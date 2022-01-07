@@ -1,0 +1,4 @@
+name: PitSimInstanceManager
+main: dev.wiji.instancemanager.BungeeMain
+version: 1.0
+author: wiji
