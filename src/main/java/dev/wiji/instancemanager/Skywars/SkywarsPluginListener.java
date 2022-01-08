@@ -1,13 +1,19 @@
 package dev.wiji.instancemanager.Skywars;
 
+import com.mattmalec.pterodactyl4j.UtilizationState;
+import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PluginMessageEvent;
+import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class SkywarsPluginListener implements Listener {
 
@@ -33,14 +39,24 @@ public class SkywarsPluginListener implements Listener {
 		String argument = subDIS.readUTF();
 		String player = subDIS.readUTF();
 
-		if(action.equals("PLAYERCOUNT")) {
-			if(serverID.equals(SkywarsGameManager.mainQueueServer)) SkywarsGameManager.mainQueuePlayers = Integer.parseInt(argument);
-			if(serverID.equals(SkywarsGameManager.backupQueueServer)) SkywarsGameManager.backupQueuePlayers = Integer.parseInt(argument);
+		if(action.equals("GAME_START")) {
+			if(serverID.equals(SkywarsGameManager.mainQueueServer)) {
 
-			System.out.println(SkywarsGameManager.mainQueuePlayers);
-			System.out.println(SkywarsGameManager.backupQueuePlayers);
+			}
 		}
 
 //
+	}
+
+	@EventHandler
+	public void onJoin(PostLoginEvent event) {
+		ProxiedPlayer player = event.getPlayer();
+
+		new ProxyRunnable() {
+			@Override
+			public void run() {
+				SkywarsQueueManager.queue(player);
+			}
+		}.runAfter(5, TimeUnit.SECONDS);
 	}
 }

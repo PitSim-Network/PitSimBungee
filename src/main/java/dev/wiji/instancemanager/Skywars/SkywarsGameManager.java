@@ -1,16 +1,14 @@
 package dev.wiji.instancemanager.Skywars;
 
 import com.mattmalec.pterodactyl4j.UtilizationState;
-import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.Server;
-import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class SkywarsGameManager {
@@ -19,6 +17,7 @@ public class SkywarsGameManager {
 	public static String backupQueueServer;
 	public static int backupQueuePlayers = 0;
 	public static List<String> startingServers = new ArrayList<>();
+	public static Map<String, ScheduledTask> activeServers = new HashMap<>();
 
 	public static void onStart(String id) {
 		System.out.println("Enabled! " + id);
@@ -34,7 +33,7 @@ public class SkywarsGameManager {
 		}
 	}
 
-	public static void onEnable() {
+	public static void fetchServer() {
 		if(ServerManager.inactiveServers.size() == 0) {
 			waitForServer();
 			return;
@@ -52,18 +51,16 @@ public class SkywarsGameManager {
 		new ProxyRunnable() {
 			@Override
 			public void run() {
-				String toRemove = null;
 
 				UtilizationState state = ServerManager.getState(id);
 				if(state == UtilizationState.RUNNING) {
 					onStart(id);
 				} else {
 					ServerManager.killServer(id);
-					toRemove = id;
 					ServerManager.inactiveServers.add(id);
-					onEnable();
+					fetchServer();
 				}
-				startingServers.remove(toRemove);
+				startingServers.remove(id);
 				System.out.println(mainQueueServer);
 			}
 		}.runAfter(20, TimeUnit.SECONDS);

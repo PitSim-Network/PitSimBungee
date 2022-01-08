@@ -1,27 +1,12 @@
 package dev.wiji.instancemanager;
 
 
-import com.mattmalec.pterodactyl4j.DataType;
-import com.mattmalec.pterodactyl4j.EnvironmentValue;
-import com.mattmalec.pterodactyl4j.PteroAction;
 import com.mattmalec.pterodactyl4j.PteroBuilder;
 import com.mattmalec.pterodactyl4j.application.entities.*;
 import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
 import dev.wiji.instancemanager.Skywars.SkywarsGameManager;
 import dev.wiji.instancemanager.Skywars.SkywarsPluginListener;
-import net.md_5.bungee.api.event.PluginMessageEvent;
-import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.config.ConfigurationProvider;
-import net.md_5.bungee.config.YamlConfiguration;
-import net.md_5.bungee.event.EventHandler;
-
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class BungeeMain extends Plugin {
 	public static BungeeMain INSTANCE;
@@ -38,7 +23,7 @@ public class BungeeMain extends Plugin {
 		ConfigManager.onEnable();
 		ConfigManager.getServerList();
 		ServerManager.onEnable();
-		SkywarsGameManager.onEnable();
+		SkywarsGameManager.fetchServer();
 	}
 
 	@Override
