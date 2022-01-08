@@ -1,54 +1,80 @@
 package dev.wiji.instancemanager;
 
 
+import com.mattmalec.pterodactyl4j.DataType;
+import com.mattmalec.pterodactyl4j.EnvironmentValue;
+import com.mattmalec.pterodactyl4j.PteroAction;
+import com.mattmalec.pterodactyl4j.PteroBuilder;
+import com.mattmalec.pterodactyl4j.application.entities.*;
+import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
+import dev.wiji.instancemanager.Skywars.SkywarsGameManager;
+import dev.wiji.instancemanager.Skywars.SkywarsPluginListener;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
 import net.md_5.bungee.event.EventHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-public class BungeeMain extends Plugin implements Listener {
+public class BungeeMain extends Plugin {
+	public static BungeeMain INSTANCE;
+	public static PteroApplication api = PteroBuilder.createApplication("***REMOVED***",
+			"ePKZBUXCVt1gS42MHwh20MfD5vreObm9JFNVCo788eV0ROnr");
+	public static PteroClient client = PteroBuilder.createClient("***REMOVED***",
+			"im4F1vVHTJKIjhRQcvJ8CAdOX3aCt99JmpukhFGbzQXI5BOQ");
+
 	@Override
 	public void onEnable() {
+		INSTANCE = this;
 		this.getProxy().registerChannel("BungeeCord");
-		getProxy().getPluginManager().registerListener(this, this);
-		for(String channel : this.getProxy().getChannels()) {
-			getLogger().info(channel);
-		}
+		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
+		ConfigManager.onEnable();
+		ConfigManager.getServerList();
+		ServerManager.onEnable();
+		SkywarsGameManager.onEnable();
 	}
 
 	@Override
 	public void onDisable() {
 		//make sure to unregister the registered channels in case of a reload
 		this.getProxy().unregisterChannel("BungeeCord");
+		ConfigManager.onDisable();
 	}
 
-	@EventHandler
-	public void onMessage(PluginMessageEvent event) throws IOException {
-		if(!event.getTag().equals("BungeeCord")) return;
-		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(event.getData()));
-
-		String type = dis.readUTF();
-		System.out.println("Type: " + type);
-		String server = dis.readUTF();
-		System.out.println("Server: " + server);
-		String subChannel = dis.readUTF();
-		System.out.println("Sub-Channel: " + subChannel);
-
-		short len = dis.readShort();
-		byte[] msgbytes = new byte[len];
-		dis.readFully(msgbytes);
-		DataInputStream subDIS = new DataInputStream(new ByteArrayInputStream(msgbytes));
-
-		System.out.println("Game: " + subDIS.readUTF());
-		System.out.println("Player: " + subDIS.readUTF());
-
-//		while(subDIS.available() > 0) {
-//			String k = subDIS.readUTF();
-//			System.out.println(k);
-//		}
-	}
+//	public void createServer() {
+//
+//		PteroApplication api = PteroBuilder.createApplication("***REMOVED***", "ePKZBUXCVt1gS42MHwh20MfD5vreObm9JFNVCo788eV0ROnr");
+//		api.retrieveUsers().executeAsync(users -> users.forEach(u -> System.out.println(u.getFullName())));
+//
+//
+//		Nest nest = api.retrieveNestById("1").execute();
+//		Location location = api.retrieveLocationById("1").execute();
+//		ApplicationEgg egg = api.retrieveEggById(nest, "3").execute();
+//
+//		Map<String, EnvironmentValue<?>> map = new HashMap<>();
+//		map.put("SERVER_JARFILE", EnvironmentValue.ofString("server.jar"));
+//		map.put("VERSION", EnvironmentValue.ofString("1.8.8"));
+//
+//		PteroAction<ApplicationServer> action = api.createServer()
+//				.setName("Mini01")
+//				.setOwner(api.retrieveUserById("1").execute())
+//				.setEgg(egg)
+//				.setLocation(location)
+//				.setAllocations(1L)
+//				.setDatabases(0L)
+//				.setCPU(50L)
+//				.setDisk(3L, DataType.GB)
+//				.setMemory(1L, DataType.GB)
+//				.setPort(25802)
+//				.startOnCompletion(false)
+//				.setEnvironment(map);
+//		ApplicationServer server = action.execute();
+//	}
 }

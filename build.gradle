@@ -1,21 +1,26 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
-group 'org.example'
-version '1.0-SNAPSHOT'
+group 'dev.wiji'
+version '1.0'
 
 repositories {
     mavenCentral()
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    maven { url "https://repo.mattmalec.com/repository/releases" }
 }
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    implementation 'com.mattmalec:Pterodactyl4J:2.BETA_81'
     compileOnly 'net.md-5:bungeecord-api:1.8-SNAPSHOT'
 }
 
-test {
-    useJUnitPlatform()
+shadowJar {
+
+    relocate 'dev.kyro.arcticapi', 'dev.kyro.pitsim.arcticapi'
+    relocate 'net.kyori', 'dev.kyro.pitsim.kyori'
 }
