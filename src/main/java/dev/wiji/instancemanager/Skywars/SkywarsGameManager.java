@@ -3,6 +3,7 @@ package dev.wiji.instancemanager.Skywars;
 import com.mattmalec.pterodactyl4j.UtilizationState;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
+import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 
 import java.util.ArrayList;
@@ -67,6 +68,43 @@ public class SkywarsGameManager {
 
 
 
+	}
+
+	public static void startGame(String serverID) {
+
+		if(serverID.equals(mainQueueServer)) {
+			mainQueueServer = backupQueueServer;
+			backupQueueServer = null;
+			fetchServer();
+		} else if(serverID.equals(backupQueueServer)) {
+			backupQueueServer = null;
+			fetchServer();
+		} else {
+			ServerManager.killServer(serverID);
+			ServerManager.inactiveServers.add(serverID);
+			return;
+		}
+
+		ScheduledTask task = new ProxyRunnable() {
+			@Override
+			public void run() {
+				SkywarsGameManager.activeServers.remove(serverID);
+				ServerManager.killServer(serverID);
+				ServerManager.inactiveServers.add(serverID);
+			}
+		}.runAfter(20, TimeUnit.MINUTES);
+
+		activeServers.put(serverID, task);
+	}
+
+	public static void endGame(String serverID) {
+		if(!activeServers.containsKey(serverID)) return;
+
+		ScheduledTask task = activeServers.get(serverID);
+		task.cancel();
+		activeServers.remove(serverID);
+		ServerManager.killServer(serverID);
+		ServerManager.inactiveServers.add(serverID);
 	}
 
 	public static ScheduledTask task;

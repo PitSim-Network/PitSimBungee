@@ -40,12 +40,13 @@ public class SkywarsPluginListener implements Listener {
 		String player = subDIS.readUTF();
 
 		if(action.equals("GAME_START")) {
-			if(serverID.equals(SkywarsGameManager.mainQueueServer)) {
-
-			}
+			SkywarsGameManager.startGame(serverID);
 		}
 
-//
+		if(action.equals("GAME_END")) {
+			SkywarsGameManager.endGame(serverID);
+		}
+
 	}
 
 	@EventHandler
