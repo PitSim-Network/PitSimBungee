@@ -54,7 +54,7 @@ public class SkywarsQueueManager {
 			SkywarsGameManager.backupQueuePlayers = BungeeMain.INSTANCE.getProxy().getServerInfo(SkywarsGameManager.backupQueueServer).getPlayers().size();
 		} catch(Exception e) { SkywarsGameManager.backupQueuePlayers = 0; }
 
-		if(SkywarsGameManager.mainQueuePlayers >= (minGameSize - 1) && SkywarsGameManager.backupQueueServer == null && SkywarsGameManager.startingServers.size() == 0) {
+			if(SkywarsGameManager.mainQueuePlayers >= (minGameSize - 1) && SkywarsGameManager.backupQueueServer == null && SkywarsGameManager.startingServers.size() == 0) {
 			SkywarsGameManager.fetchServer();
 		}
 

@@ -16,10 +16,14 @@ import net.md_5.bungee.event.EventHandler;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class SkywarsPluginListener implements Listener {
+
+	public static List<String> startedServers = new ArrayList<>();
 
 	@EventHandler
 	public void onMessage(PluginMessageEvent event) throws IOException {
@@ -49,9 +53,17 @@ public class SkywarsPluginListener implements Listener {
 		String player = subDIS.readUTF();
 
 		if(action.equals("GAME_START")) {
-			if(SkywarsGameManager.activeServers.containsKey(serverID)) return;
+			if(startedServers.contains(serverID)) return;
 			SkywarsGameManager.startGame(serverID);
 			System.out.println("Skywars game started on " + serverID);
+			startedServers.add(serverID);
+
+			new ProxyRunnable() {
+				@Override
+				public void run() {
+					startedServers.remove(serverID);
+				}
+			}.runAfter(10, TimeUnit.SECONDS);
 		}
 
 //		if(action.equals("GAME_END")) {
@@ -77,7 +89,7 @@ public class SkywarsPluginListener implements Listener {
 	public void onSwitch(ServerSwitchEvent event) {
 		for(Map.Entry<String, ScheduledTask> entry : SkywarsGameManager.activeServers.entrySet()) {
 			int size = BungeeMain.INSTANCE.getProxy().getServerInfo(entry.getKey()).getPlayers().size();
-			if(size == 1) {
+			if(size == 0) {
 				SkywarsGameManager.endGame(entry.getKey());
 				System.out.println("Skywars game ended on " + entry.getKey());
 			}

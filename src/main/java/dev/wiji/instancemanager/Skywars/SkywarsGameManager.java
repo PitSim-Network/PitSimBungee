@@ -72,13 +72,21 @@ public class SkywarsGameManager {
 
 	public static void startGame(String serverID) {
 
-		System.out.println("Stats start");
-		System.out.println(serverID);
-		System.out.println(mainQueueServer);
-		System.out.println(backupQueueServer);
-		System.out.println("Stats end");
-
-		if(activeServers.containsKey(serverID)) return;
+		ScheduledTask task = new ProxyRunnable() {
+			@Override
+			public void run() {
+				SkywarsGameManager.activeServers.remove(serverID);
+				ServerManager.killServer(serverID);
+				ServerManager.inactiveServers.add(serverID);
+			}
+		}.runAfter(20, TimeUnit.MINUTES);
+		activeServers.put(serverID, task);
+//
+//		System.out.println("Stats start");
+//		System.out.println(serverID);
+//		System.out.println(mainQueueServer);
+//		System.out.println(backupQueueServer);
+//		System.out.println("Stats end");
 
 		if(serverID.equals(mainQueueServer)) {
 			mainQueueServer = backupQueueServer;
@@ -93,16 +101,6 @@ public class SkywarsGameManager {
 			ServerManager.inactiveServers.add(serverID);
 			return;
 		}
-
-		ScheduledTask task = new ProxyRunnable() {
-			@Override
-			public void run() {
-				SkywarsGameManager.activeServers.remove(serverID);
-				ServerManager.killServer(serverID);
-				ServerManager.inactiveServers.add(serverID);
-			}
-		}.runAfter(20, TimeUnit.MINUTES);
-		activeServers.put(serverID, task);
 	}
 
 	public static void endGame(String serverID) {
