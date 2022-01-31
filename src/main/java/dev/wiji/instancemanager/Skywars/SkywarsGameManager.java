@@ -22,7 +22,7 @@ public class SkywarsGameManager {
 
 	public static void onStart(String id) {
 		System.out.println("Enabled! " + id);
-		ServerManager.runCommand(id, "gameload skywars");
+		ServerManager.runCommand(id, "skywars load");
 		startingServers.remove(id);
 		if(mainQueueServer == null) mainQueueServer = id;
 		else if(backupQueueServer == null) backupQueueServer = id;
@@ -64,13 +64,21 @@ public class SkywarsGameManager {
 				startingServers.remove(id);
 				System.out.println(mainQueueServer);
 			}
-		}.runAfter(20, TimeUnit.SECONDS);
+		}.runAfter(40, TimeUnit.SECONDS);
 
 
 
 	}
 
 	public static void startGame(String serverID) {
+
+		System.out.println("Stats start");
+		System.out.println(serverID);
+		System.out.println(mainQueueServer);
+		System.out.println(backupQueueServer);
+		System.out.println("Stats end");
+
+		if(activeServers.containsKey(serverID)) return;
 
 		if(serverID.equals(mainQueueServer)) {
 			mainQueueServer = backupQueueServer;
@@ -80,6 +88,7 @@ public class SkywarsGameManager {
 			backupQueueServer = null;
 			fetchServer();
 		} else {
+			System.out.println("Killing" + serverID);
 			ServerManager.killServer(serverID);
 			ServerManager.inactiveServers.add(serverID);
 			return;
@@ -93,7 +102,6 @@ public class SkywarsGameManager {
 				ServerManager.inactiveServers.add(serverID);
 			}
 		}.runAfter(20, TimeUnit.MINUTES);
-
 		activeServers.put(serverID, task);
 	}
 

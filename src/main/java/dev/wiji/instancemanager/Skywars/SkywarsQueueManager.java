@@ -9,7 +9,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class SkywarsQueueManager {
 
-	public static int gameSize = 2;
+	public static int maxGameSize = 5;
+	public static int minGameSize = 2;
 
 	public static void queue(ProxiedPlayer player) {
 		try {
@@ -22,9 +23,14 @@ public class SkywarsQueueManager {
 
 		String targetServer = null;
 
-		if(SkywarsGameManager.mainQueuePlayers < gameSize) {
+//		System.out.println(SkywarsGameManager.mainQueueServer);
+//		System.out.println(SkywarsGameManager.mainQueuePlayers);
+//		System.out.println(SkywarsGameManager.backupQueueServer);
+//		System.out.println(SkywarsGameManager.backupQueuePlayers);
+
+		if(SkywarsGameManager.mainQueuePlayers < maxGameSize) {
 			targetServer = SkywarsGameManager.mainQueueServer;
-		} else if(SkywarsGameManager.backupQueuePlayers < gameSize) {
+		} else if(SkywarsGameManager.backupQueuePlayers < maxGameSize) {
 			targetServer = SkywarsGameManager.backupQueueServer;
 		}
 
@@ -48,7 +54,7 @@ public class SkywarsQueueManager {
 			SkywarsGameManager.backupQueuePlayers = BungeeMain.INSTANCE.getProxy().getServerInfo(SkywarsGameManager.backupQueueServer).getPlayers().size();
 		} catch(Exception e) { SkywarsGameManager.backupQueuePlayers = 0; }
 
-		if(SkywarsGameManager.mainQueuePlayers >= (gameSize / 2) && SkywarsGameManager.backupQueueServer == null && SkywarsGameManager.startingServers.size() == 0) {
+		if(SkywarsGameManager.mainQueuePlayers >= (minGameSize - 1) && SkywarsGameManager.backupQueueServer == null && SkywarsGameManager.startingServers.size() == 0) {
 			SkywarsGameManager.fetchServer();
 		}
 

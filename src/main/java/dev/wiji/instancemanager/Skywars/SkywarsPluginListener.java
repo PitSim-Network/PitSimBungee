@@ -5,27 +5,36 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.event.EventHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class SkywarsPluginListener implements Listener {
 
 	@EventHandler
 	public void onMessage(PluginMessageEvent event) throws IOException {
-		System.out.println("Message recieved!");
 		if(!event.getTag().equals("BungeeCord")) return;
 		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(event.getData()));
 
 		String type = dis.readUTF();
 		String server = dis.readUTF();
-		String subChannel = dis.readUTF();
+		String subChannel = null;
+
+		try {
+			subChannel = dis.readUTF();
+		} catch(Exception e) {
+			return;
+		}
 
 		if(!subChannel.equals("Skywars")) return;
 
@@ -40,12 +49,15 @@ public class SkywarsPluginListener implements Listener {
 		String player = subDIS.readUTF();
 
 		if(action.equals("GAME_START")) {
+			if(SkywarsGameManager.activeServers.containsKey(serverID)) return;
 			SkywarsGameManager.startGame(serverID);
+			System.out.println("Skywars game started on " + serverID);
 		}
 
-		if(action.equals("GAME_END")) {
-			SkywarsGameManager.endGame(serverID);
-		}
+//		if(action.equals("GAME_END")) {
+//			SkywarsGameManager.endGame(serverID);
+//			System.out.println("Skywars game ended on " + serverID);
+//		}
 
 	}
 
@@ -59,5 +71,30 @@ public class SkywarsPluginListener implements Listener {
 				SkywarsQueueManager.queue(player);
 			}
 		}.runAfter(5, TimeUnit.SECONDS);
+	}
+
+	@EventHandler
+	public void onSwitch(ServerSwitchEvent event) {
+		for(Map.Entry<String, ScheduledTask> entry : SkywarsGameManager.activeServers.entrySet()) {
+			int size = BungeeMain.INSTANCE.getProxy().getServerInfo(entry.getKey()).getPlayers().size();
+			if(size == 1) {
+				SkywarsGameManager.endGame(entry.getKey());
+				System.out.println("Skywars game ended on " + entry.getKey());
+			}
+		}
+	}
+
+	@EventHandler
+	public void onLeave(PlayerDisconnectEvent event) {
+		System.out.println("Quit!");
+		for(Map.Entry<String, ScheduledTask> entry : SkywarsGameManager.activeServers.entrySet()) {
+			System.out.println(entry.getKey());
+			int size = BungeeMain.INSTANCE.getProxy().getServerInfo(entry.getKey()).getPlayers().size();
+			System.out.println(size);
+			if(size == 1) {
+				SkywarsGameManager.endGame(entry.getKey());
+				System.out.println("Skywars game ended on " + entry.getKey());
+			}
+		}
 	}
 }
