@@ -5,10 +5,7 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.PlayerDisconnectEvent;
-import net.md_5.bungee.api.event.PluginMessageEvent;
-import net.md_5.bungee.api.event.PostLoginEvent;
-import net.md_5.bungee.api.event.ServerSwitchEvent;
+import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.event.EventHandler;
@@ -87,6 +84,17 @@ public class SkywarsPluginListener implements Listener {
 
 	@EventHandler
 	public void onSwitch(ServerSwitchEvent event) {
+		for(Map.Entry<String, ScheduledTask> entry : SkywarsGameManager.activeServers.entrySet()) {
+			int size = BungeeMain.INSTANCE.getProxy().getServerInfo(entry.getKey()).getPlayers().size();
+			if(size == 0) {
+				SkywarsGameManager.endGame(entry.getKey());
+				System.out.println("Skywars game ended on " + entry.getKey());
+			}
+		}
+	}
+
+	@EventHandler
+	public void onSwitch(ServerDisconnectEvent event) {
 		for(Map.Entry<String, ScheduledTask> entry : SkywarsGameManager.activeServers.entrySet()) {
 			int size = BungeeMain.INSTANCE.getProxy().getServerInfo(entry.getKey()).getPlayers().size();
 			if(size == 0) {
