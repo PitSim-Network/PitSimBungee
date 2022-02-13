@@ -9,8 +9,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class SkywarsQueueManager {
 
-	public static int maxGameSize = 5;
-	public static int minGameSize = 2;
+	public static int maxGameSize = 12;
+	public static int minGameSize = 3;
 
 	public static void queue(ProxiedPlayer player) {
 		try {
@@ -35,7 +35,8 @@ public class SkywarsQueueManager {
 		}
 
 		if(targetServer == null) {
-			player.disconnect(new ComponentBuilder("There are currently no available servers. Please try again in a moment!").color(ChatColor.RED).create());
+			player.sendMessage(new ComponentBuilder("There are currently no available servers. Please try again in a moment!").color(ChatColor.RED).create());
+			return;
 		} else {
 			System.out.println(player.getServer().getInfo().getName());
 			if (player.getServer().getInfo().getName().equalsIgnoreCase(targetServer)) {

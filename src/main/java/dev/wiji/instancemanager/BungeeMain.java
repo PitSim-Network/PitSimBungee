@@ -4,8 +4,12 @@ package dev.wiji.instancemanager;
 import com.mattmalec.pterodactyl4j.PteroBuilder;
 import com.mattmalec.pterodactyl4j.application.entities.*;
 import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
+import dev.wiji.instancemanager.Commands.PlayCommand;
+import dev.wiji.instancemanager.Commands.ToggleCommand;
+import dev.wiji.instancemanager.Skywars.PluginMessageSender;
 import dev.wiji.instancemanager.Skywars.SkywarsGameManager;
 import dev.wiji.instancemanager.Skywars.SkywarsPluginListener;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 
 public class BungeeMain extends Plugin {
@@ -24,6 +28,9 @@ public class BungeeMain extends Plugin {
 		ConfigManager.getServerList();
 		ServerManager.onEnable();
 		SkywarsGameManager.fetchServer();
+		PluginMessageSender.sendPlayerStats();
+		getProxy().getPluginManager().registerCommand(this, new PlayCommand(this));
+		getProxy().getPluginManager().registerCommand(this, new ToggleCommand(this));
 	}
 
 	@Override

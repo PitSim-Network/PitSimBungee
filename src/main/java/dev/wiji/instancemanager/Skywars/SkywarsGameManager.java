@@ -20,6 +20,8 @@ public class SkywarsGameManager {
 	public static List<String> startingServers = new ArrayList<>();
 	public static Map<String, ScheduledTask> activeServers = new HashMap<>();
 
+	public static boolean isEnabled = true;
+
 	public static void onStart(String id) {
 		System.out.println("Enabled! " + id);
 		ServerManager.runCommand(id, "skywars load");
@@ -64,7 +66,7 @@ public class SkywarsGameManager {
 				startingServers.remove(id);
 				System.out.println(mainQueueServer);
 			}
-		}.runAfter(40, TimeUnit.SECONDS);
+		}.runAfter(60   , TimeUnit.SECONDS);
 
 
 
