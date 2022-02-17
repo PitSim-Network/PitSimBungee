@@ -93,10 +93,8 @@ public class SkywarsGameManager {
 		if(serverID.equals(mainQueueServer)) {
 			mainQueueServer = backupQueueServer;
 			backupQueueServer = null;
-			fetchServer();
 		} else if(serverID.equals(backupQueueServer)) {
 			backupQueueServer = null;
-			fetchServer();
 		} else {
 			System.out.println("Killing" + serverID);
 			ServerManager.killServer(serverID);

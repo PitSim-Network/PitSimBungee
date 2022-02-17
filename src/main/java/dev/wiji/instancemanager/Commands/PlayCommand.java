@@ -35,6 +35,9 @@ public class PlayCommand extends Command {
 				commandSender.sendMessage((new ComponentBuilder("Sending you to Skywars!").color(ChatColor.GREEN).create()));
 				SkywarsQueueManager.queue((ProxiedPlayer) commandSender);
 			} else commandSender.sendMessage((new ComponentBuilder("Queuing for this gamemode is currently disabled.").color(ChatColor.RED).create()));
+		} else if(strings[0].equalsIgnoreCase("rewind")) {
+				commandSender.sendMessage((new ComponentBuilder("Sending you to Rewind!").color(ChatColor.GREEN).create()));
+				((ProxiedPlayer) commandSender).connect(BungeeMain.INSTANCE.getProxy().getServerInfo("rewind"));
 		}
 	}
 }
