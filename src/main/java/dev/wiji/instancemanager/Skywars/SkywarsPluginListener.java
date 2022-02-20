@@ -70,6 +70,7 @@ public class SkywarsPluginListener implements Listener {
 		if(action.equals("GAME_END")) {
 			SkywarsGameManager.endGame(serverID);
 			System.out.println("Skywars game ended on " + serverID);
+			checkForServerWait();
 		}
 		} catch(Exception ignored) { }
 	}
@@ -118,6 +119,7 @@ public class SkywarsPluginListener implements Listener {
 			if(size == 0) {
 				SkywarsGameManager.endGame(entry.getKey());
 				System.out.println("Skywars game ended on " + entry.getKey());
+				checkForServerWait();
 			}
 		}
 	}
@@ -129,6 +131,7 @@ public class SkywarsPluginListener implements Listener {
 			if(size == 0) {
 				SkywarsGameManager.endGame(entry.getKey());
 				System.out.println("Skywars game ended on " + entry.getKey());
+				checkForServerWait();
 			}
 		}
 	}
@@ -142,7 +145,15 @@ public class SkywarsPluginListener implements Listener {
 			if(size == 1) {
 				SkywarsGameManager.endGame(entry.getKey());
 				System.out.println("Skywars game ended on " + entry.getKey());
+				checkForServerWait();
 			}
 		}
+	}
+
+	public static void checkForServerWait() {
+		if(!SkywarsGameManager.outOfGameServers) return;
+
+		SkywarsGameManager.fetchServer();
+		SkywarsGameManager.outOfGameServers = false;
 	}
 }

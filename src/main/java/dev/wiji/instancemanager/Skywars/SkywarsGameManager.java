@@ -20,6 +20,8 @@ public class SkywarsGameManager {
 	public static List<String> startingServers = new ArrayList<>();
 	public static Map<String, ScheduledTask> activeServers = new HashMap<>();
 
+	public static boolean outOfGameServers = false;
+
 	public static boolean isEnabled = true;
 
 	public static void onStart(String id) {
@@ -41,6 +43,7 @@ public class SkywarsGameManager {
 			waitForServer();
 			return;
 		}
+		System.out.println(ServerManager.inactiveServers);
 		String initialServer = ServerManager.inactiveServers.get(0);
 
 		ServerManager.inactiveServers.remove(initialServer);
@@ -113,22 +116,8 @@ public class SkywarsGameManager {
 		ServerManager.inactiveServers.add(serverID);
 	}
 
-	public static ScheduledTask task;
 
 	public static void waitForServer() {
-
-		task = new ProxyRunnable() {
-			@Override
-			public void run() {
-				if(ServerManager.inactiveServers.size() == 0) return;
-				else {
-					String initialServer = ServerManager.inactiveServers.get(0);
-					ServerManager.inactiveServers.remove(initialServer);
-					startingServers.add(initialServer);
-					startServer(initialServer);
-					task.cancel();
-				}
-			}
-		}.runAfterEvery(10,10, TimeUnit.SECONDS);
+		outOfGameServers = true;
 	}
 }
