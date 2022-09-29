@@ -5,6 +5,7 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
@@ -24,6 +25,9 @@ public class SkywarsPluginListener implements Listener {
 
 	@EventHandler
 	public void onMessage(PluginMessageEvent event) throws IOException {
+		if(event.getSender() instanceof ProxiedPlayer) {
+			Server server = ((ProxiedPlayer) event.getSender()).getServer();
+		}
 
 		try {
 			if(!event.getTag().equals("BungeeCord")) return;

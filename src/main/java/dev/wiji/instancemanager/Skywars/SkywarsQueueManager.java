@@ -1,6 +1,7 @@
 package dev.wiji.instancemanager.Skywars;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.Objects.PluginMessage;
 import dev.wiji.instancemanager.ProxyRunnable;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -9,6 +10,7 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class SkywarsQueueManager {
@@ -36,7 +38,7 @@ public class SkywarsQueueManager {
 //		System.out.println(SkywarsGameManager.mainQueueServer);
 //		System.out.println(SkywarsGameManager.mainQueuePlayers);
 //		System.out.println(SkywarsGameManager.backupQueueServer);
-//		System.out.println(SkywarsGameManager.backupQueuePlayers);
+//	`	System.out.println(SkywarsGameManager.backupQueuePlayers);
 
 		if(SkywarsGameManager.mainQueuePlayers < maxGameSize) {
 			targetServer = SkywarsGameManager.mainQueueServer;
@@ -75,8 +77,16 @@ public class SkywarsQueueManager {
 			SkywarsGameManager.fetchServer();
 		}
 
-		if(SkywarsGameManager.mainQueuePlayers >= 3 || SkywarsGameManager.backupQueuePlayers >= 3 && !alertCooldown) {
+		if(SkywarsGameManager.mainQueuePlayers >= 2 || SkywarsGameManager.backupQueuePlayers >= 2) {
+			if(!alertCooldown) return;
+
 			for(ProxiedPlayer proxiedPlayer : ProxyServer.getInstance().getPlayers()) {
+
+				String server = proxiedPlayer.getServer().getInfo().getName();
+				if(SkywarsGameManager.activeServers.containsKey(server)) continue;
+				if(Objects.equals(SkywarsGameManager.mainQueueServer, server)) continue;
+				if(Objects.equals(SkywarsGameManager.backupQueueServer, server)) continue;
+
 				proxiedPlayer.sendMessage(new ComponentBuilder("-------------------------").color(ChatColor.DARK_GRAY).strikethrough(true).create());
 				proxiedPlayer.sendMessage(new ComponentBuilder("A Skywars game is starting soon!").color(ChatColor.LIGHT_PURPLE).bold(true).create());
 				proxiedPlayer.sendMessage(new ComponentBuilder("Use ").color(ChatColor.YELLOW).append("/play skywars ").color(ChatColor.WHITE).append("to join!").color(ChatColor.YELLOW).create());
