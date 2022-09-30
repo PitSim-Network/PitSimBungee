@@ -2,6 +2,7 @@ package dev.wiji.instancemanager.Events;
 
 import dev.wiji.instancemanager.Objects.PluginMessage;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Event;
 

@@ -1,5 +1,6 @@
 package dev.wiji.instancemanager;
 
+import javafx.util.Pair;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
@@ -7,7 +8,6 @@ import net.md_5.bungee.config.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 public class ConfigManager {
 	public static File file;
@@ -35,11 +35,25 @@ public class ConfigManager {
 		}
 	}
 
-	public static void getServerList() {
-		for(Object s : configuration.getList("servers")) {
+	public static void getMiniServerList() {
+		for(Object s : configuration.getList("mini-servers")) {
 			ServerManager.inactiveServers.add((String) s);
 		}
 
 	}
+
+	public static void getPitSimServerList() {
+		for(Object s : configuration.getList("pitsim-servers")) {
+			String[] split = ((String) s).split(":");
+			ServerManager.pitSimServers.put(split[0], split[1]);
+		}
+	}
+
+	public static void getDarkzoneServer() {
+		String[] split = configuration.getString("darkzone").split(":");
+		ServerManager.darkzoneServer = new Pair<>(split[0], split[1]);
+	}
+
+
 
 }

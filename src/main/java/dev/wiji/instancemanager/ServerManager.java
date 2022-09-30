@@ -3,12 +3,17 @@ package dev.wiji.instancemanager;
 import com.mattmalec.pterodactyl4j.UtilizationState;
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 import com.mattmalec.pterodactyl4j.client.entities.Utilization;
+import javafx.util.Pair;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ServerManager {
 	public static List<String> inactiveServers = new ArrayList<>();
+	public static Map<String, String> pitSimServers = new HashMap<>();
+	public static Pair<String, String> darkzoneServer;
 
 	public static void onEnable() {
 		for(String inactiveServer : inactiveServers) {
