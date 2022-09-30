@@ -1,6 +1,8 @@
 package dev.wiji.instancemanager.Objects;
 
+import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.PitSim.PluginMessageManager;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.Server;
 
 import java.io.DataInputStream;
@@ -15,7 +17,7 @@ public class PluginMessage {
     private final List<Integer> integers = new ArrayList<>();
     private final List<Boolean> booleans = new ArrayList<>();
 
-    private final List<Server> servers = new ArrayList<>();
+    private final List<ServerInfo> servers = new ArrayList<>();
 
     public UUID messageID;
     public UUID responseID;
@@ -67,15 +69,23 @@ public class PluginMessage {
         return this;
     }
 
-    public PluginMessage addServer(Server server) {
+    public PluginMessage addServer(ServerInfo server) {
         servers.add(server);
         return this;
     }
 
-    public void send() {
-        for(Server server : servers) {
+    public PluginMessage addServer(String server) {
+        ServerInfo info = BungeeMain.INSTANCE.getProxy().getServerInfo(server);
+        if(info == null) return this;
+        servers.add(info);
+        return this;
+    }
+
+    public PluginMessage send() {
+        for(ServerInfo server : servers) {
             PluginMessageManager.sendMessage(this, server);
         }
+        return this;
     }
 
     public List<String> getStrings() {
@@ -90,13 +100,14 @@ public class PluginMessage {
         return booleans;
     }
 
-    public List<Server> getServers() {
+    public List<ServerInfo> getServers() {
         return servers;
     }
 
-    public void respond(PluginMessage message) {
+    public PluginMessage respond(PluginMessage message) {
         message.responseID = messageID;
         message.send();
+        return this;
     }
 
     public boolean isResponseTo(PluginMessage message) {

@@ -21,30 +21,34 @@ import java.util.concurrent.TimeUnit;
 
 public class PluginMessageManager implements Listener {
 
+	public static PluginMessage lastMessage;
 
-	public static void sendMessage(PluginMessage message, Server server) {
+
+	public static void sendMessage(PluginMessage message, ServerInfo server) {
 
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("Forward"); // So BungeeCord knows to forward it
-		out.writeUTF(server.getInfo().getName());
+		out.writeUTF(server.getName());
 		out.writeUTF("PitSim");
-		out.writeUTF("Proxy");
 
 		ByteArrayOutputStream msgbytes = new ByteArrayOutputStream();
 		DataOutputStream msgout = new DataOutputStream(msgbytes);
 		try {
 			msgout.writeUTF(message.messageID.toString());
 			msgout.writeUTF(message.responseID.toString());
-			msgout.writeUTF(server.getInfo().getName());
+			msgout.writeUTF(server.getName());
+
 			msgout.writeInt(message.getStrings().size());
+			msgout.writeInt(message.getIntegers().size());
+			msgout.writeInt(message.getBooleans().size());
+
 			for(String string : message.getStrings()) {
 				msgout.writeUTF(string);
 			}
-			msgout.writeInt(message.getIntegers().size());
 			for(int integer : message.getIntegers()) {
-				msgout.writeLong(integer);
+				msgout.writeInt(integer);
 			}
-			msgout.writeInt(message.getBooleans().size());
+
 			for(Boolean bool : message.getBooleans()) {
 				msgout.writeBoolean(bool);
 			}
@@ -56,8 +60,19 @@ public class PluginMessageManager implements Listener {
 		out.writeShort(msgbytes.toByteArray().length);
 		out.write(msgbytes.toByteArray());
 
-		server.getInfo().getPlayers().iterator().next().sendData("BungeeCord", out.toByteArray());
+		ProxiedPlayer player = getPlayer(server.getName());
+		assert player != null;
+		player.getServer().sendData("BungeeCord", out.toByteArray());
 
+		lastMessage = message;
+
+	}
+
+	public static ProxiedPlayer getPlayer(String server) {
+		Collection<ProxiedPlayer> players = BungeeMain.INSTANCE.getProxy().getServerInfo(server).getPlayers();
+
+		if(players.size() == 0) return null;
+		else return players.iterator().next();
 	}
 
 	@EventHandler
