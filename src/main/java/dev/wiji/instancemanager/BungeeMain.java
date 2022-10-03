@@ -8,6 +8,8 @@ import dev.wiji.instancemanager.Commands.BetaCommad;
 import dev.wiji.instancemanager.Commands.LobbyCommand;
 import dev.wiji.instancemanager.Commands.PlayCommand;
 import dev.wiji.instancemanager.Commands.ToggleCommand;
+import dev.wiji.instancemanager.PitSim.MessageListener;
+import dev.wiji.instancemanager.PitSim.PitSimServerManager;
 import dev.wiji.instancemanager.PitSim.PluginMessageManager;
 import net.md_5.bungee.api.plugin.Plugin;
 
@@ -24,8 +26,9 @@ public class BungeeMain extends Plugin {
 		this.getProxy().registerChannel("BungeeCord");
 //		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
 		getProxy().getPluginManager().registerListener(this, new PluginMessageManager());
-//		ConfigManager.onEnable();
-//		ConfigManager.getServerList();
+		getProxy().getPluginManager().registerListener(this, new MessageListener());
+		ConfigManager.onEnable();
+		ConfigManager.getMiniServerList();
 //		ServerManager.onEnable();
 //		SkywarsGameManager.fetchServer();
 //		PluginMessageSender.sendPlayerStats();
@@ -33,6 +36,9 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerCommand(this, new ToggleCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new LobbyCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new BetaCommad(this));
+
+		ConfigManager.getPitSimServerList();
+		PitSimServerManager.init();
 	}
 
 	@Override
