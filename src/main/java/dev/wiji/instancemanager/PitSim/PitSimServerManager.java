@@ -17,15 +17,19 @@ public class PitSimServerManager {
 	public static List<PitSimServer> serverList = new ArrayList<>();
 	public static List<PitSimServer> activeServers = new ArrayList<>();
 
+	public static final int START_THRESHOLD = 2;
+	public static final int STOP_THRESHOLD = 1;
+
 	static {
 		((ProxyRunnable) () -> {
 			int players = getTotalPlayers();
-			int serversToActivate = (int) (Math.floor(players / 10) + 1) - activeServers.size();
+			int serversToActivate = (int) (Math.floor(players / START_THRESHOLD) + 1) - activeServers.size();
 
 			if(serversToActivate < 0) {
-				for(int i = 0; i < Math.abs(serversToActivate); i++) {
-					if(activeServers.size() == 1) break;
 
+				int totalPlayers = getTotalPlayers();
+
+				for(int i = 1 + (totalPlayers + (START_THRESHOLD - STOP_THRESHOLD - 1)) / 10; i < START_THRESHOLD; i++) {
 					PitSimServer server = activeServers.get(activeServers.size() - 1);
 					server.shutDown();
 					activeServers.remove(server);
@@ -59,6 +63,7 @@ public class PitSimServerManager {
 		for(PitSimServer pitSimServer : serverList) {
 			UtilizationState state = pitSimServer.getState();
 			if(state == UtilizationState.RUNNING) {
+				System.out.println("Recovered " + pitSimServer.getServerIndex());
 				activeServers.add(pitSimServer);
 				recoveredServers.add(pitSimServer);
 			}
@@ -87,14 +92,22 @@ public class PitSimServerManager {
 
 	public static boolean queue(ProxiedPlayer player) {
 
+
 		if(activeServers.size() == 0 || !activeServers.contains(serverList.get(0))) return false;
 
 		PitSimServer targetServer = null;
 		int players = getTotalPlayers();
 
+		System.out.println(activeServers);
+
 		for(PitSimServer activeServer : activeServers) {
+			System.out.println(activeServer);
+			System.out.println(players / activeServers.size());
 			if(activeServer.getPlayers().size() > players / activeServers.size()) continue;
-			else targetServer = activeServer;
+			else {
+				targetServer = activeServer;
+				break;
+			}
 		}
 
 		if(targetServer == null) targetServer = activeServers.get(0);
