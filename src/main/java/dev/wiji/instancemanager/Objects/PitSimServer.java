@@ -19,6 +19,8 @@ public class PitSimServer {
     private String pteroID;
     private int serverIndex;
 
+    private long startTime;
+
     public PitSimServer(String pteroID, int serverIndex) {
         this.pteroID = pteroID;
         this.serverIndex = serverIndex;
@@ -30,6 +32,7 @@ public class PitSimServer {
         ((ProxyRunnable) () -> {
             if(getState() == UtilizationState.RUNNING) {
                 PitSimServerManager.activeServers.add(this);
+                startTime = System.currentTimeMillis();
             } else {
                 System.out.println("Server " + pteroID + " failed to start up!");
             }
@@ -41,6 +44,10 @@ public class PitSimServer {
     }
 
     public void shutDown() {
+        new PluginMessage().writeString("SHUTDOWN").addServer(getServerInfo()).send();
+    }
+
+    public void hardShutDown() {
         ServerManager.stopServer(pteroID);
     }
 
@@ -50,6 +57,14 @@ public class PitSimServer {
 
     public int getServerIndex() {
         return serverIndex;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
     }
 
     public ServerInfo getServerInfo() {

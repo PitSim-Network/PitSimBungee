@@ -1,9 +1,12 @@
 package dev.wiji.instancemanager.PitSim;
 
 import com.mattmalec.pterodactyl4j.UtilizationState;
+import com.mattmalec.pterodactyl4j.client.entities.impl.UtilizationImpl;
+import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.Objects.PitSimServer;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
+import net.md_5.bungee.Util;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -63,11 +66,21 @@ public class PitSimServerManager {
 		for(PitSimServer pitSimServer : serverList) {
 			UtilizationState state = pitSimServer.getState();
 			if(state == UtilizationState.RUNNING) {
+				if(ConfigManager.configuration.getLong(pitSimServer.getPteroID()) == 0) {
+					pitSimServer.hardShutDown();
+					continue;
+				}
 				System.out.println("Recovered " + pitSimServer.getServerIndex());
+				pitSimServer.setStartTime(ConfigManager.configuration.getLong(pitSimServer.getPteroID()));
+				ConfigManager.configuration.set(pitSimServer.getPteroID(), null);
 				activeServers.add(pitSimServer);
 				recoveredServers.add(pitSimServer);
 			}
 			else if(state == UtilizationState.STARTING) {
+				if(ConfigManager.configuration.getLong(pitSimServer.getPteroID()) == 0) {
+					pitSimServer.hardShutDown();
+					continue;
+				}
 				pitSimServer.startUp(true);
 				recoveredServers.add(pitSimServer);
 			}

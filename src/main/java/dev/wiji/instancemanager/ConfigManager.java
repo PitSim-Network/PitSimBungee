@@ -54,6 +54,10 @@ public class ConfigManager {
 		ServerManager.darkzoneServer = new Pair<>(split[0], split[1]);
 	}
 
+	public static String getProxyServer() {
+		return configuration.getString("proxy");
+	}
+
 
 
 }

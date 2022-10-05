@@ -20,6 +20,8 @@ public class BungeeMain extends Plugin {
 	public static PteroClient client = PteroBuilder.createClient("***REMOVED***",
 			"im4F1vVHTJKIjhRQcvJ8CAdOX3aCt99JmpukhFGbzQXI5BOQ");
 
+
+
 	@Override
 	public void onEnable() {
 		INSTANCE = this;
