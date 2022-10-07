@@ -1,8 +1,6 @@
 package dev.wiji.instancemanager.Commands;
 
-import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.Skywars.SkywarsGameManager;
-import dev.wiji.instancemanager.Skywars.SkywarsQueueManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -34,6 +32,16 @@ public class ToggleCommand extends Command {
 			else {
 				SkywarsGameManager.isEnabled = true;
 				commandSender.sendMessage((new ComponentBuilder("Turned on queuing for Skywars").color(ChatColor.GREEN).create()));
+			}
+		}
+
+		if(strings[0].equalsIgnoreCase("dev")) {
+			if(DevCommand.isEnabled) {
+				DevCommand.isEnabled = false;
+				commandSender.sendMessage((new ComponentBuilder("Turned off queuing for Dev").color(ChatColor.RED).create()));
+			} else {
+				DevCommand.isEnabled = true;
+				commandSender.sendMessage((new ComponentBuilder("Turned on queuing for Dev").color(ChatColor.GREEN).create()));
 			}
 		}
 	}

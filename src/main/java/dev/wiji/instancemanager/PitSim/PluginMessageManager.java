@@ -14,12 +14,16 @@ import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import septogeddon.pluginquery.api.QueryConnection;
+import septogeddon.pluginquery.api.QueryMessageListener;
+import septogeddon.pluginquery.bungeecord.BungeePluginQuery;
+import septogeddon.pluginquery.bungeecord.event.QueryMessageEvent;
 
 import java.io.*;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
-public class PluginMessageManager implements Listener {
+public class PluginMessageManager implements QueryMessageListener {
 
 	public static PluginMessage lastMessage;
 
@@ -62,7 +66,14 @@ public class PluginMessageManager implements Listener {
 
 		ProxiedPlayer player = getPlayer(server.getName());
 		assert player != null;
-		player.getServer().sendData("BungeeCord", out.toByteArray());
+
+		QueryConnection connection = BungeePluginQuery.getConnection(server);
+		if (connection != null) {
+			connection.sendQuery("BungeeCord", out.toByteArray());
+		} else {
+			throw new IllegalArgumentException("server is not yet connected");
+		}
+//		player.getServer().sendData("BungeeCord", out.toByteArray());
 
 		lastMessage = message;
 
@@ -75,11 +86,13 @@ public class PluginMessageManager implements Listener {
 		else return players.iterator().next();
 	}
 
-	@EventHandler
-	public void onReceive(PluginMessageEvent event) {
-		if(event.getTag().equals("BungeeCord")) {
+	@Override
+	public void onQueryReceived(QueryConnection connection, String channel, byte[] message) {
+		System.out.println("Received message from " + connection + " on channel " + channel);
+		if(channel.equals("BungeeCord")) {
 			try {
-				DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getData()));
+
+				DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
 				String type = in.readUTF();
 				String server = in.readUTF();
 				String subChannel = in.readUTF();
@@ -94,7 +107,9 @@ public class PluginMessageManager implements Listener {
 				PluginMessage pluginMessage = new PluginMessage(subDIS);
 				BungeeMain.INSTANCE.getProxy().getPluginManager().callEvent(new MessageEvent(pluginMessage, subChannel));
 
-			} catch(Exception e) { }
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 	}

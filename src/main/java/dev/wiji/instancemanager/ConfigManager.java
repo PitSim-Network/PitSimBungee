@@ -49,9 +49,11 @@ public class ConfigManager {
 		}
 	}
 
-	public static void getDarkzoneServer() {
-		String[] split = configuration.getString("darkzone").split(":");
-		ServerManager.darkzoneServer = new Pair<>(split[0], split[1]);
+	public static void getDarkzoneServerList() {
+		for(Object s : configuration.getList("darkzone-servers")) {
+			String[] split = ((String) s).split(":");
+			ServerManager.darkzoneServers.put(split[0], split[1]);
+		}
 	}
 
 	public static String getProxyServer() {

@@ -82,6 +82,7 @@ public class PluginMessage {
     }
 
     public PluginMessage send() {
+        this.responseID = UUID.randomUUID();
         for(ServerInfo server : servers) {
             PluginMessageManager.sendMessage(this, server);
         }

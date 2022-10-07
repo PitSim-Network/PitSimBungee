@@ -5,3 +5,4 @@ author: wiji
 commands:
   play:
   toggle:
+  dev:

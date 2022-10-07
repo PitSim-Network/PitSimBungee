@@ -1,6 +1,7 @@
 package dev.wiji.instancemanager.Commands;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.PitSim.PitSimServerManager;
 import dev.wiji.instancemanager.Skywars.SkywarsGameManager;
 import dev.wiji.instancemanager.Skywars.SkywarsQueueManager;
 import net.md_5.bungee.api.ChatColor;
@@ -25,8 +26,9 @@ public class PlayCommand extends Command {
 		}
 
 		if(strings[0].equalsIgnoreCase("pitsim")) {
-			commandSender.sendMessage((new ComponentBuilder("Sending you to PitSim!").color(ChatColor.GREEN).create()));
-			((ProxiedPlayer) commandSender).connect(BungeeMain.INSTANCE.getProxy().getServerInfo("pitsim"));
+			if(!PitSimServerManager.queue((ProxiedPlayer) commandSender)) {
+				commandSender.sendMessage((new ComponentBuilder("There are currently no available servers!").color(ChatColor.RED).create()));
+			}
 		} else if(strings[0].equalsIgnoreCase("sync")) {
 			commandSender.sendMessage((new ComponentBuilder("Sending you to Sync!").color(ChatColor.GREEN).create()));
 		((ProxiedPlayer) commandSender).connect(BungeeMain.INSTANCE.getProxy().getServerInfo("sync"));

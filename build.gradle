@@ -17,6 +17,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
     implementation 'com.mattmalec:Pterodactyl4J:2.BETA_81'
     compileOnly 'net.md-5:bungeecord-api:1.8-SNAPSHOT'
+    compileOnly files('libs/PluginQuery.jar')
 }
 
 shadowJar {

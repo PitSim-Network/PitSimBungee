@@ -1,12 +1,12 @@
 package dev.wiji.instancemanager.PitSim;
 
 import com.mattmalec.pterodactyl4j.UtilizationState;
-import com.mattmalec.pterodactyl4j.client.entities.impl.UtilizationImpl;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.Objects.PitSimServer;
+import dev.wiji.instancemanager.Objects.PluginMessage;
+import dev.wiji.instancemanager.Objects.ServerStatus;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
-import net.md_5.bungee.Util;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -18,34 +18,42 @@ import java.util.concurrent.TimeUnit;
 public class PitSimServerManager {
 
 	public static List<PitSimServer> serverList = new ArrayList<>();
-	public static List<PitSimServer> activeServers = new ArrayList<>();
 
-	public static final int START_THRESHOLD = 2;
-	public static final int STOP_THRESHOLD = 1;
+	public static final int START_THRESHOLD = 10;
+	public static final int STOP_THRESHOLD = 6;
 
 	static {
 		((ProxyRunnable) () -> {
 			int players = getTotalPlayers();
-			int serversToActivate = (int) (Math.floor(players / START_THRESHOLD) + 1) - activeServers.size();
 
-			if(serversToActivate < 0) {
-
-				int totalPlayers = getTotalPlayers();
-
-				for(int i = 1 + (totalPlayers + (START_THRESHOLD - STOP_THRESHOLD - 1)) / 10; i < START_THRESHOLD; i++) {
-					PitSimServer server = activeServers.get(activeServers.size() - 1);
-					server.shutDown();
-					activeServers.remove(server);
+			for(int i = 0; i < Math.min(players / 10 + 1, serverList.size()); i++) {
+				PitSimServer server = serverList.get(i);
+				if(server.status.isOnline()) {
+					if(server.status == ServerStatus.SHUTTING_DOWN_INITIAL) {
+						server.status = ServerStatus.RUNNING;
+						new PluginMessage().writeString("CANCEL SHUTDOWN").addServer(server.getServerInfo().getName()).send();
+					}
+					continue;
 				}
-				return;
+
+				if(server.isOnStartCooldown) continue;
+
+				server.status = ServerStatus.RUNNING;
+				server.startUp();
+				System.out.println("Turning on server: " + (i + 1));
 			}
 
-			if(serversToActivate > serverList.size() - activeServers.size()) {
-				serversToActivate = serverList.size() - activeServers.size();
-			}
+			for(int i = 1 + (players + (START_THRESHOLD - STOP_THRESHOLD - 1)) / 10; i < serverList.size(); i++) {
+				PitSimServer server = serverList.get(i);
+				if(server.status.isShuttingDown() || server.status == ServerStatus.OFFLINE) continue;
+				if(server.status == ServerStatus.RESTARTING_INITIAL) {
+					server.status = ServerStatus.SHUTTING_DOWN_INITIAL;
+					System.out.println("Switching restart to shut down: " + (i + 1));
+					continue;
+				}
 
-			for(int i = 0; i < serversToActivate; i++) {
-				serverList.get(activeServers.size() + i).startUp(false);
+				System.out.println("Shutting down server: " + (i + 1));
+				server.shutDown(false);
 			}
 
 		}).runAfterEvery(2, 2, TimeUnit.MINUTES);
@@ -105,25 +113,36 @@ public class PitSimServerManager {
 
 	public static boolean queue(ProxiedPlayer player) {
 
+		
 
-		if(activeServers.size() == 0 || !activeServers.contains(serverList.get(0))) return false;
+		if(getTotalServers() == 0) return false;
 
 		PitSimServer targetServer = null;
 		int players = getTotalPlayers();
 
-		System.out.println(activeServers);
 
-		for(PitSimServer activeServer : activeServers) {
-			System.out.println(activeServer);
-			System.out.println(players / activeServers.size());
-			if(activeServer.getPlayers().size() > players / activeServers.size()) continue;
+		for(PitSimServer activeServer : serverList) {
+			if(activeServer.status != ServerStatus.RUNNING) continue;
+
+			if(activeServer.getPlayers().size() > players / getTotalServers()) continue;
 			else {
 				targetServer = activeServer;
 				break;
 			}
 		}
 
-		if(targetServer == null) targetServer = activeServers.get(0);
+		if(targetServer == null) {
+			for(PitSimServer pitSimServer : serverList) {
+				if(pitSimServer.status == ServerStatus.RUNNING) {
+					targetServer = pitSimServer;
+					break;
+				}
+			}
+		}
+
+		if(targetServer == null) return false;
+
+
 		player.sendMessage((new ComponentBuilder("Sending you to " + targetServer.getServerInfo().getName()).color(ChatColor.GREEN).create()));
 		player.connect(targetServer.getServerInfo());
 		return true;
@@ -136,4 +155,13 @@ public class PitSimServerManager {
 		}
 		return total;
 	}
+
+	public static int getTotalServers() {
+		int total = 0;
+		for(PitSimServer server : serverList) {
+			if(server.status == ServerStatus.RUNNING || server.status == ServerStatus.RESTARTING_INITIAL) total++;
+		}
+		return total;
+	}
+
 }

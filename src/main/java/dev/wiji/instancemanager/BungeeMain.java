@@ -4,43 +4,55 @@ package dev.wiji.instancemanager;
 import com.mattmalec.pterodactyl4j.PteroBuilder;
 import com.mattmalec.pterodactyl4j.application.entities.*;
 import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
-import dev.wiji.instancemanager.Commands.BetaCommad;
-import dev.wiji.instancemanager.Commands.LobbyCommand;
-import dev.wiji.instancemanager.Commands.PlayCommand;
-import dev.wiji.instancemanager.Commands.ToggleCommand;
+import dev.wiji.instancemanager.Commands.*;
 import dev.wiji.instancemanager.PitSim.MessageListener;
 import dev.wiji.instancemanager.PitSim.PitSimServerManager;
 import dev.wiji.instancemanager.PitSim.PluginMessageManager;
+import dev.wiji.instancemanager.PitSim.RestartManager;
+import dev.wiji.instancemanager.Skywars.PluginMessageSender;
+import dev.wiji.instancemanager.Skywars.SkywarsGameManager;
 import net.md_5.bungee.api.plugin.Plugin;
+import septogeddon.pluginquery.PluginQuery;
+import septogeddon.pluginquery.api.QueryMessenger;
 
 public class BungeeMain extends Plugin {
 	public static BungeeMain INSTANCE;
 	public static PteroApplication api = PteroBuilder.createApplication("***REMOVED***",
-			"ePKZBUXCVt1gS42MHwh20MfD5vreObm9JFNVCo788eV0ROnr");
+			"4t1LoF4HF8cPHCDhScaXKxQkMLwnXRVBqFKvl0cAbYB0btzI");
 	public static PteroClient client = PteroBuilder.createClient("***REMOVED***",
-			"im4F1vVHTJKIjhRQcvJ8CAdOX3aCt99JmpukhFGbzQXI5BOQ");
+			"VILPyBXQfdJUEJEd4HUUbvTKsyDfbVD8KjYTOk2DMmyPfxCD");
 
-
+	public static long STARTUP_TIME;
 
 	@Override
 	public void onEnable() {
 		INSTANCE = this;
 		this.getProxy().registerChannel("BungeeCord");
+		STARTUP_TIME = System.currentTimeMillis();
+
+
 //		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
-		getProxy().getPluginManager().registerListener(this, new PluginMessageManager());
+//		getProxy().getPluginManager().registerListener(this, new PluginMessageManager());
 		getProxy().getPluginManager().registerListener(this, new MessageListener());
 		ConfigManager.onEnable();
 		ConfigManager.getMiniServerList();
+
+
 //		ServerManager.onEnable();
 //		SkywarsGameManager.fetchServer();
 //		PluginMessageSender.sendPlayerStats();
+		QueryMessenger messenger = PluginQuery.getMessenger();
+		messenger.getEventBus().registerListener(new PluginMessageManager());
+
 		getProxy().getPluginManager().registerCommand(this, new PlayCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new ToggleCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new LobbyCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new BetaCommad(this));
+		getProxy().getPluginManager().registerCommand(this, new DevCommand(this));
 
 		ConfigManager.getPitSimServerList();
 		PitSimServerManager.init();
+		RestartManager.init();
 	}
 
 	@Override

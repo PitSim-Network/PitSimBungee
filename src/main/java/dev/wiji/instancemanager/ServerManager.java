@@ -13,7 +13,7 @@ import java.util.Map;
 public class ServerManager {
 	public static List<String> inactiveServers = new ArrayList<>();
 	public static Map<String, String> pitSimServers = new HashMap<>();
-	public static Pair<String, String> darkzoneServer;
+	public static Map<String, String> darkzoneServers;
 
 	public static void onEnable() {
 		for(String inactiveServer : inactiveServers) {
@@ -34,6 +34,11 @@ public class ServerManager {
 	public static void killServer(String identifier) {
 		BungeeMain.client.retrieveServerByIdentifier(identifier)
 				.flatMap(ClientServer::kill).executeAsync();
+	}
+
+	public static void restartServer(String identifier) {
+		BungeeMain.client.retrieveServerByIdentifier(identifier)
+				.flatMap(ClientServer::restart).executeAsync();
 	}
 
 	public static UtilizationState getState(String identifier) {
