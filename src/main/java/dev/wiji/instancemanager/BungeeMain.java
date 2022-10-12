@@ -32,6 +32,7 @@ public class BungeeMain extends Plugin {
 //		getProxy().getPluginManager().registerListener(this, new PluginMessageManager());
 		getProxy().getPluginManager().registerListener(this, new MessageListener());
 		getProxy().getPluginManager().registerListener(this, new ServerDataManager());
+		getProxy().getPluginManager().registerListener(this, new ServerChangeListener());
 		ConfigManager.onEnable();
 		ConfigManager.getMiniServerList();
 

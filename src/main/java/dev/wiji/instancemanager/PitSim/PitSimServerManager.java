@@ -1,10 +1,7 @@
 package dev.wiji.instancemanager.PitSim;
 
-import com.mattmalec.pterodactyl4j.UtilizationState;
-import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.Objects.PitSimServer;
 import dev.wiji.instancemanager.Objects.PluginMessage;
-import dev.wiji.instancemanager.Objects.ServerData;
 import dev.wiji.instancemanager.Objects.ServerStatus;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
@@ -72,8 +69,16 @@ public class PitSimServerManager {
 		}
 	}
 
-	public static boolean queue(ProxiedPlayer player, int requestedServer) {
-		if(getTotalServers() == 0) return false;
+	public static void queue(ProxiedPlayer player, int requestedServer) {
+		if(getTotalServers() == 0) {
+			player.sendMessage(new ComponentBuilder("There are currently no available servers. Please try again later.").color(ChatColor.RED).create());
+			return;
+		}
+
+		if(ServerChangeListener.recentlyLeft.contains(player)) {
+			player.sendMessage(new ComponentBuilder("You recently left a server. Please wait a few seconds before rejoining.").color(ChatColor.RED).create());
+			return;
+		}
 
 		ServerDataManager.sendServerData();
 
@@ -83,7 +88,7 @@ public class PitSimServerManager {
 			targetServer = serverList.get(requestedServer - 1);
 			if(targetServer.status != ServerStatus.RUNNING) {
 				player.sendMessage(new ComponentBuilder("This server is currently unavailable!").color(ChatColor.RED).create());
-				return false;
+				return;
 			}
 		}
 
@@ -112,13 +117,12 @@ public class PitSimServerManager {
 
 		if(targetServer == null) {
 			player.sendMessage(new ComponentBuilder("There are currently no available servers. Please try again later.").color(ChatColor.RED).create());
-			return false;
+			return;
 		}
 
 
 		player.sendMessage((new ComponentBuilder("Sending you to " + targetServer.getServerInfo().getName()).color(ChatColor.GREEN).create()));
 		player.connect(targetServer.getServerInfo());
-		return true;
 	}
 
 	public static int getTotalPlayers() {
