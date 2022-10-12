@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class PitSimServerManager {
-
 	public static List<PitSimServer> serverList = new ArrayList<>();
 
 	public static final int START_THRESHOLD = 10;
@@ -61,55 +60,16 @@ public class PitSimServerManager {
 	}
 
 	public static void init() {
+		for(String value : ServerManager.pitSimServers.values()) serverList.add(new PitSimServer(value));
 
-		int i = 1;
-		for(String value : ServerManager.pitSimServers.values()) {
-			serverList.add(new PitSimServer(value, i));
-			i++;
-		}
-
-		PitSimServer mainServer = serverList.get(0);
-
-		List<PitSimServer> recoveredServers = new ArrayList<>();
-
-		for(PitSimServer pitSimServer : serverList) {
-			UtilizationState state = pitSimServer.getState();
-			if(state == UtilizationState.RUNNING) {
-				if(ConfigManager.configuration.getLong(pitSimServer.getPteroID()) == 0) {
-					pitSimServer.hardShutDown();
-					continue;
-				}
-				System.out.println("Recovered " + pitSimServer.getServerIndex());
-				pitSimServer.setStartTime(ConfigManager.configuration.getLong(pitSimServer.getPteroID()));
-				ConfigManager.configuration.set(pitSimServer.getPteroID(), null);
-				activeServers.add(pitSimServer);
-				recoveredServers.add(pitSimServer);
+		for(PitSimServer server : serverList) {
+			if(serverList.get(0) == server) {
+				ServerManager.restartServer(server.getPteroID());
+				continue;
 			}
-			else if(state == UtilizationState.STARTING) {
-				if(ConfigManager.configuration.getLong(pitSimServer.getPteroID()) == 0) {
-					pitSimServer.hardShutDown();
-					continue;
-				}
-				pitSimServer.startUp(true);
-				recoveredServers.add(pitSimServer);
-			}
+
+			server.hardShutDown();
 		}
-
-		if(!recoveredServers.contains(mainServer)) mainServer.startUp(false);
-
-		int highestServer = 1;
-		for(PitSimServer recoveredServer : recoveredServers) {
-			if(recoveredServer.getServerIndex() > highestServer) {
-				highestServer = recoveredServer.getServerIndex();
-			}
-		}
-
-		for(PitSimServer pitSimServer : serverList) {
-			if(pitSimServer.getServerIndex() < highestServer && !recoveredServers.contains(pitSimServer)) {
-				pitSimServer.startUp(false);
-			}
-		}
-
 	}
 
 	public static boolean queue(ProxiedPlayer player, int requestedServer) {
