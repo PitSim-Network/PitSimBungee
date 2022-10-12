@@ -4,6 +4,7 @@ import com.mattmalec.pterodactyl4j.UtilizationState;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.Objects.PitSimServer;
 import dev.wiji.instancemanager.Objects.PluginMessage;
+import dev.wiji.instancemanager.Objects.ServerData;
 import dev.wiji.instancemanager.Objects.ServerStatus;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
@@ -111,23 +112,32 @@ public class PitSimServerManager {
 
 	}
 
-	public static boolean queue(ProxiedPlayer player) {
-
-		
-
+	public static boolean queue(ProxiedPlayer player, int requestedServer) {
 		if(getTotalServers() == 0) return false;
 
+		ServerDataManager.sendServerData();
+
 		PitSimServer targetServer = null;
+
+		if(requestedServer != 0) {
+			targetServer = serverList.get(requestedServer - 1);
+			if(targetServer.status != ServerStatus.RUNNING) {
+				player.sendMessage(new ComponentBuilder("This server is currently unavailable!").color(ChatColor.RED).create());
+				return false;
+			}
+		}
+
 		int players = getTotalPlayers();
 
+		if(targetServer == null) {
+			for(PitSimServer activeServer : serverList) {
+				if(activeServer.status != ServerStatus.RUNNING) continue;
 
-		for(PitSimServer activeServer : serverList) {
-			if(activeServer.status != ServerStatus.RUNNING) continue;
-
-			if(activeServer.getPlayers().size() > players / getTotalServers()) continue;
-			else {
-				targetServer = activeServer;
-				break;
+				if(activeServer.getPlayers().size() > players / getTotalServers()) continue;
+				else {
+					targetServer = activeServer;
+					break;
+				}
 			}
 		}
 
@@ -140,7 +150,10 @@ public class PitSimServerManager {
 			}
 		}
 
-		if(targetServer == null) return false;
+		if(targetServer == null) {
+			player.sendMessage(new ComponentBuilder("There are currently no available servers. Please try again later.").color(ChatColor.RED).create());
+			return false;
+		}
 
 
 		player.sendMessage((new ComponentBuilder("Sending you to " + targetServer.getServerInfo().getName()).color(ChatColor.GREEN).create()));

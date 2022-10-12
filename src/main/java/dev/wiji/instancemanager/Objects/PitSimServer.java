@@ -23,6 +23,8 @@ public class PitSimServer {
 
 	public ServerStatus status = ServerStatus.OFFLINE;
 
+	public ServerData serverData;
+
 	public PitSimServer(String pteroID) {
 		this.pteroID = pteroID;
 		this.serverIndex = nextIndex++;

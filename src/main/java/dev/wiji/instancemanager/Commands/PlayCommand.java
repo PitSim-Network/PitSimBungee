@@ -26,7 +26,7 @@ public class PlayCommand extends Command {
 		}
 
 		if(strings[0].equalsIgnoreCase("pitsim")) {
-			if(!PitSimServerManager.queue((ProxiedPlayer) commandSender)) {
+			if(!PitSimServerManager.queue((ProxiedPlayer) commandSender, 0)) {
 				commandSender.sendMessage((new ComponentBuilder("There are currently no available servers!").color(ChatColor.RED).create()));
 			}
 		} else if(strings[0].equalsIgnoreCase("sync")) {

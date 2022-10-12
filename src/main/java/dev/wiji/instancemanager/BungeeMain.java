@@ -5,10 +5,7 @@ import com.mattmalec.pterodactyl4j.PteroBuilder;
 import com.mattmalec.pterodactyl4j.application.entities.*;
 import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
 import dev.wiji.instancemanager.Commands.*;
-import dev.wiji.instancemanager.PitSim.MessageListener;
-import dev.wiji.instancemanager.PitSim.PitSimServerManager;
-import dev.wiji.instancemanager.PitSim.PluginMessageManager;
-import dev.wiji.instancemanager.PitSim.RestartManager;
+import dev.wiji.instancemanager.PitSim.*;
 import dev.wiji.instancemanager.Skywars.PluginMessageSender;
 import dev.wiji.instancemanager.Skywars.SkywarsGameManager;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -34,6 +31,7 @@ public class BungeeMain extends Plugin {
 //		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
 //		getProxy().getPluginManager().registerListener(this, new PluginMessageManager());
 		getProxy().getPluginManager().registerListener(this, new MessageListener());
+		getProxy().getPluginManager().registerListener(this, new ServerDataManager());
 		ConfigManager.onEnable();
 		ConfigManager.getMiniServerList();
 

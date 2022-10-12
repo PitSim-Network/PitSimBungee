@@ -88,7 +88,6 @@ public class PluginMessageManager implements QueryMessageListener {
 
 	@Override
 	public void onQueryReceived(QueryConnection connection, String channel, byte[] message) {
-		System.out.println("Received message from " + connection + " on channel " + channel);
 		if(channel.equals("BungeeCord")) {
 			try {
 

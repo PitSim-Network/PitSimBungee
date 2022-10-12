@@ -4,6 +4,7 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.Events.MessageEvent;
 import dev.wiji.instancemanager.Objects.PitSimServer;
 import dev.wiji.instancemanager.Objects.PluginMessage;
+import dev.wiji.instancemanager.Objects.ServerData;
 import dev.wiji.instancemanager.Objects.ServerStatus;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
@@ -18,6 +19,7 @@ public class MessageListener implements Listener {
 
 		PluginMessage message = event.getMessage();
 		List<String> strings = event.getMessage().getStrings();
+		List<Integer> integers = event.getMessage().getIntegers();
 
 		if(strings.size() >= 2 && strings.get(0).equals("INITIATE STARTUP")) {
 			String serverName = strings.get(1);
@@ -42,8 +44,9 @@ public class MessageListener implements Listener {
 			for(PitSimServer server : PitSimServerManager.serverList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
 
+					server.serverData = null;
 					for(ProxiedPlayer player : server.getPlayers()) {
-						PitSimServerManager.queue(player);
+						PitSimServerManager.queue(player, 0);
 					}
 
 					server.status = ServerStatus.SHUTTING_DOWN_FINAL;
@@ -58,8 +61,9 @@ public class MessageListener implements Listener {
 			for(PitSimServer server : PitSimServerManager.serverList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
 
+					server.serverData = null;
 					for(ProxiedPlayer player : server.getPlayers()) {
-						PitSimServerManager.queue(player);
+						PitSimServerManager.queue(player, 0);
 					}
 
 					server.status = ServerStatus.RESTARTING_FINAL;
@@ -88,7 +92,12 @@ public class MessageListener implements Listener {
 			ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(playerString);
 			if(player == null) return;
 
-			PitSimServerManager.queue(player);
+			int requested = 0;
+			if(integers.size() >= 1) {
+				requested = integers.get(0);
+			}
+
+			PitSimServerManager.queue(player, requested);
 		}
 	}
 
