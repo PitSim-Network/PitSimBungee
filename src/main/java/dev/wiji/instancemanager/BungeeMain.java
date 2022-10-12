@@ -47,6 +47,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerCommand(this, new LobbyCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new BetaCommad(this));
 		getProxy().getPluginManager().registerCommand(this, new DevCommand(this));
+		getProxy().getPluginManager().registerCommand(this, new ShutdownCommand(this));
 
 		ConfigManager.getPitSimServerList();
 		PitSimServerManager.init();
