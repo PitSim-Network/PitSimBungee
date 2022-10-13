@@ -20,6 +20,7 @@ public class MessageListener implements Listener {
 		PluginMessage message = event.getMessage();
 		List<String> strings = event.getMessage().getStrings();
 		List<Integer> integers = event.getMessage().getIntegers();
+		List<Boolean> booleans = event.getMessage().getBooleans();
 
 		if(strings.size() >= 2 && strings.get(0).equals("INITIATE STARTUP")) {
 			String serverName = strings.get(1);
@@ -46,7 +47,7 @@ public class MessageListener implements Listener {
 
 					server.serverData = null;
 					for(ProxiedPlayer player : server.getPlayers()) {
-						PitSimServerManager.queue(player, 0);
+						PitSimServerManager.queue(player, 0, false);
 					}
 
 					server.status = ServerStatus.SHUTTING_DOWN_FINAL;
@@ -63,7 +64,7 @@ public class MessageListener implements Listener {
 
 					server.serverData = null;
 					for(ProxiedPlayer player : server.getPlayers()) {
-						PitSimServerManager.queue(player, 0);
+						PitSimServerManager.queue(player, 0, false);
 					}
 
 					server.status = ServerStatus.RESTARTING_FINAL;
@@ -97,7 +98,12 @@ public class MessageListener implements Listener {
 				requested = integers.get(0);
 			}
 
-			PitSimServerManager.queue(player, requested);
+			boolean fromDarkzone = false;
+			if(booleans.size() >= 1) {
+				fromDarkzone = booleans.get(0);
+			}
+
+			PitSimServerManager.queue(player, requested, fromDarkzone);
 		}
 	}
 

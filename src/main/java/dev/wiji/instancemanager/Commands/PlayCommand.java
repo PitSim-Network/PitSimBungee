@@ -70,7 +70,7 @@ public class PlayCommand extends Command {
 
 			}
 
-			PitSimServerManager.queue((ProxiedPlayer) commandSender, 0);
+			PitSimServerManager.queue((ProxiedPlayer) commandSender, 0, false);
 
 		} else if(strings[0].equalsIgnoreCase("sync")) {
 			commandSender.sendMessage((new ComponentBuilder("Sending you to Sync!").color(ChatColor.GREEN).create()));
