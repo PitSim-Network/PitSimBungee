@@ -2,6 +2,7 @@ package dev.wiji.instancemanager.PitSim;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
+import dev.wiji.instancemanager.Objects.DarkzoneServer;
 import dev.wiji.instancemanager.Objects.PitSimServer;
 import dev.wiji.instancemanager.Objects.ServerStatus;
 import dev.wiji.instancemanager.ProxyRunnable;
@@ -33,6 +34,23 @@ public class RestartManager {
 				if(activeServer.getStartTime() + RESTART_TIME < System.currentTimeMillis()) {
 
 					for(PitSimServer server : PitSimServerManager.serverList) {
+						if(activeServer == server || server.status != ServerStatus.RUNNING) continue;
+						if((server.getStartTime() + RESTART_TIME) < RESTART_BUFFER + System.currentTimeMillis()) {
+							server.setStartTime(server.getStartTime() + RESTART_BUFFER);
+						}
+					}
+
+					activeServer.shutDown(true);
+				}
+			}
+
+
+			for(DarkzoneServer activeServer : DarkzoneServerManager.serverList) {
+				if(activeServer.status != ServerStatus.RUNNING) continue;
+
+				if(activeServer.getStartTime() + RESTART_TIME < System.currentTimeMillis()) {
+
+					for(DarkzoneServer server : DarkzoneServerManager.serverList) {
 						if(activeServer == server || server.status != ServerStatus.RUNNING) continue;
 						if((server.getStartTime() + RESTART_TIME) < RESTART_BUFFER + System.currentTimeMillis()) {
 							server.setStartTime(server.getStartTime() + RESTART_BUFFER);

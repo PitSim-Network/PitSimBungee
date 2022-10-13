@@ -1,10 +1,7 @@
 package dev.wiji.instancemanager.PitSim;
 
 import dev.wiji.instancemanager.Events.MessageEvent;
-import dev.wiji.instancemanager.Objects.PitSimServer;
-import dev.wiji.instancemanager.Objects.PluginMessage;
-import dev.wiji.instancemanager.Objects.ServerData;
-import dev.wiji.instancemanager.Objects.ServerStatus;
+import dev.wiji.instancemanager.Objects.*;
 import dev.wiji.instancemanager.ProxyRunnable;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -19,7 +16,6 @@ public class ServerDataManager implements Listener {
 		((ProxyRunnable) ServerDataManager::sendServerData).runAfterEvery(5, 5, TimeUnit.SECONDS);
 	}
 
-
 	@EventHandler
 	public void onMessage(MessageEvent event) {
 		PluginMessage message = event.getMessage();
@@ -29,6 +25,14 @@ public class ServerDataManager implements Listener {
 
 			String serverName = strings.get(1);
 			for(PitSimServer server : PitSimServerManager.serverList) {
+				if(server.getServerInfo().getName().equals(serverName)) {
+					strings.remove(0);
+					strings.remove(0);
+					server.serverData = new ServerData(strings);
+				}
+			}
+
+			for(DarkzoneServer server : DarkzoneServerManager.serverList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
 					strings.remove(0);
 					strings.remove(0);
@@ -58,6 +62,28 @@ public class ServerDataManager implements Listener {
 			}
 
 			message.addServer(pitSimServer.getServerInfo().getName()).send();
+		}
+
+
+		for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
+			if(!darkzoneServer.status.isOnline()) continue;
+
+			PluginMessage message = new PluginMessage();
+			message.writeString("SERVER DATA");
+
+			for(DarkzoneServer activeServer : DarkzoneServerManager.serverList) {
+				message.writeInt(activeServer.serverData == null ? 0 : activeServer.serverData.getPlayerStrings().size());
+				message.writeBoolean(activeServer.status == ServerStatus.RUNNING);
+
+				if(activeServer.serverData != null) {
+					for(String playerString : activeServer.serverData.getPlayerStrings()) {
+						message.writeString(playerString);
+					}
+				}
+
+			}
+
+			message.addServer(darkzoneServer.getServerInfo().getName()).send();
 		}
 	}
 }

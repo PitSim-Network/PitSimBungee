@@ -2,10 +2,7 @@ package dev.wiji.instancemanager.PitSim;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.Events.MessageEvent;
-import dev.wiji.instancemanager.Objects.PitSimServer;
-import dev.wiji.instancemanager.Objects.PluginMessage;
-import dev.wiji.instancemanager.Objects.ServerData;
-import dev.wiji.instancemanager.Objects.ServerStatus;
+import dev.wiji.instancemanager.Objects.*;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -26,7 +23,19 @@ public class MessageListener implements Listener {
 			String serverName = strings.get(1);
 			for(PitSimServer server : PitSimServerManager.serverList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
+					if(server.status.isShuttingDown()) {
+						server.hardShutDown();
+					} else {
+						System.out.println("Server " + serverName + " is now running!");
+						server.status = ServerStatus.RUNNING;
+						server.setStartTime(System.currentTimeMillis());
+						break;
+					}
+				}
+			}
 
+			for(DarkzoneServer server : DarkzoneServerManager.serverList) {
+				if(server.getServerInfo().getName().equals(serverName)) {
 					if(server.status.isShuttingDown()) {
 						server.hardShutDown();
 					} else {
@@ -42,14 +51,17 @@ public class MessageListener implements Listener {
 
 		if(strings.size() >= 2 && strings.get(0).equals("INITIATE FINAL SHUTDOWN")) {
 			String serverName = strings.get(1);
-			for(PitSimServer server : PitSimServerManager.serverList) {
+				for(PitSimServer server : PitSimServerManager.serverList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
-
 					server.serverData = null;
-					for(ProxiedPlayer player : server.getPlayers()) {
-						PitSimServerManager.queue(player, 0, false);
-					}
+					server.status = ServerStatus.SHUTTING_DOWN_FINAL;
+					server.beginStartCooldown();
+				}
+			}
 
+			for(DarkzoneServer server : DarkzoneServerManager.serverList) {
+				if(server.getServerInfo().getName().equals(serverName)) {
+					server.serverData = null;
 					server.status = ServerStatus.SHUTTING_DOWN_FINAL;
 					server.beginStartCooldown();
 				}
@@ -61,12 +73,15 @@ public class MessageListener implements Listener {
 			String serverName = strings.get(1);
 			for(PitSimServer server : PitSimServerManager.serverList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
-
 					server.serverData = null;
-					for(ProxiedPlayer player : server.getPlayers()) {
-						PitSimServerManager.queue(player, 0, false);
-					}
+					server.status = ServerStatus.RESTARTING_FINAL;
+					server.beginStartCooldown();
+				}
+			}
 
+			for(DarkzoneServer server : DarkzoneServerManager.serverList) {
+				if(server.getServerInfo().getName().equals(serverName)) {
+					server.serverData = null;
 					server.status = ServerStatus.RESTARTING_FINAL;
 					server.beginStartCooldown();
 				}
@@ -78,6 +93,13 @@ public class MessageListener implements Listener {
 			String serverName = strings.get(1);
 			String status = strings.get(2);
 			for(PitSimServer server : PitSimServerManager.serverList) {
+				if(server.getServerInfo().getName().equals(serverName)) {
+					server.status = ServerStatus.valueOf(status);
+					break;
+				}
+			}
+
+			for(DarkzoneServer server : DarkzoneServerManager.serverList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
 					server.status = ServerStatus.valueOf(status);
 					break;
@@ -104,6 +126,25 @@ public class MessageListener implements Listener {
 			}
 
 			PitSimServerManager.queue(player, requested, fromDarkzone);
+		}
+
+		if(strings.size() >= 2 && strings.get(0).equals("QUEUE DARKZONE")) {
+
+			String playerString = strings.get(1);
+			ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(playerString);
+			if(player == null) return;
+
+			int requested = 0;
+			if(integers.size() >= 1) {
+				requested = integers.get(0);
+			}
+
+			boolean fromDarkzone = false;
+			if(booleans.size() >= 1) {
+				fromDarkzone = booleans.get(0);
+			}
+
+			DarkzoneServerManager.queue(player, requested);
 		}
 	}
 

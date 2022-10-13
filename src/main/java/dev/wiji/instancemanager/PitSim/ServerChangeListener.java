@@ -18,7 +18,7 @@ public class ServerChangeListener implements Listener {
 
 	@EventHandler
 	public void onServerChange(ServerDisconnectEvent event) {
-		if(!event.getTarget().getName().contains("pitsim")) return;
+		if(!event.getTarget().getName().contains("pitsim") && !event.getTarget().getName().contains("darkzone")) return;
 
 		recentlyLeft.add(event.getPlayer());
 		((ProxyRunnable) () -> recentlyLeft.remove(event.getPlayer())).runAfter(5, TimeUnit.SECONDS);

@@ -1,9 +1,11 @@
 package dev.wiji.instancemanager.Commands;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.Objects.DarkzoneServer;
 import dev.wiji.instancemanager.Objects.PitSimServer;
 import dev.wiji.instancemanager.Objects.PluginMessage;
 import dev.wiji.instancemanager.Objects.ServerStatus;
+import dev.wiji.instancemanager.PitSim.DarkzoneServerManager;
 import dev.wiji.instancemanager.PitSim.PitSimServerManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
@@ -49,6 +51,13 @@ public class ShutdownCommand extends Command {
 			if(server.getInfo() == pitSimServer.getServerInfo()) {
 				pitSimServer.status = ServerStatus.SHUTTING_DOWN_INITIAL;
 				new PluginMessage().writeString("SHUTDOWN").writeBoolean(false).writeInt(minutes).addServer(pitSimServer.getServerInfo()).send();
+			}
+		}
+
+		for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
+			if(server.getInfo() == darkzoneServer.getServerInfo()) {
+				darkzoneServer.status = ServerStatus.SHUTTING_DOWN_INITIAL;
+				new PluginMessage().writeString("SHUTDOWN").writeBoolean(false).writeInt(minutes).addServer(darkzoneServer.getServerInfo()).send();
 			}
 		}
 

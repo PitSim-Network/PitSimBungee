@@ -1,6 +1,6 @@
 package dev.wiji.instancemanager.PitSim;
 
-import dev.wiji.instancemanager.Objects.PitSimServer;
+import dev.wiji.instancemanager.Objects.DarkzoneServer;
 import dev.wiji.instancemanager.Objects.PluginMessage;
 import dev.wiji.instancemanager.Objects.ServerStatus;
 import dev.wiji.instancemanager.ProxyRunnable;
@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class PitSimServerManager {
-	public static List<PitSimServer> serverList = new ArrayList<>();
+public class DarkzoneServerManager {
+	public static List<DarkzoneServer> serverList = new ArrayList<>();
 
 	public static final int START_THRESHOLD = 10;
 	public static final int STOP_THRESHOLD = 6;
@@ -24,7 +24,7 @@ public class PitSimServerManager {
 			int players = getTotalPlayers();
 
 			for(int i = 0; i < Math.min(players / 10 + 1, serverList.size()); i++) {
-				PitSimServer server = serverList.get(i);
+				DarkzoneServer server = serverList.get(i);
 				if(server.status.isOnline()) {
 					if(server.status == ServerStatus.SHUTTING_DOWN_INITIAL) {
 						server.status = ServerStatus.RUNNING;
@@ -41,7 +41,7 @@ public class PitSimServerManager {
 			}
 
 			for(int i = 1 + (players + (START_THRESHOLD - STOP_THRESHOLD - 1)) / 10; i < serverList.size(); i++) {
-				PitSimServer server = serverList.get(i);
+				DarkzoneServer server = serverList.get(i);
 				if(server.status.isShuttingDown() || server.status == ServerStatus.OFFLINE) continue;
 				if(server.status == ServerStatus.RESTARTING_INITIAL) {
 					server.status = ServerStatus.SHUTTING_DOWN_INITIAL;
@@ -57,9 +57,9 @@ public class PitSimServerManager {
 	}
 
 	public static void init() {
-		for(String value : ServerManager.pitSimServers.values()) serverList.add(new PitSimServer(value));
+		for(String value : ServerManager.darkzoneServers.values()) serverList.add(new DarkzoneServer(value));
 
-		for(PitSimServer server : serverList) {
+		for(DarkzoneServer server : serverList) {
 			if(serverList.get(0) == server) {
 				ServerManager.restartServer(server.getPteroID());
 				continue;
@@ -69,20 +69,15 @@ public class PitSimServerManager {
 		}
 	}
 
-	public static boolean queue(ProxiedPlayer player, int requestedServer, boolean fromDarkzone) {
+	public static boolean queue(ProxiedPlayer player, int requestedServer) {
 		if(getTotalServers() == 0) {
 			player.sendMessage(new ComponentBuilder("There are currently no available servers. Please try again later.").color(ChatColor.RED).create());
 			return false;
 		}
 
-		if(ServerChangeListener.recentlyLeft.contains(player)) {
-			player.sendMessage(new ComponentBuilder("You recently left a server. Please wait a few seconds before rejoining.").color(ChatColor.RED).create());
-			return false;
-		}
-
 		ServerDataManager.sendServerData();
 
-		PitSimServer targetServer = null;
+		DarkzoneServer targetServer = null;
 
 		if(requestedServer != 0) {
 			targetServer = serverList.get(requestedServer - 1);
@@ -95,7 +90,7 @@ public class PitSimServerManager {
 		int players = getTotalPlayers();
 
 		if(targetServer == null) {
-			for(PitSimServer activeServer : serverList) {
+			for(DarkzoneServer activeServer : serverList) {
 				if(activeServer.status != ServerStatus.RUNNING) continue;
 
 				if(activeServer.getPlayers().size() > players / getTotalServers()) continue;
@@ -107,9 +102,9 @@ public class PitSimServerManager {
 		}
 
 		if(targetServer == null) {
-			for(PitSimServer pitSimServer : serverList) {
-				if(pitSimServer.status == ServerStatus.RUNNING) {
-					targetServer = pitSimServer;
+			for(DarkzoneServer darkzoneServer : serverList) {
+				if(darkzoneServer.status == ServerStatus.RUNNING) {
+					targetServer = darkzoneServer;
 					break;
 				}
 			}
@@ -123,14 +118,14 @@ public class PitSimServerManager {
 
 		player.sendMessage((new ComponentBuilder("Sending you to " + targetServer.getServerInfo().getName()).color(ChatColor.GREEN).create()));
 
-		if(fromDarkzone) new PluginMessage().writeString("DARKZONE JOIN").writeString(player.getUniqueId().toString()).writeBoolean(true).addServer(targetServer.getServerInfo().getName()).send();
 		player.connect(targetServer.getServerInfo());
+
 		return true;
 	}
 
 	public static int getTotalPlayers() {
 		int total = 0;
-		for(PitSimServer server : serverList) {
+		for(DarkzoneServer server : serverList) {
 			total += server.getPlayers().size();
 		}
 		return total;
@@ -138,7 +133,7 @@ public class PitSimServerManager {
 
 	public static int getTotalServers() {
 		int total = 0;
-		for(PitSimServer server : serverList) {
+		for(DarkzoneServer server : serverList) {
 			if(server.status == ServerStatus.RUNNING || server.status == ServerStatus.RESTARTING_INITIAL) total++;
 		}
 		return total;
