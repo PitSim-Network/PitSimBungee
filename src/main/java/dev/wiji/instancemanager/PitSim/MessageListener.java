@@ -3,6 +3,9 @@ package dev.wiji.instancemanager.PitSim;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.Events.MessageEvent;
 import dev.wiji.instancemanager.Objects.*;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -23,10 +26,18 @@ public class MessageListener implements Listener {
 			String serverName = strings.get(1);
 			for(PitSimServer server : PitSimServerManager.serverList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
-					if(server.status.isShuttingDown()) {
+					if(PitSimServerManager.networkIsShuttingDown || server.status.isShuttingDown()) {
 						server.hardShutDown();
 					} else {
 						System.out.println("Server " + serverName + " is now running!");
+
+						BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&2&lKEEPER! &7Server &e" + serverName + " &7is now available!"));
+						for(ProxiedPlayer player : BungeeMain.INSTANCE.getProxy().getPlayers()) {
+							if(player.getServer().getInfo().getName().contains("pitsim")) {
+								player.sendMessage(components);
+							}
+						}
+
 						server.status = ServerStatus.RUNNING;
 						server.setStartTime(System.currentTimeMillis());
 						break;
@@ -36,7 +47,7 @@ public class MessageListener implements Listener {
 
 			for(DarkzoneServer server : DarkzoneServerManager.serverList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
-					if(server.status.isShuttingDown()) {
+					if(DarkzoneServerManager.networkIsShuttingDown || server.status.isShuttingDown()) {
 						server.hardShutDown();
 					} else {
 						System.out.println("Server " + serverName + " is now running!");

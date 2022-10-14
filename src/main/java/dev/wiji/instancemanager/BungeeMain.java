@@ -6,8 +6,6 @@ import com.mattmalec.pterodactyl4j.application.entities.*;
 import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
 import dev.wiji.instancemanager.Commands.*;
 import dev.wiji.instancemanager.PitSim.*;
-import dev.wiji.instancemanager.Skywars.PluginMessageSender;
-import dev.wiji.instancemanager.Skywars.SkywarsGameManager;
 import net.md_5.bungee.api.plugin.Plugin;
 import septogeddon.pluginquery.PluginQuery;
 import septogeddon.pluginquery.api.QueryMessenger;
@@ -48,7 +46,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerCommand(this, new LobbyCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new BetaCommad(this));
 		getProxy().getPluginManager().registerCommand(this, new DevCommand(this));
-		getProxy().getPluginManager().registerCommand(this, new ShutdownCommand(this));
+		getProxy().getPluginManager().registerCommand(this, new AdminCommand(this));
 
 		ConfigManager.getPitSimServerList();
 		ConfigManager.getDarkzoneServerList();

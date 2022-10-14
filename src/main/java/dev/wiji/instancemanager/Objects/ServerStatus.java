@@ -1,12 +1,22 @@
 package dev.wiji.instancemanager.Objects;
 
+import net.md_5.bungee.api.ChatColor;
+
 public enum ServerStatus {
-	RUNNING,
-	RESTARTING_INITIAL,
-	RESTARTING_FINAL,
-	SHUTTING_DOWN_INITIAL,
-	SHUTTING_DOWN_FINAL,
-	OFFLINE;
+	STARTING(ChatColor.YELLOW),
+	RUNNING(ChatColor.GREEN),
+	RESTARTING_INITIAL(ChatColor.GOLD),
+	RESTARTING_FINAL(ChatColor.RED),
+	SHUTTING_DOWN_INITIAL(ChatColor.GOLD),
+	SHUTTING_DOWN_FINAL(ChatColor.RED),
+	OFFLINE(ChatColor.RED);
+
+
+	public final ChatColor color;
+
+	ServerStatus(ChatColor color) {
+		this.color = color;
+	}
 
 	public boolean isOnline() {
 		return this == RUNNING || this == RESTARTING_INITIAL || this == SHUTTING_DOWN_INITIAL;

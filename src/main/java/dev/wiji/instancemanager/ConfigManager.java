@@ -1,6 +1,5 @@
 package dev.wiji.instancemanager;
 
-import javafx.util.Pair;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
@@ -58,6 +57,10 @@ public class ConfigManager {
 
 	public static String getProxyServer() {
 		return configuration.getString("proxy");
+	}
+
+	public static String getLobbyServer() {
+		return configuration.getString("lobby");
 	}
 
 

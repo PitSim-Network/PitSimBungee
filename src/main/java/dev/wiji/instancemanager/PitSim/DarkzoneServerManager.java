@@ -1,5 +1,7 @@
 package dev.wiji.instancemanager.PitSim;
 
+import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.Objects.DarkzoneServer;
 import dev.wiji.instancemanager.Objects.PluginMessage;
 import dev.wiji.instancemanager.Objects.ServerStatus;
@@ -19,9 +21,18 @@ public class DarkzoneServerManager {
 	public static final int START_THRESHOLD = 10;
 	public static final int STOP_THRESHOLD = 6;
 
+	public static boolean networkIsShuttingDown = false;
+
 	static {
 		((ProxyRunnable) () -> {
+
+			if(networkIsShuttingDown) return;
+
 			int players = getTotalPlayers();
+
+			for(DarkzoneServer darkzoneServer : serverList) {
+				if(darkzoneServer.status == ServerStatus.STARTING) return;
+			}
 
 			for(int i = 0; i < Math.min(players / 10 + 1, serverList.size()); i++) {
 				DarkzoneServer server = serverList.get(i);
@@ -35,9 +46,9 @@ public class DarkzoneServerManager {
 
 				if(server.isOnStartCooldown) continue;
 
-				server.status = ServerStatus.RUNNING;
+				server.status = ServerStatus.STARTING;
 				server.startUp();
-				System.out.println("Turning on server: " + (i + 1));
+				System.out.println("Turning on darkzone server: " + (i + 1));
 			}
 
 			for(int i = 1 + (players + (START_THRESHOLD - STOP_THRESHOLD - 1)) / 10; i < serverList.size(); i++) {
@@ -49,11 +60,11 @@ public class DarkzoneServerManager {
 					continue;
 				}
 
-				System.out.println("Shutting down server: " + (i + 1));
+				System.out.println("Shutting down darkzone server: " + (i + 1));
 				server.shutDown(false);
 			}
 
-		}).runAfterEvery(2, 2, TimeUnit.MINUTES);
+		}).runAfterEvery(10, 10, TimeUnit.SECONDS);
 	}
 
 	public static void init() {
@@ -61,6 +72,7 @@ public class DarkzoneServerManager {
 
 		for(DarkzoneServer server : serverList) {
 			if(serverList.get(0) == server) {
+				server.status = ServerStatus.STARTING;
 				ServerManager.restartServer(server.getPteroID());
 				continue;
 			}
@@ -70,6 +82,24 @@ public class DarkzoneServerManager {
 	}
 
 	public static boolean queue(ProxiedPlayer player, int requestedServer) {
+
+		DarkzoneServer previousServer = null;
+		for(DarkzoneServer server : serverList) {
+			if(server.getServerInfo() == player.getServer().getInfo()) {
+				previousServer = server;
+				break;
+			}
+		}
+
+		if(previousServer != null) {
+			if(previousServer.status == ServerStatus.RESTARTING_FINAL || previousServer.status == ServerStatus.SHUTTING_DOWN_FINAL) {
+				if(networkIsShuttingDown) {
+					player.connect(BungeeMain.INSTANCE.getProxy().getServerInfo(ConfigManager.getLobbyServer()));
+				}
+			}
+		}
+
+
 		if(getTotalServers() == 0) {
 			player.sendMessage(new ComponentBuilder("There are currently no available servers. Please try again later.").color(ChatColor.RED).create());
 			return false;
@@ -111,6 +141,14 @@ public class DarkzoneServerManager {
 		}
 
 		if(targetServer == null) {
+
+			if(previousServer != null) {
+				if(previousServer.status == ServerStatus.RESTARTING_FINAL || previousServer.status == ServerStatus.SHUTTING_DOWN_FINAL) {
+					player.connect(BungeeMain.INSTANCE.getProxy().getServerInfo(ConfigManager.getLobbyServer()));
+					return true;
+				}
+			}
+
 			player.sendMessage(new ComponentBuilder("There are currently no available servers. Please try again later.").color(ChatColor.RED).create());
 			return false;
 		}

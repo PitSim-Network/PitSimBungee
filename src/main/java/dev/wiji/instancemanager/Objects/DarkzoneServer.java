@@ -46,6 +46,7 @@ public class DarkzoneServer {
 
 	public void hardShutDown() {
 		ServerManager.stopServer(pteroID);
+		status = ServerStatus.OFFLINE;
 	}
 
 	public String getPteroID() {

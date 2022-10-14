@@ -1,5 +1,7 @@
 package dev.wiji.instancemanager.PitSim;
 
+import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.Objects.PitSimServer;
 import dev.wiji.instancemanager.Objects.PluginMessage;
 import dev.wiji.instancemanager.Objects.ServerStatus;
@@ -19,9 +21,17 @@ public class PitSimServerManager {
 	public static final int START_THRESHOLD = 10;
 	public static final int STOP_THRESHOLD = 6;
 
+	public static boolean networkIsShuttingDown = false;
+
 	static {
 		((ProxyRunnable) () -> {
 			int players = getTotalPlayers();
+
+			if(networkIsShuttingDown) return;
+
+			for(PitSimServer pitSimServer : serverList) {
+				if(pitSimServer.status == ServerStatus.STARTING) return;
+			}
 
 			for(int i = 0; i < Math.min(players / 10 + 1, serverList.size()); i++) {
 				PitSimServer server = serverList.get(i);
@@ -35,7 +45,7 @@ public class PitSimServerManager {
 
 				if(server.isOnStartCooldown) continue;
 
-				server.status = ServerStatus.RUNNING;
+				server.status = ServerStatus.STARTING;
 				server.startUp();
 				System.out.println("Turning on server: " + (i + 1));
 			}
@@ -53,7 +63,7 @@ public class PitSimServerManager {
 				server.shutDown(false);
 			}
 
-		}).runAfterEvery(2, 2, TimeUnit.MINUTES);
+		}).runAfterEvery(10, 10, TimeUnit.SECONDS);
 	}
 
 	public static void init() {
@@ -61,6 +71,7 @@ public class PitSimServerManager {
 
 		for(PitSimServer server : serverList) {
 			if(serverList.get(0) == server) {
+				server.status = ServerStatus.STARTING;
 				ServerManager.restartServer(server.getPteroID());
 				continue;
 			}
@@ -70,6 +81,23 @@ public class PitSimServerManager {
 	}
 
 	public static boolean queue(ProxiedPlayer player, int requestedServer, boolean fromDarkzone) {
+
+		PitSimServer previousServer = null;
+		for(PitSimServer server : serverList) {
+			if(server.getServerInfo() == player.getServer().getInfo()) {
+				previousServer = server;
+				break;
+			}
+		}
+
+		if(previousServer != null) {
+			if(previousServer.status == ServerStatus.RESTARTING_FINAL || previousServer.status == ServerStatus.SHUTTING_DOWN_FINAL) {
+				if(networkIsShuttingDown) {
+					player.connect(BungeeMain.INSTANCE.getProxy().getServerInfo(ConfigManager.getLobbyServer()));
+				}
+			}
+		}
+
 		if(getTotalServers() == 0) {
 			player.sendMessage(new ComponentBuilder("There are currently no available servers. Please try again later.").color(ChatColor.RED).create());
 			return false;
@@ -116,6 +144,14 @@ public class PitSimServerManager {
 		}
 
 		if(targetServer == null) {
+
+			if(previousServer != null) {
+				if(previousServer.status == ServerStatus.RESTARTING_FINAL || previousServer.status == ServerStatus.SHUTTING_DOWN_FINAL) {
+					player.connect(BungeeMain.INSTANCE.getProxy().getServerInfo(ConfigManager.getLobbyServer()));
+					return true;
+				}
+			}
+
 			player.sendMessage(new ComponentBuilder("There are currently no available servers. Please try again later.").color(ChatColor.RED).create());
 			return false;
 		}

@@ -39,7 +39,7 @@ public class PitSimServer {
 	}
 
 	public void shutDown(boolean restart) {
-		new PluginMessage().writeString("SHUTDOWN").addServer(getServerInfo()).writeBoolean(restart).send();
+		new PluginMessage().writeString("SHUTDOWN").writeBoolean(restart).addServer(getServerInfo()).send();
 		if(restart) status = ServerStatus.RESTARTING_INITIAL;
 		else status = ServerStatus.SHUTTING_DOWN_INITIAL;
 	}
@@ -47,6 +47,7 @@ public class PitSimServer {
 
 	public void hardShutDown() {
 		ServerManager.stopServer(pteroID);
+		status = ServerStatus.OFFLINE;
 	}
 
 	public String getPteroID() {
