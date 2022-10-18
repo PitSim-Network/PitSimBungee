@@ -157,6 +157,19 @@ public class MessageListener implements Listener {
 
 			DarkzoneServerManager.queue(player, requested);
 		}
+
+		if(strings.size() >= 3 && strings.get(0).equals("BOOSTER USE")) {
+			String boosterName = strings.get(1);
+			String announcement = strings.get(2);
+
+			PluginMessage outgoingMessage = new PluginMessage();
+			outgoingMessage.writeString("BOOSTER USE").writeString(boosterName).writeString(announcement);
+			for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
+				if(pitSimServer.status.isOnline()) message.addServer(pitSimServer.getServerInfo());
+			}
+
+			message.send();
+		}
 	}
 
 }
