@@ -1,14 +1,29 @@
 package dev.wiji.instancemanager.PitSim;
 
 import dev.wiji.instancemanager.Objects.Leaderboard;
+import dev.wiji.instancemanager.Objects.PitSimServer;
 import dev.wiji.instancemanager.Objects.PlayerData;
+import dev.wiji.instancemanager.Objects.PluginMessage;
+import dev.wiji.instancemanager.ProxyRunnable;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class LeaderboardCalc {
+
+	static {
+		((ProxyRunnable) () -> {
+			for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
+				if(!pitSimServer.status.isOnline()) continue;
+				sendLeaderboardData(pitSimServer);
+			}
+		}).runAfterEvery(30, 30, TimeUnit.SECONDS);
+	}
+
 	public static Map<Leaderboard, List<PlayerData>> leaderboardPositions = new HashMap<>();
 
 	public static void init() {
@@ -17,17 +32,35 @@ public class LeaderboardCalc {
 		}
 
 		for(PlayerData playerData : PlayerData.playerDataList) {
+			leaderboardPositions:
 			for(Leaderboard leaderboard : Leaderboard.values()) {
 				List<PlayerData> list = leaderboardPositions.get(leaderboard);
 				for(int i = 0; i < list.size(); i++) {
 					if(playerData.getData(leaderboard) > list.get(i).getData(leaderboard)) {
 						list.add(i, playerData);
+						continue leaderboardPositions;
 					}
-					list.add(playerData);
 				}
+				list.add(playerData);
 			}
 		}
 
 		System.out.println(leaderboardPositions);
+	}
+
+	public static void sendLeaderboardData(PitSimServer server) {
+		PluginMessage message = new PluginMessage();
+		message.writeString("LEADERBOARD DATA");
+		for(Leaderboard value : Leaderboard.values()) {
+			StringBuilder builder = new StringBuilder();
+			for(int i = 0; i < 10; i++) {
+				PlayerData data = leaderboardPositions.get(value).get(i);
+				builder.append(data.getPlayerUUID().toString()).append(",").append(BigDecimal.valueOf(data.getData(value)).toPlainString());
+				if(i != 9) builder.append("|");
+			}
+			message.writeString(builder.toString());
+		}
+		message.addServer(server.getServerInfo());
+		message.send();
 	}
 }

@@ -24,13 +24,17 @@ public class PlayerData {
 		for(Leaderboard value : Leaderboard.values()) {
 			if(value == Leaderboard.XP) {
 
-				dataMap.put(value, PrestigeValues.getTotalXP((int) document.get("prestige"), (int) document.get("level"), (long) document.get("remainingXP")));
+				int prestige = Objects.requireNonNull(document.getLong("prestige")).intValue();
+				int level = Objects.requireNonNull(document.getLong("level")).intValue();
+				long remainingXP = document.getLong("remainingXP");
+
+				dataMap.put(value, PrestigeValues.getTotalXP(prestige, level, remainingXP));
 				continue;
 			}
 
-			System.out.println(document.get("stats." + value.fireStore));
+//			System.out.println(document.get("stats." + value.fireStore));
 
-			dataMap.put(value, (Double) document.get("stats." + value.fireStore));
+			dataMap.put(value, document.getDouble("stats." + value.fireStore));
 		}
 
 		playerDataList.add(this);

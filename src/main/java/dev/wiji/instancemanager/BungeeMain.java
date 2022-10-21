@@ -64,10 +64,6 @@ public class BungeeMain extends Plugin {
 		if(FirestoreManager.registration != null) {
 			FirestoreManager.registration.remove();
 		}
-
-		if(FirestoreManager.initialRegistration != null) {
-			FirestoreManager.initialRegistration.remove();
-		}
 	}
 
 //	public void createServer() {

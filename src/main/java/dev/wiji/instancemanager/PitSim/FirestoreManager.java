@@ -1,5 +1,6 @@
 package dev.wiji.instancemanager.PitSim;
 
+import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.*;
 import com.google.firebase.FirebaseApp;
@@ -9,17 +10,20 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.Misc.FileResourcesUtils;
 import dev.wiji.instancemanager.Objects.Leaderboard;
 import dev.wiji.instancemanager.Objects.PlayerData;
+import dev.wiji.instancemanager.ProxyRunnable;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 public class FirestoreManager {
 	public static Firestore FIRESTORE;
 
 	public static ListenerRegistration registration;
-	public static ListenerRegistration initialRegistration;
 
 	public static final String PLAYERDATA_COLLECTION = "pitsim-playerdata";
 
@@ -46,22 +50,17 @@ public class FirestoreManager {
 			return;
 		}
 
-		initialRegistration = FirestoreManager.FIRESTORE.collection(FirestoreManager.PLAYERDATA_COLLECTION)
-
-				.addSnapshotListener(
-						(snapshots, exception) -> {
-							if(exception != null) {
-								exception.printStackTrace();
-								return;
-							}
-
-							for(DocumentSnapshot document : snapshots.getDocuments()) {
-
-								System.out.println(document.getId());
-
-								new PlayerData(UUID.fromString(document.getId()), document);
-							}
-						});
+		ApiFuture<QuerySnapshot> future = FIRESTORE.collection(PLAYERDATA_COLLECTION).get();
+		List<QueryDocumentSnapshot> documents;
+		try {
+			documents = future.get().getDocuments();
+		} catch(InterruptedException | ExecutionException e) {
+			throw new RuntimeException(e);
+		}
+		for (QueryDocumentSnapshot document : documents) {
+			System.out.println(document.getId());
+			new PlayerData(UUID.fromString(document.getId()), document);
+		}
 
 
 		registration = FirestoreManager.FIRESTORE.collection(FirestoreManager.PLAYERDATA_COLLECTION)
@@ -76,15 +75,14 @@ public class FirestoreManager {
 							for(DocumentChange modifiedDocument : snapshots.getDocumentChanges()) {
 								DocumentSnapshot playerData = modifiedDocument.getDocument();
 
-								System.out.println(playerData.getId());
-
 								new PlayerData(UUID.fromString(playerData.getId()), playerData);
 							}
 						});
 
 
 
-		LeaderboardCalc.init();
+		//run the leaderboard calc init after 5 seconds
+		((ProxyRunnable) LeaderboardCalc::init).runAfter(5, TimeUnit.SECONDS);
 	}
 
 }
