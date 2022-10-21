@@ -6,6 +6,9 @@ import com.mattmalec.pterodactyl4j.application.entities.*;
 import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
 import dev.wiji.instancemanager.Commands.*;
 import dev.wiji.instancemanager.PitSim.*;
+import dev.wiji.instancemanager.Skywars.PluginMessageSender;
+import dev.wiji.instancemanager.Skywars.SkywarsGameManager;
+import dev.wiji.instancemanager.Skywars.SkywarsPluginListener;
 import net.md_5.bungee.api.plugin.Plugin;
 import septogeddon.pluginquery.PluginQuery;
 import septogeddon.pluginquery.api.QueryMessenger;
@@ -27,7 +30,7 @@ public class BungeeMain extends Plugin {
 		FirestoreManager.init();
 
 //		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
-//		getProxy().getPluginManager().registerListener(this, new PluginMessageManager());
+		getProxy().getPluginManager().registerListener(this, new PluginMessageManager());
 		getProxy().getPluginManager().registerListener(this, new MessageListener());
 		getProxy().getPluginManager().registerListener(this, new ServerDataManager());
 		getProxy().getPluginManager().registerListener(this, new ServerChangeListener());
@@ -35,7 +38,7 @@ public class BungeeMain extends Plugin {
 		ConfigManager.getMiniServerList();
 
 
-//		ServerManager.onEnable();
+		ServerManager.onEnable();
 //		SkywarsGameManager.fetchServer();
 //		PluginMessageSender.sendPlayerStats();
 		QueryMessenger messenger = PluginQuery.getMessenger();

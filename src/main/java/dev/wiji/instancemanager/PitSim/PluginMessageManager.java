@@ -23,7 +23,7 @@ import java.io.*;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
-public class PluginMessageManager implements QueryMessageListener {
+public class PluginMessageManager implements QueryMessageListener, Listener {
 
 	public static PluginMessage lastMessage;
 

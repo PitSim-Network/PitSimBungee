@@ -7,10 +7,7 @@ import dev.wiji.instancemanager.Objects.PluginMessage;
 import dev.wiji.instancemanager.ProxyRunnable;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class LeaderboardCalc {
@@ -55,7 +52,11 @@ public class LeaderboardCalc {
 			StringBuilder builder = new StringBuilder();
 			for(int i = 0; i < 10; i++) {
 				PlayerData data = leaderboardPositions.get(value).get(i);
-				builder.append(data.getPlayerUUID().toString()).append(",").append(BigDecimal.valueOf(data.getData(value)).toPlainString());
+				int prestige = Objects.requireNonNull(data.getDocument().getLong("prestige")).intValue();
+				int level = Objects.requireNonNull(data.getDocument().getLong("level")).intValue();
+
+				builder.append(data.getPlayerUUID().toString()).append(",").append(PrestigeValues.getPlayerPrefix(prestige,
+						level)).append(",").append(BigDecimal.valueOf(data.getData(value)).toPlainString());
 				if(i != 9) builder.append("|");
 			}
 			message.writeString(builder.toString());
