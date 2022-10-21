@@ -6,3 +6,5 @@ commands:
   play:
   toggle:
   dev:
+depend:
+  - PitSimBungeeDependencies

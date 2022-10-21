@@ -24,7 +24,7 @@ public class BungeeMain extends Plugin {
 		INSTANCE = this;
 		this.getProxy().registerChannel("BungeeCord");
 		STARTUP_TIME = System.currentTimeMillis();
-
+		FirestoreManager.init();
 
 //		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
 //		getProxy().getPluginManager().registerListener(this, new PluginMessageManager());
@@ -59,7 +59,15 @@ public class BungeeMain extends Plugin {
 	public void onDisable() {
 		//make sure to unregister the registered channels in case of a reload
 		this.getProxy().unregisterChannel("BungeeCord");
-		ConfigManager.onDisable();
+//		ConfigManager.onDisable();
+
+		if(FirestoreManager.registration != null) {
+			FirestoreManager.registration.remove();
+		}
+
+		if(FirestoreManager.initialRegistration != null) {
+			FirestoreManager.initialRegistration.remove();
+		}
 	}
 
 //	public void createServer() {
