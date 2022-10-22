@@ -18,7 +18,7 @@ public class LeaderboardCalc {
 				if(!pitSimServer.status.isOnline()) continue;
 				sendLeaderboardData(pitSimServer);
 			}
-		}).runAfterEvery(30, 30, TimeUnit.SECONDS);
+		}).runAfterEvery(15, 15, TimeUnit.SECONDS);
 	}
 
 	public static Map<Leaderboard, List<PlayerData>> leaderboardPositions = new HashMap<>();
@@ -63,5 +63,26 @@ public class LeaderboardCalc {
 		}
 		message.addServer(server.getServerInfo());
 		message.send();
+	}
+
+	public static void sendLeaderboardPlayerData(UUID uuid) {
+		PluginMessage message = new PluginMessage().writeString("LEADERBOARD PLAYER DATA");
+		message.writeString(uuid.toString());
+		for(Leaderboard value : Leaderboard.values()) {
+			message.writeInt(getPosition(uuid, value));
+		}
+		for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
+			if(!pitSimServer.status.isOnline()) continue;
+			message.addServer(pitSimServer.getServerInfo());
+		}
+		message.send();
+	}
+
+	public static int getPosition(UUID uuid, Leaderboard leaderboard) {
+		List<PlayerData> data = leaderboardPositions.get(leaderboard);
+		PlayerData playerData = PlayerData.getPlayerData(uuid);
+		if(!data.contains(playerData)) return -1;
+
+		return data.indexOf(playerData) + 1;
 	}
 }

@@ -2,6 +2,7 @@ package dev.wiji.instancemanager.PitSim;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
+import dev.wiji.instancemanager.Objects.Leaderboard;
 import dev.wiji.instancemanager.Objects.PitSimServer;
 import dev.wiji.instancemanager.Objects.PluginMessage;
 import dev.wiji.instancemanager.Objects.ServerStatus;
@@ -81,6 +82,8 @@ public class PitSimServerManager {
 	}
 
 	public static boolean queue(ProxiedPlayer player, int requestedServer, boolean fromDarkzone) {
+
+		LeaderboardCalc.sendLeaderboardPlayerData(player.getUniqueId());
 
 		PitSimServer previousServer = null;
 		for(PitSimServer server : serverList) {
