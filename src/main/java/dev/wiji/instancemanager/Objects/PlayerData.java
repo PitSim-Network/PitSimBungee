@@ -1,7 +1,6 @@
 package dev.wiji.instancemanager.Objects;
 
 import com.google.cloud.firestore.DocumentSnapshot;
-import dev.wiji.instancemanager.PitSim.PrestigeValues;
 
 import java.util.*;
 
@@ -26,9 +25,8 @@ public class PlayerData {
 
 				int prestige = Objects.requireNonNull(document.getLong("prestige")).intValue();
 				int level = Objects.requireNonNull(document.getLong("level")).intValue();
-				long remainingXP = document.getLong("remainingXP");
-
-				dataMap.put(value, PrestigeValues.getTotalXP(prestige, level, remainingXP));
+//				long remainingXP = document.getLong("remainingXP");
+				dataMap.put(value, (double) (level + prestige * 1000));
 				continue;
 			}
 
