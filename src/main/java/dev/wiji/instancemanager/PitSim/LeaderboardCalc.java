@@ -55,7 +55,7 @@ public class LeaderboardCalc {
 				int prestige = Objects.requireNonNull(data.getDocument().getLong("prestige")).intValue();
 				int level = Objects.requireNonNull(data.getDocument().getLong("level")).intValue();
 
-				builder.append(data.getPlayerUUID().toString()).append(",").append(prestige).append(" ").append("level")
+				builder.append(data.getPlayerUUID().toString()).append(",").append(prestige).append(" ").append(level)
 						.append(",").append(BigDecimal.valueOf(data.getData(value)).toPlainString());
 				if(i != 9) builder.append("|");
 			}

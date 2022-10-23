@@ -5,12 +5,16 @@ import dev.wiji.instancemanager.Events.MessageEvent;
 import dev.wiji.instancemanager.Objects.*;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.protocol.packet.Chat;
 
 import java.util.List;
+import java.util.UUID;
 
 public class MessageListener implements Listener {
 
@@ -169,6 +173,78 @@ public class MessageListener implements Listener {
 			}
 
 			message.send();
+		}
+
+		if(strings.size() >= 3 && strings.get(0).equals("AUCTION ITEM REQUEST")) {
+			String playerName = strings.get(1);
+			ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(playerName);
+			ServerInfo serverInfo = BungeeMain.INSTANCE.getProxy().getServerInfo(strings.get(2));
+
+			BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&'
+					,"&5&lDARK AUCTION! &e" + playerName + " &7won " + strings.get(3) + " &7for &f" +
+							integers.get(2) + " Souls&7."));
+
+			boolean isOnline = false;
+
+			for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
+				for(ProxiedPlayer pitSimServerPlayer : pitSimServer.getPlayers()) {
+					pitSimServerPlayer.sendMessage(components);
+				}
+				if(pitSimServer.getPlayers().contains(player)) {
+					isOnline = true;
+				}
+			}
+
+			for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
+				for(ProxiedPlayer darkzoneServerPlayer : darkzoneServer.getPlayers()) {
+					darkzoneServerPlayer.sendMessage(components);
+				}
+				if(darkzoneServer.getPlayers().contains(player)) {
+					isOnline = true;
+				}
+			}
+
+
+			System.out.println(serverInfo.getName());
+			PluginMessage responseMessage = new PluginMessage().writeBoolean(isOnline);
+			event.getMessage().respond(responseMessage, serverInfo);
+			System.out.println(event.getMessage().messageID);
+			System.out.println(responseMessage.responseID);
+
+			if(isOnline) {
+				ServerInfo playerServer = player.getServer().getInfo();
+				PluginMessage outgoingMessage = new PluginMessage();
+				outgoingMessage.writeString("AUCTION ITEM REQUEST").writeString(player.getUniqueId().toString());
+				for(Integer integer : message.getIntegers()) {
+					outgoingMessage.writeInt(integer);
+				}
+				message.addServer(playerServer);
+				message.send();
+			}
+		}
+
+		if(strings.size() >= 3 && strings.get(0).equals("AUCTION NOTIFY")) {
+			String bidPlayer = strings.get(1);
+			String itemName = strings.get(2);
+			int bid = integers.get(0);
+
+			strings.remove(0);
+			strings.remove(0);
+			strings.remove(0);
+
+			BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&'
+					,"&5&lDARK AUCTION! &e" + bidPlayer + " &7bid &f" + bid + " Souls &7on " + itemName));
+
+			for(String string : strings) {
+				UUID uuid = UUID.fromString(string);
+				ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(uuid);
+				if(player != null) {
+					String server = player.getServer().getInfo().getName();
+					if(server.contains("pitsim") || server.contains("darkzone")) {
+						player.sendMessage(components);
+					}
+				}
+			}
 		}
 	}
 

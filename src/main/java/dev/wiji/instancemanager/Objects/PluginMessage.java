@@ -105,9 +105,10 @@ public class PluginMessage {
         return servers;
     }
 
-    public PluginMessage respond(PluginMessage message) {
+    public PluginMessage respond(PluginMessage message, ServerInfo server) {
         message.responseID = messageID;
-        message.send();
+
+        PluginMessageManager.sendMessage(message, server);
         return this;
     }
 
