@@ -5,6 +5,7 @@ import com.mattmalec.pterodactyl4j.PteroBuilder;
 import com.mattmalec.pterodactyl4j.application.entities.*;
 import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
 import dev.wiji.instancemanager.Commands.*;
+import dev.wiji.instancemanager.Guilds.ArcticGuilds;
 import dev.wiji.instancemanager.PitSim.*;
 import dev.wiji.instancemanager.Skywars.PluginMessageSender;
 import dev.wiji.instancemanager.Skywars.SkywarsGameManager;
@@ -56,6 +57,8 @@ public class BungeeMain extends Plugin {
 		PitSimServerManager.init();
 		DarkzoneServerManager.init();
 		RestartManager.init();
+
+		ArcticGuilds.onEnable(this);
 	}
 
 	@Override
@@ -67,6 +70,8 @@ public class BungeeMain extends Plugin {
 		if(FirestoreManager.registration != null) {
 			FirestoreManager.registration.remove();
 		}
+
+		ArcticGuilds.onDisable(this);
 	}
 
 //	public void createServer() {
