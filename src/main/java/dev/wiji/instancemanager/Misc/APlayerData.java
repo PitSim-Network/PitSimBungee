@@ -1,4 +1,3 @@
-
 package dev.wiji.instancemanager.Misc;
 
 import dev.wiji.instancemanager.BungeeMain;

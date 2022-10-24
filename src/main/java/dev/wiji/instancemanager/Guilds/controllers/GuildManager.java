@@ -84,9 +84,17 @@ public class GuildManager implements Listener {
 		}.runAfterEvery(0, 60, TimeUnit.SECONDS);
 	}
 
-	public static Guild getGuild(UUID guildUUID) {
+	public static Guild getGuildFromGuildUUID(UUID guildUUID) {
 		for(Guild guild : guildList) if(guild.uuid.equals(guildUUID)) return guild;
 		return null;
+	}
+
+	public static Guild getGuildFromPlayer(UUID playerUUID) {
+		APlayer player = APlayerData.getPlayerData(playerUUID);
+		String guildUUID = player.playerData.getString("guild");
+		if(guildUUID == null || guildUUID.equals("")) return null;
+		System.out.println("GuildUUID: " + guildUUID);
+		return getGuildFromGuildUUID(UUID.fromString(guildUUID));
 	}
 
 	public static GuildMember getMember(UUID playerUUID) {

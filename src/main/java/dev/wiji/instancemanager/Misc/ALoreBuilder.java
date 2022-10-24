@@ -1,8 +1,3 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
 package dev.wiji.instancemanager.Misc;
 
 import dev.wiji.instancemanager.Guilds.controllers.objects.DummyItemStack;

@@ -35,7 +35,7 @@ public class GuildMember {
 
 	public void leave() {
 		if(guildUUID != null) {
-			Guild guild = GuildManager.getGuild(guildUUID);
+			Guild guild = GuildManager.getGuildFromGuildUUID(guildUUID);
 			guild.members.remove(this);
 			guild.save();
 		}

@@ -2,17 +2,20 @@ package dev.wiji.instancemanager;
 
 
 import com.mattmalec.pterodactyl4j.PteroBuilder;
-import com.mattmalec.pterodactyl4j.application.entities.*;
+import com.mattmalec.pterodactyl4j.application.entities.PteroApplication;
 import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
+import de.sumafu.PlayerStatus.PlayerNeverConnectedException;
+import de.sumafu.PlayerStatus.PlayerStatus;
+import de.sumafu.PlayerStatus.PlayerStatusAPI;
 import dev.wiji.instancemanager.Commands.*;
 import dev.wiji.instancemanager.Guilds.ArcticGuilds;
 import dev.wiji.instancemanager.PitSim.*;
-import dev.wiji.instancemanager.Skywars.PluginMessageSender;
-import dev.wiji.instancemanager.Skywars.SkywarsGameManager;
-import dev.wiji.instancemanager.Skywars.SkywarsPluginListener;
 import net.md_5.bungee.api.plugin.Plugin;
 import septogeddon.pluginquery.PluginQuery;
 import septogeddon.pluginquery.api.QueryMessenger;
+
+import java.sql.SQLException;
+import java.util.UUID;
 
 public class BungeeMain extends Plugin {
 	public static BungeeMain INSTANCE;
@@ -23,12 +26,16 @@ public class BungeeMain extends Plugin {
 
 	public static long STARTUP_TIME;
 
+	public static PlayerStatusAPI psApi;
+
 	@Override
 	public void onEnable() {
 		INSTANCE = this;
 		this.getProxy().registerChannel("BungeeCord");
 		STARTUP_TIME = System.currentTimeMillis();
 		FirestoreManager.init();
+
+		 psApi = PlayerStatus.getAPI();
 
 //		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
 		getProxy().getPluginManager().registerListener(this, new PluginMessageManager());
@@ -72,6 +79,24 @@ public class BungeeMain extends Plugin {
 		}
 
 		ArcticGuilds.onDisable(this);
+	}
+
+	public static String getName(UUID uuid, boolean printError) {
+		try {
+			return psApi.getNameOfUuid(uuid);
+		} catch(SQLException | PlayerNeverConnectedException e) {
+			if(printError) throw new RuntimeException(e);
+		}
+		return null;
+	}
+
+	public static UUID getUUID(String name, boolean printError) {
+		try {
+			return psApi.getUuidOfName(name);
+		} catch(SQLException | PlayerNeverConnectedException e) {
+			if(printError) throw new RuntimeException(e);
+		}
+		return null;
 	}
 
 //	public void createServer() {

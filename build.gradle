@@ -10,12 +10,16 @@ repositories {
     mavenCentral()
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     maven { url "https://repo.mattmalec.com/repository/releases" }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     compileOnly 'com.mattmalec:Pterodactyl4J:2.BETA_81'
     compileOnly 'net.md-5:bungeecord-api:1.8-SNAPSHOT'
     compileOnly files('libs/PluginQuery.jar')
+    compileOnly files('libs/PlayerStatus-0.2.0.jar')
+    compileOnly files('libs/PremiumVanish-2.7.20.jar')
+//    compileOnly 'com.github.LeonMangler:PremiumVanishAPI:2.7.11-2'
     compileOnly 'com.google.firebase:firebase-admin:8.0.0'
 }
 
