@@ -10,6 +10,7 @@ import dev.wiji.instancemanager.Guilds.guildupgrades.BankLimit;
 import dev.wiji.instancemanager.Guilds.guildupgrades.GuildBuffs;
 import dev.wiji.instancemanager.Guilds.guildupgrades.GuildSize;
 import dev.wiji.instancemanager.Guilds.guildupgrades.ReputationIncrease;
+import dev.wiji.instancemanager.Misc.APlayerData;
 
 import java.text.DecimalFormat;
 
@@ -21,6 +22,7 @@ public class ArcticGuilds {
 
 	public static void onEnable(BungeeMain instance) {
 		INSTANCE = instance;
+		APlayerData.init();
 
 		registerCommands();
 		registerBuffs();

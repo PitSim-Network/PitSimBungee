@@ -5,9 +5,13 @@ import dev.wiji.instancemanager.Guilds.ArcticGuilds;
 import dev.wiji.instancemanager.Guilds.controllers.BuffManager;
 import dev.wiji.instancemanager.Guilds.controllers.GuildManager;
 import dev.wiji.instancemanager.Guilds.controllers.UpgradeManager;
+import dev.wiji.instancemanager.Guilds.enums.DyeColor;
 import dev.wiji.instancemanager.Guilds.enums.GuildRank;
 import dev.wiji.instancemanager.Guilds.events.GuildCreateEvent;
 import dev.wiji.instancemanager.Misc.AOutput;
+import dev.wiji.instancemanager.Misc.APlayer;
+import dev.wiji.instancemanager.Misc.APlayerData;
+import dev.wiji.instancemanager.Misc.ColorConverter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
@@ -69,6 +73,8 @@ public class Guild {
 		for(String uuidString : allMemberData.getKeys()) {
 			Configuration memberData = guildData.getSection("members." + uuidString);
 			UUID playerUUID = UUID.fromString(uuidString);
+
+			APlayer player = APlayerData.getPlayerData(playerUUID);
 
 			GuildMember guildMember = GuildManager.getMember(playerUUID);
 			members.put(guildMember, new GuildMemberInfo(memberData));
@@ -254,14 +260,12 @@ public class Guild {
 	}
 
 	public ChatColor getColor() {
-		//TODO: Either move fetching to front end or duplicate the Bukkit enum
-//		DyeColor dyeColor = null;
-//		for(DyeColor value : DyeColor.values()) {
-//			if(value.getDyeData() != bannerColor) continue;
-//			dyeColor = value;
-//		}
-//		assert dyeColor != null;
-//		return ColorConverter.getChatColor(dyeColor);
-		return null;
+		DyeColor dyeColor = null;
+		for(DyeColor value : DyeColor.values()) {
+			if(value.getDyeData() != bannerColor) continue;
+			dyeColor = value;
+		}
+		assert dyeColor != null;
+		return ColorConverter.getChatColor(dyeColor);
 	}
 }

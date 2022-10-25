@@ -17,6 +17,7 @@ public class ChatManager implements Listener {
 	public void onChat(ChatEvent event) {
 		ProxiedPlayer player = (ProxiedPlayer) event.getSender();
 		if(!guildChatPlayer.contains(player.getUniqueId())) return;
+		if(event.getMessage().startsWith("/")) return;
 
 		Guild guild = GuildManager.getGuildFromPlayer(player.getUniqueId());
 		if(guild == null) return;

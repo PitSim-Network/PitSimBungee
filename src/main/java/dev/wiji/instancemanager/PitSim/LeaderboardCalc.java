@@ -41,8 +41,6 @@ public class LeaderboardCalc {
 				list.add(playerData);
 			}
 		}
-
-		System.out.println(leaderboardPositions);
 	}
 
 	public static void sendLeaderboardData(PitSimServer server) {

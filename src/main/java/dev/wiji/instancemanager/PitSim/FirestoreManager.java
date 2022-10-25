@@ -58,7 +58,6 @@ public class FirestoreManager {
 			throw new RuntimeException(e);
 		}
 		for (QueryDocumentSnapshot document : documents) {
-			System.out.println(document.getId());
 			new PlayerData(UUID.fromString(document.getId()), document);
 		}
 
