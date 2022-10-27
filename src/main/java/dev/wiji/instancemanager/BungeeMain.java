@@ -10,11 +10,14 @@ import de.sumafu.PlayerStatus.PlayerStatusAPI;
 import dev.wiji.instancemanager.Commands.*;
 import dev.wiji.instancemanager.Guilds.ArcticGuilds;
 import dev.wiji.instancemanager.PitSim.*;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import septogeddon.pluginquery.PluginQuery;
 import septogeddon.pluginquery.api.QueryMessenger;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class BungeeMain extends Plugin {
@@ -88,6 +91,15 @@ public class BungeeMain extends Plugin {
 			if(printError) throw new RuntimeException(e);
 		}
 		return null;
+	}
+
+	public static List<ProxiedPlayer> getMainGamemodePlayers() {
+		List<ProxiedPlayer> players = new ArrayList<>();
+		for(ProxiedPlayer player : INSTANCE.getProxy().getPlayers()) {
+			String server = player.getServer().getInfo().getName();
+			if(server.contains("pitsim") || server.contains("darkzone")) players.add(player);
+		}
+		return players;
 	}
 
 	public static UUID getUUID(String name, boolean printError) {

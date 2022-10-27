@@ -28,7 +28,6 @@ public abstract class GuildUpgrade implements Listener {
 	}
 
 	public abstract int getCost(int level);
-	//TODO: Move Itemstack handling to frontend
 	public abstract DummyItemStack getBaseStack(Guild guild, int level);
 
 	public DummyItemStack getDisplayStack(Guild guild, int level) {

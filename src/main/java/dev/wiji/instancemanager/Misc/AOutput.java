@@ -11,4 +11,10 @@ public class AOutput {
 		BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', message));
 		player.sendMessage(components);
 	}
+
+	public static void error(ProxiedPlayer player, String message) {
+		BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&c" + message));
+		player.sendMessage(components);
+	}
+
 }

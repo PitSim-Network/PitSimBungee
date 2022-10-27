@@ -5,6 +5,7 @@ import dev.wiji.instancemanager.Guilds.controllers.GuildManager;
 import dev.wiji.instancemanager.Guilds.controllers.PermissionManager;
 import dev.wiji.instancemanager.Guilds.controllers.objects.Guild;
 import dev.wiji.instancemanager.Guilds.controllers.objects.GuildMember;
+import dev.wiji.instancemanager.Guilds.inventories.ConfirmationGUI;
 import dev.wiji.instancemanager.Misc.ACommand;
 import dev.wiji.instancemanager.Misc.ALoreBuilder;
 import dev.wiji.instancemanager.Misc.AMultiCommand;
@@ -83,7 +84,6 @@ public class CreateCommand extends ACommand {
 		ALoreBuilder yesLore = new ALoreBuilder("&7Clicking here will create", "&7the guild " + name, "",
 				"&7Doing so costs &6" + ArcticGuilds.decimalFormat.format(GUILD_CREATION_COST) + "g");
 		ALoreBuilder noLore = new ALoreBuilder("&7Click to cancel");
-//		new ConfirmationGUI(player, disband, yesLore, noLore).open();
-		//TODO: Send ConfirmationGUI open to frontend
+		new ConfirmationGUI(player, disband, yesLore, noLore).open();
 	}
 }

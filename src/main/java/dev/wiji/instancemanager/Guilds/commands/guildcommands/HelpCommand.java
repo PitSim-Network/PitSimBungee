@@ -1,5 +1,6 @@
 package dev.wiji.instancemanager.Guilds.commands.guildcommands;
 
+import dev.wiji.instancemanager.Guilds.inventories.HelpGUI;
 import dev.wiji.instancemanager.Misc.ACommand;
 import dev.wiji.instancemanager.Misc.AMultiCommand;
 import net.md_5.bungee.api.CommandSender;
@@ -17,8 +18,7 @@ public class HelpCommand extends ACommand {
 		if(!(sender instanceof ProxiedPlayer)) return;
 		ProxiedPlayer player = (ProxiedPlayer) sender;
 
-		//TODO: Send help GUI
-//		new HelpGUI(player).open();
+		new HelpGUI(player).open();
 	}
 
 }

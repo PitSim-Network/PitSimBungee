@@ -3,6 +3,7 @@ package dev.wiji.instancemanager.Guilds.commands.guildcommands;
 import dev.wiji.instancemanager.Guilds.controllers.GuildManager;
 import dev.wiji.instancemanager.Guilds.controllers.PermissionManager;
 import dev.wiji.instancemanager.Guilds.controllers.objects.Guild;
+import dev.wiji.instancemanager.Guilds.inventories.ConfirmationGUI;
 import dev.wiji.instancemanager.Misc.ACommand;
 import dev.wiji.instancemanager.Misc.ALoreBuilder;
 import dev.wiji.instancemanager.Misc.AMultiCommand;
@@ -46,7 +47,6 @@ public class DisbandCommand extends ACommand {
 		ALoreBuilder yesLore = new ALoreBuilder("&7Clicking here will disband", "&7your guild " + guild.name);
 		ALoreBuilder noLore = new ALoreBuilder("&7Click to cancel");
 
-		//TODO: Send confirmation GUI
-//		new ConfirmationGUI(player, disband, yesLore, noLore).open();
+		new ConfirmationGUI(player, disband, yesLore, noLore).open();
 	}
 }

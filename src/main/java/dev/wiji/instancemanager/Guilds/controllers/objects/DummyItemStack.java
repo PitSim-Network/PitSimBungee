@@ -1,5 +1,7 @@
 package dev.wiji.instancemanager.Guilds.controllers.objects;
 
+import dev.wiji.instancemanager.Guilds.enums.DyeColor;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,6 +72,20 @@ public class DummyItemStack {
 
 	public void addModifier(String modifier) {
 		modifiers.add(modifier);
+	}
+
+	public String toString() {
+		return material + "|" + amount + "|" + data + "|" + displayName + "|" + modifiers + "|" + lore;
+	}
+
+	public DyeColor getBannerColor() {
+		for(String modifier : modifiers) {
+			if(!modifier.startsWith("BANNER_COLOR")) continue;
+
+			String[] split = modifier.split(":");
+			return DyeColor.getByDyeData(Byte.parseByte(split[1]));
+		}
+		return null;
 	}
 
 

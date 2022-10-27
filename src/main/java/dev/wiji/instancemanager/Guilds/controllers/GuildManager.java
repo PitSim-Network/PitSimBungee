@@ -3,7 +3,6 @@ package dev.wiji.instancemanager.Guilds.controllers;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.Guilds.controllers.objects.Guild;
 import dev.wiji.instancemanager.Guilds.controllers.objects.GuildMember;
-import dev.wiji.instancemanager.Guilds.controllers.objects.GuildMemberInfo;
 import dev.wiji.instancemanager.Guilds.events.GuildReputationEvent;
 import dev.wiji.instancemanager.Misc.AData;
 import dev.wiji.instancemanager.Misc.APlayer;
@@ -42,48 +41,41 @@ public class GuildManager implements Listener {
 			new Guild(key, guildData);
 		}
 
-		new ProxyRunnable() {
-			@Override
-			public void run() {
-//				TODO: Call this code on buff/upgrade change
-				for(Guild guild : guildList) {
-					guild.diminish();
-					for(Map.Entry<GuildMember, GuildMemberInfo> entry : guild.members.entrySet()) {
-						UUID playerUUID = entry.getKey().playerUUID;
-						//TODO: Send PluginMessage to frontend updating open Guild GUIs
-//						for(Player player : Bukkit.getOnlinePlayers()) {
+//		new ProxyRunnable() {
+//			@Override
+//			public void run() {
+////				TODO: Call this code on buff/upgrade change
+//				for(Guild guild : guildList) {
+//					guild.diminish();
+//					for(Map.Entry<GuildMember, GuildMemberInfo> entry : guild.members.entrySet()) {
+//						UUID playerUUID = entry.getKey().playerUUID;
+//						//TODO: Send PluginMessage to frontend updating open Guild GUIs
+//						for(ProxiedPlayer player : BungeeMain.getMainGamemodePlayers()) {
 //							if(!player.getUniqueId().equals(playerUUID)) continue;
-//							if(player.getOpenInventory().getTopInventory().getHolder().getClass() != BuffPanel.class) continue;
+//							if(player.getOpenInventory().getTopInventory().getHolder().getClass() != BuffPanel.class)
+//								continue;
 //							BuffPanel buffPanel = (BuffPanel) player.getOpenInventory().getTopInventory().getHolder();
 //							buffPanel.setInventory();
 //						}
-					}
-				}
-			}
-		}.runAfterEvery(864, 3540, TimeUnit.SECONDS);
+//					}
+//				}
+//			}
+//		}.runAfterEvery(864, 3540, TimeUnit.SECONDS);
 //		}.runTaskTimer(ArcticGuilds.INSTANCE, 100, 100);
 
-		new ProxyRunnable() {
-			@Override
-			public void run() {
-				for(Guild guild : GuildManager.guildList) {
-					if(guild.queuedReputation == 0) continue;
+		((ProxyRunnable) () -> {
+			for(Guild guild : GuildManager.guildList) {
+				if(guild.queuedReputation == 0) continue;
 
-					GuildReputationEvent event = new GuildReputationEvent(guild, guild.queuedReputation);
-					BungeeMain.INSTANCE.getProxy().getPluginManager().callEvent(event);
+				GuildReputationEvent event = new GuildReputationEvent(guild, guild.queuedReputation);
+				BungeeMain.INSTANCE.getProxy().getPluginManager().callEvent(event);
 
-					guild.queuedReputation = 0;
-					guild.addReputationDirect(event.getTotalReputation());
-				}
+				guild.queuedReputation = 0;
+				guild.addReputationDirect(event.getTotalReputation());
 			}
-		}.runAfterEvery(0, 10, TimeUnit.SECONDS);
+		}).runAfterEvery(0, 10, TimeUnit.SECONDS);
 
-		new ProxyRunnable() {
-			@Override
-			public void run() {
-				sortGuilds();
-			}
-		}.runAfterEvery(0, 60, TimeUnit.SECONDS);
+		((ProxyRunnable) GuildManager::sortGuilds).runAfterEvery(0, 60, TimeUnit.SECONDS);
 	}
 
 	public static Guild getGuildFromGuildUUID(UUID guildUUID) {

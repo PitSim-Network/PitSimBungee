@@ -37,7 +37,7 @@ public class GuildSize extends GuildUpgrade {
 		lore.addLore("&7Each tier:", "&a+1 &7member slot");
 
 		DummyItemStack itemStack = new DummyItemStack("SKULL_ITEM", 1, (byte) 3);
-		itemStack.addModifier("SkullOwner:" + guild.ownerUUID.toString());
+		itemStack.addModifier("SKULL_OWNER:" + guild.ownerUUID.toString());
 		itemStack.setDisplayName(displayName);
 		itemStack.setLore(lore.getLore());
 		return itemStack;
