@@ -5,6 +5,7 @@ import dev.wiji.instancemanager.Guilds.controllers.PermissionManager;
 import dev.wiji.instancemanager.Guilds.controllers.objects.Guild;
 import dev.wiji.instancemanager.Guilds.controllers.objects.GuildMember;
 import dev.wiji.instancemanager.Guilds.controllers.objects.GuildMemberInfo;
+import dev.wiji.instancemanager.Guilds.inventories.MenuGUI;
 import dev.wiji.instancemanager.Misc.ACommand;
 import dev.wiji.instancemanager.Misc.AMultiCommand;
 import dev.wiji.instancemanager.Misc.AOutput;
@@ -40,6 +41,6 @@ public class MenuCommand extends ACommand {
 		}
 
 		//TODO: Open Meny GUI in frontend
-//		new MenuGUI(player, guild).open();
+		new MenuGUI(player, guild).open();
 	}
 }

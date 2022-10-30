@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class DefenceBuff extends GuildBuff {
 	public DefenceBuff() {
-		super("&9Defence Buff", "defence",
+		super(ChatColor.BLUE + "Defence Buff", "defence",
 				new ALoreBuilder("&7Decreased damage from other guild members").getLore(), ChatColor.BLUE);
 		firstLevelCost = 2;
 	}

@@ -14,7 +14,7 @@ public class HelpPanel extends PreparedInventoryPanel {
 		super(gui);
 		this.helpGUI = (HelpGUI) gui;
 
-		inventoryBuilder.createBorder("STAINED_GLASS_PANE", 7);
+		inventoryBuilder.createBorder("STAINED_GLASS_PANE", 7, getRows() * 9);
 
 		DummyItemStack general = new AItemStackBuilder("PAPER")
 				.setName("&f&lWhat are Guilds?")

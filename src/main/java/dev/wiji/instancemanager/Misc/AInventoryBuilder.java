@@ -31,13 +31,13 @@ public class AInventoryBuilder {
 	/**
 	 * Creates a border going around the outside of the GUI.
 	 */
-	public AInventoryBuilder createBorder(String material, int toData) {
+	public AInventoryBuilder createBorder(String material, int toData, int inventorySize) {
 
 		byte data = (byte) toData;
 
-		for(int i = 0; i < inventory.size(); i++) {
+		for(int i = 0; i < inventorySize; i++) {
 
-			if(i < 9 || i > inventory.size() - 10 || i % 9 == 8 || i % 9 == 0) {
+			if(i < 9 || i > inventorySize - 10 || i % 9 == 8 || i % 9 == 0) {
 
 				inventory.put(i, new DummyItemStack(material, 1, data));
 			}
@@ -53,7 +53,7 @@ public class AInventoryBuilder {
 
 		for(int slot : slots) {
 
-			setSlot(material, toData, slot, null, null);
+			setSlot(material, toData, slot, "", null);
 		}
 
 		return this;

@@ -1,7 +1,10 @@
 package dev.wiji.instancemanager.Guilds.controllers;
 
+import dev.wiji.instancemanager.Guilds.controllers.objects.Guild;
 import dev.wiji.instancemanager.Guilds.controllers.objects.GuildBuff;
+import dev.wiji.instancemanager.Guilds.events.GuildReputationEvent;
 import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.event.EventHandler;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -31,5 +34,20 @@ public class BuffManager implements Listener {
 			allBuffMap.put(guildBuff, guildBuff.getBuffs(level));
 		}
 		return allBuffMap;
+	}
+
+	@EventHandler
+	public void onReputation(GuildReputationEvent event) {
+		Guild guild = event.getGuild();
+
+		GuildBuff renownBuff = BuffManager.getBuff("renown");
+		int renownBuffLevel = guild.getLevel(renownBuff);
+		if(renownBuffLevel != 0) {
+			Map<GuildBuff.SubBuff, Double> buffs = renownBuff.getBuffs(renownBuffLevel);
+			for(Map.Entry<GuildBuff.SubBuff, Double> entry : buffs.entrySet()) {
+				event.addMultiplier(1 + entry.getValue() / 100.0);
+				break;
+			}
+		}
 	}
 }

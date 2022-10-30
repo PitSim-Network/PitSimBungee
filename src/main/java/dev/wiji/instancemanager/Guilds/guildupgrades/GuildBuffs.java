@@ -4,10 +4,11 @@ import dev.wiji.instancemanager.Guilds.controllers.objects.DummyItemStack;
 import dev.wiji.instancemanager.Guilds.controllers.objects.Guild;
 import dev.wiji.instancemanager.Guilds.controllers.objects.GuildUpgrade;
 import dev.wiji.instancemanager.Misc.ALoreBuilder;
+import net.md_5.bungee.api.ChatColor;
 
 public class GuildBuffs extends GuildUpgrade {
 	public GuildBuffs() {
-		super("&bGuild Buffs", "buffs", 1);
+		super(ChatColor.AQUA + "Guild Buffs", "buffs", 1);
 	}
 
 	@Override

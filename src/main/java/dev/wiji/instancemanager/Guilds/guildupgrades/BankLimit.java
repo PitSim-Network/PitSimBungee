@@ -6,10 +6,11 @@ import dev.wiji.instancemanager.Guilds.controllers.objects.Guild;
 import dev.wiji.instancemanager.Guilds.controllers.objects.GuildUpgrade;
 import dev.wiji.instancemanager.Misc.ALoreBuilder;
 import dev.wiji.instancemanager.Misc.AUtil;
+import net.md_5.bungee.api.ChatColor;
 
 public class BankLimit extends GuildUpgrade {
 	public BankLimit() {
-		super("&6Larger Bank", "bank", 4);
+		super(ChatColor.GOLD + "Larger Bank", "bank", 4);
 	}
 
 	@Override

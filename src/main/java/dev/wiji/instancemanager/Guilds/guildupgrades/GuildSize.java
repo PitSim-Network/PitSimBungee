@@ -5,10 +5,11 @@ import dev.wiji.instancemanager.Guilds.controllers.objects.Guild;
 import dev.wiji.instancemanager.Guilds.controllers.objects.GuildUpgrade;
 import dev.wiji.instancemanager.Misc.ALoreBuilder;
 import dev.wiji.instancemanager.Misc.AUtil;
+import net.md_5.bungee.api.ChatColor;
 
 public class GuildSize extends GuildUpgrade {
 	public GuildSize() {
-		super("&aIncreased Guild Size", "size", 5);
+		super(ChatColor.GREEN + "Increased Guild Size", "size", 5);
 	}
 
 	@Override

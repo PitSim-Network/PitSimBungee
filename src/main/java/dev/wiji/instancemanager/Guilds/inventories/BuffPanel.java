@@ -109,7 +109,7 @@ public class BuffPanel extends PreparedInventoryPanel {
 			new AItemStackBuilder(itemStack).setLore(loreBuilder);
 			getInventory().put(startingSlot, itemStack);
 		}
-		updateInventory();
+//		updateInventory();
 	}
 
 	public DummyItemStack getDisplayLevel(GuildBuff buff, int level, UnlockStatus status, Map<GuildBuff.SubBuff, Double> subBuffs) {

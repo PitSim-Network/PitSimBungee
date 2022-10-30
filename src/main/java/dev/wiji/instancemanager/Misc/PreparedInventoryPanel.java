@@ -4,23 +4,30 @@ import dev.wiji.instancemanager.Guilds.controllers.objects.DummyItemStack;
 import dev.wiji.instancemanager.Guilds.events.InventoryClickEvent;
 import dev.wiji.instancemanager.Guilds.events.InventoryCloseEvent;
 import dev.wiji.instancemanager.Guilds.events.InventoryOpenEvent;
+import dev.wiji.instancemanager.Objects.PluginMessage;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class PreparedInventoryPanel {
 
+	public static List<PreparedInventoryPanel> panels = new ArrayList<>();
+
 	public ProxiedPlayer player;
 	public PreparedGUI gui;
 	public PreparedInventoryPanel previousGUI;
-	public AInventoryBuilder inventoryBuilder;
 
-	private Map<Integer, DummyItemStack> inventory;
+	private final Map<Integer, DummyItemStack> inventory = new HashMap<>();
+	public AInventoryBuilder inventoryBuilder = new AInventoryBuilder(inventory);
 
 	public boolean cancelClicks = true;
 
 	public PreparedInventoryPanel(PreparedGUI gui) {
 		this(gui, false);
+		panels.add(this);
 	}
 
 	/**
@@ -32,6 +39,8 @@ public abstract class PreparedInventoryPanel {
 	public PreparedInventoryPanel(PreparedGUI gui, boolean lateBuild) {
 		this.player = gui.player;
 		this.gui = gui;
+
+		panels.add(this);
 
 		if(!lateBuild) buildInventory();
 	}
@@ -46,25 +55,23 @@ public abstract class PreparedInventoryPanel {
 	public abstract void onClose(InventoryCloseEvent event);
 
 	public void openPanel(PreparedInventoryPanel guiPanel) {
-
 		guiPanel.previousGUI = this;
 
-		//TODO: Call the panel's "sendPanelToPlayer" method instead of this
-//		guiPanel.player.openInventory(guiPanel.getInventory());
+		guiPanel.sendPanelToPlayer();
 	}
 
 	public void openPreviousGUI() {
+		System.out.println(1);
 		if(previousGUI == null) return;
+		System.out.println(2);
 
-//		previousGUI.player.openInventory(previousGUI.getInventory());
-		//TODO: Send message to open previous gui ("sendPanelToPlayer" method)
+		previousGUI.sendPanelToPlayer();
 		previousGUI = null;
 	}
 
 	public void updateInventory() {
 
-		//TODO: Send update message to player
-//		player.updateInventory();
+		sendPanelToPlayer();
 	}
 
 	private static int getSlots(int rows) {
@@ -76,23 +83,54 @@ public abstract class PreparedInventoryPanel {
 		return inventory;
 	}
 
-	public void buildInventory() {
+	public PluginMessage buildInventory() {
+		PluginMessage message = new PluginMessage();
+		message.writeString("OPEN INVENTORY");
+		message.writeString(player.getUniqueId().toString());
+		message.writeString(getName());
+		message.writeInt(getRows());
 
-		//TODO: Make this method build the inventory map into a plugin message
-//		inventory = Bukkit.createInventory(this, getSlots(getRows()), getName());
-		//inventoryBuilder = new AInventoryBuilder(inventory);
+		for(int i = 0; i <= getSlots(getRows()); i++) {
+			DummyItemStack item = inventory.get(i);
+			if(item == null) {
+				message.writeString("null");
+			} else {
+				message.writeString(item.toString());
+			}
+		}
+
+		String server = player.getServer().getInfo().getName();
+		message.addServer(server);
+
+		return message;
 	}
 
 	public void sendPanelToPlayer() {
-		//TODO: Send items and inventory panel info in plugin message here
+		for(PreparedInventoryPanel panel : panels) {
+			if(panel.player.equals(player)) {
+				panels.remove(panel);
+				break;
+			}
+		}
+
+		buildInventory().send();
 	}
 
 	public void closeInventory() {
-		//TODO: Send message to player to close inventory
+		PluginMessage message = new PluginMessage();
+		message.writeString("CLOSE INVENTORY");
+		message.writeString(player.getUniqueId().toString());
+		message.addServer(player.getServer().getInfo().getName());
+		message.send();
 	}
 
 	public void playSound(String soundString) {
-		//TODO: Send message to player to play sound
+		PluginMessage message = new PluginMessage();
+		message.writeString("PLAY SOUND");
+		message.writeString(player.getUniqueId().toString());
+		message.writeString(soundString);
+		message.addServer(player.getServer().getInfo().getName());
+		message.send();
 	}
 
 }

@@ -11,6 +11,7 @@ import dev.wiji.instancemanager.Guilds.guildupgrades.GuildBuffs;
 import dev.wiji.instancemanager.Guilds.guildupgrades.GuildSize;
 import dev.wiji.instancemanager.Guilds.guildupgrades.ReputationIncrease;
 import dev.wiji.instancemanager.Misc.APlayerData;
+import dev.wiji.instancemanager.Misc.InventoryManager;
 
 import java.text.DecimalFormat;
 
@@ -69,6 +70,9 @@ public class ArcticGuilds {
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new GuildManager());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new PlayerManager());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new PermissionManager());
+
+		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new GuildMessaging());
+		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new InventoryManager());
 	}
 
 	private static void registerBuffs() {

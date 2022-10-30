@@ -21,7 +21,7 @@ public class UpgradePanel extends PreparedInventoryPanel {
 		super(gui);
 		this.menuGUI = (MenuGUI) gui;
 
-		inventoryBuilder.createBorder("STAINED_GLASS_PANE", 7);
+		inventoryBuilder.createBorder("STAINED_GLASS_PANE", 7, getRows() * 9);
 
 		for(int i = 0; i < UpgradeManager.upgradeList.size(); i++) {
 			GuildUpgrade upgrade = UpgradeManager.upgradeList.get(i);

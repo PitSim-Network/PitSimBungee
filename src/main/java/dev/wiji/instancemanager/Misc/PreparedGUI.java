@@ -29,6 +29,7 @@ public class PreparedGUI {
 	public void open() {
 
 		//TODO: use the home panel to send the correct inventory to the player
+		if(homePanel != null) homePanel.sendPanelToPlayer();
 //		if(homePanel != null) player.openInventory(homePanel.getInventory());
 	}
 

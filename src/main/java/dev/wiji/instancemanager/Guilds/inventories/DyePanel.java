@@ -23,6 +23,8 @@ public class DyePanel extends PreparedInventoryPanel {
 		for(int i = 0; i < 16; i++) {
 			DummyItemStack itemStack = new DummyItemStack("BANNER");
 			itemStack.addModifier("BANNER_COLOR:" + DyeColor.values()[i].getDyeData());
+			String name = ChatColor.translateAlternateColorCodes('&', "&f&l" + DyeColor.values()[i].name());
+			itemStack.setDisplayName(name);
 
 			getInventory().put(i, itemStack);
 		}
@@ -40,12 +42,12 @@ public class DyePanel extends PreparedInventoryPanel {
 
 	@Override
 	public void onClick(InventoryClickEvent event) {
-		DummyItemStack clickedItem = event.getCurrentItem();
+		DummyItemStack clickedItem = event.getItem();
 		if(clickedItem == null || !Objects.equals(clickedItem.getMaterial(), "BANNER")) return;
-		menuGUI.guild.bannerColor = clickedItem.getBannerColor().getDyeData();
+		menuGUI.guild.bannerColor = clickedItem.getBannerColor().getWoolData();
 		menuGUI.guild.save();
 		menuGUI.menuPanel.setInventory();
-		closeInventory();
+		openPreviousGUI();
 	}
 
 	@Override

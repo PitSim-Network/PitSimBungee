@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class RenownBuff extends GuildBuff {
 	public RenownBuff() {
-		super("&eRenown Buff", "renown",
+		super(ChatColor.YELLOW + "Renown Buff", "renown",
 				new ALoreBuilder("&7Increased passive renown").getLore(), ChatColor.YELLOW);
 	}
 

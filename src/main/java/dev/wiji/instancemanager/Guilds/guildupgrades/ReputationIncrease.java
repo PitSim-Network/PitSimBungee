@@ -6,11 +6,12 @@ import dev.wiji.instancemanager.Guilds.controllers.objects.GuildUpgrade;
 import dev.wiji.instancemanager.Guilds.events.GuildReputationEvent;
 import dev.wiji.instancemanager.Misc.ALoreBuilder;
 import dev.wiji.instancemanager.Misc.AUtil;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.event.EventHandler;
 
 public class ReputationIncrease extends GuildUpgrade {
 	public ReputationIncrease() {
-		super("&fIncreased Reputation", "reputation", 5);
+		super(ChatColor.WHITE + "Increased Reputation", "reputation", 5);
 	}
 
 	@EventHandler

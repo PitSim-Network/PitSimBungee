@@ -25,7 +25,7 @@ public class MenuPanel extends PreparedInventoryPanel {
 		super(gui);
 		this.menuGUI = (MenuGUI) gui;
 
-		inventoryBuilder.createBorder("STAINED_GLASS_PANE", 7)
+		inventoryBuilder.createBorder("STAINED_GLASS_PANE", 7, getRows() * 9)
 				.setSlots("STAINED_GLASS_PANE", 7, 11);
 
 		DummyItemStack buffs = new AItemStackBuilder("BEACON")
@@ -75,6 +75,12 @@ public class MenuPanel extends PreparedInventoryPanel {
 
 	@Override
 	public void onClick(InventoryClickEvent event) {
+		System.out.println(event.getSlot());
+		if(!event.getPlayer().getUniqueId().equals(player.getUniqueId()) || !event.getInventoryName().equals(getName())) {
+			return;
+		}
+		System.out.println(event.getSlot());
+
 		int slot = event.getSlot();
 		if(slot == 10) {
 			Map.Entry<GuildMember, GuildMemberInfo> entry = menuGUI.guild.getMember(player);
@@ -104,7 +110,9 @@ public class MenuPanel extends PreparedInventoryPanel {
 	public void onOpen(InventoryOpenEvent event) { }
 
 	@Override
-	public void onClose(InventoryCloseEvent event) { }
+	public void onClose(InventoryCloseEvent event) {
+		PreparedInventoryPanel.panels.remove(this);
+	}
 
 	public void setInventory() {
 		DyeColor dyeColor = null;
@@ -118,7 +126,7 @@ public class MenuPanel extends PreparedInventoryPanel {
 		dateFormat.setTimeZone(TimeZone.getTimeZone(ConfigManager.configuration.getString("timezone")));
 
 		DummyItemStack stats = new DummyItemStack("BANNER");
-		stats.addModifier("BANNER_COLLOR:" + dyeColor.getDyeData());
+		stats.addModifier("BANNER_COLOR:" + dyeColor.getDyeData());
 
 		ChatColor chatColor = ColorConverter.getChatColor(dyeColor);
 		new AItemStackBuilder(stats)
