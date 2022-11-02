@@ -40,15 +40,15 @@ public class GuildManager implements Listener {
 			new Guild(key, guildData);
 		}
 
-//		new ProxyRunnable() {
-//			@Override
-//			public void run() {
-////				TODO: Call this code on buff/upgrade change
-//				for(Guild guild : guildList) {
-//					guild.diminish();
+		new ProxyRunnable() {
+			@Override
+			public void run() {
+//				TODO: Call this code on buff/upgrade change
+				for(Guild guild : guildList) {
+					guild.diminish();
 //					for(Map.Entry<GuildMember, GuildMemberInfo> entry : guild.members.entrySet()) {
 //						UUID playerUUID = entry.getKey().playerUUID;
-//						//TODO: Send PluginMessage to frontend updating open Guild GUIs
+//						TODO: Send PluginMessage to frontend updating open Guild GUIs
 //						for(ProxiedPlayer player : BungeeMain.getMainGamemodePlayers()) {
 //							if(!player.getUniqueId().equals(playerUUID)) continue;
 //							if(player.getOpenInventory().getTopInventory().getHolder().getClass() != BuffPanel.class)
@@ -57,10 +57,9 @@ public class GuildManager implements Listener {
 //							buffPanel.setInventory();
 //						}
 //					}
-//				}
-//			}
-//		}.runAfterEvery(864, 3540, TimeUnit.SECONDS);
-//		}.runTaskTimer(ArcticGuilds.INSTANCE, 100, 100);
+				}
+			}
+		}.runAfterEvery(5, 5, TimeUnit.SECONDS);
 
 		((ProxyRunnable) () -> {
 			for(Guild guild : GuildManager.guildList) {
