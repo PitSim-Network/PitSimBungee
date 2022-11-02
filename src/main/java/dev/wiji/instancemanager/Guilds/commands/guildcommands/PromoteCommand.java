@@ -30,27 +30,27 @@ public class PromoteCommand extends ACommand {
 
 		Guild guild = GuildManager.getGuildFromPlayer(player.getUniqueId());
 		if(guild == null) {
-			AOutput.color(player, "You are not in a guild");
+			AOutput.error(player, "You are not in a guild");
 			return;
 		}
 
 		Map.Entry<GuildMember, GuildMemberInfo> entry = guild.getMember(player);
 		if(!PermissionManager.isAdmin(player)) {
 			if(!entry.getValue().rank.isAtLeast(Constants.PROMOTE_PERMISSION)) {
-				AOutput.color(player, "You must be at least " + Constants.PROMOTE_PERMISSION.displayName + " to do this");
+				AOutput.error(player, "You must be at least " + Constants.PROMOTE_PERMISSION.displayName + " to do this");
 				return;
 			}
 		}
 
 		if(args.size() < 1) {
-			AOutput.color(player, "Usage: /promote <player>");
+			AOutput.error(player, "Usage: /promote <player>");
 			return;
 		}
 
 		Map.Entry<GuildMember, GuildMemberInfo> guildTarget = null;
 		UUID target = BungeeMain.getUUID(args.get(0), false);
 		if(target == null) {
-			AOutput.color(player, "That player does not exist");
+			AOutput.error(player, "That player does not exist");
 			return;
 		}
 		for(Map.Entry<GuildMember, GuildMemberInfo> memberEntry : guild.members.entrySet()) {
@@ -59,25 +59,25 @@ public class PromoteCommand extends ACommand {
 			break;
 		}
 		if(guildTarget == null) {
-			AOutput.color(player, "That player is not in your guild");
+			AOutput.error(player, "That player is not in your guild");
 			return;
 		}
 
 		if(guildTarget.getValue().rank.isAtLeast(GuildRank.CO_OWNER)) {
-			AOutput.color(player, "That player cannot be promoted any higher");
+			AOutput.error(player, "That player cannot be promoted any higher");
 			return;
 		}
 
 		if(!PermissionManager.isAdmin(player)) {
 			if(guildTarget.getValue().rank.getPriority() + 1 >= entry.getValue().rank.getPriority()) {
-				AOutput.color(player, "You cannot promote someone of an equal or higher rank");
+				AOutput.error(player, "You cannot promote someone of an equal or higher rank");
 				return;
 			}
 		}
 
 		if(!PermissionManager.isAdmin(player)) {
 			if(target.equals(player.getUniqueId())) {
-				AOutput.color(player, "You cannot promote yourself");
+				AOutput.error(player, "You cannot promote yourself");
 				return;
 			}
 		}

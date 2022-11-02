@@ -7,11 +7,11 @@ import dev.wiji.instancemanager.Guilds.events.InventoryCloseEvent;
 import dev.wiji.instancemanager.Guilds.events.InventoryOpenEvent;
 import dev.wiji.instancemanager.Misc.PreparedGUI;
 import dev.wiji.instancemanager.Misc.PreparedInventoryPanel;
-import dev.wiji.instancemanager.ProxyRunnable;
 import net.md_5.bungee.api.ChatColor;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 public class DyePanel extends PreparedInventoryPanel {
 	public MenuGUI menuGUI;
@@ -28,6 +28,13 @@ public class DyePanel extends PreparedInventoryPanel {
 
 			getInventory().put(i, itemStack);
 		}
+
+		DummyItemStack back = new DummyItemStack("ARROW");
+		back.setDisplayName(ChatColor.GREEN + "Go Back!");
+		List<String> lore = Collections.singletonList(ChatColor.GRAY + "To Guild Menu");
+		back.setLore(lore);
+
+		getInventory().put(22, back);
 	}
 
 	@Override
@@ -37,12 +44,18 @@ public class DyePanel extends PreparedInventoryPanel {
 
 	@Override
 	public int getRows() {
-		return 2;
+		return 3;
 	}
 
 	@Override
 	public void onClick(InventoryClickEvent event) {
 		DummyItemStack clickedItem = event.getItem();
+
+		if(event.getSlot() == 22) {
+			openPreviousGUI();
+			return;
+		}
+
 		if(clickedItem == null || !Objects.equals(clickedItem.getMaterial(), "BANNER")) return;
 		menuGUI.guild.bannerColor = clickedItem.getBannerColor().getWoolData();
 		menuGUI.guild.save();
@@ -55,6 +68,6 @@ public class DyePanel extends PreparedInventoryPanel {
 
 	@Override
 	public void onClose(InventoryCloseEvent event) {
-		((ProxyRunnable) this::openPreviousGUI).runAfter(50, TimeUnit.MILLISECONDS);
+//		((ProxyRunnable) this::openPreviousGUI).runAfter(50, TimeUnit.MILLISECONDS);
 	}
 }

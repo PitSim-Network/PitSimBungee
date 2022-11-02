@@ -31,19 +31,19 @@ public class TransferCommand extends ACommand {
 
 		Guild guild = GuildManager.getGuildFromPlayer(player.getUniqueId());
 		if(guild == null) {
-			AOutput.color(player, "You are not in a guild");
+			AOutput.error(player, "You are not in a guild");
 			return;
 		}
 
 		if(!PermissionManager.isAdmin(player)) {
 			if(!guild.ownerUUID.equals(player.getUniqueId())) {
-				AOutput.color(player, "you are not the owner of your guild");
+				AOutput.error(player, "you are not the owner of your guild");
 				return;
 			}
 		}
 
 		if(args.size() < 1) {
-			AOutput.color(player, "Usage: /transfer <player>");
+			AOutput.error(player, "Usage: /transfer <player>");
 			return;
 		}
 
@@ -52,7 +52,7 @@ public class TransferCommand extends ACommand {
 		UUID target = BungeeMain.getUUID(args.get(0), false);
 
 		if(target == null) {
-			AOutput.color(player, "That player does not exist");
+			AOutput.error(player, "That player does not exist");
 			return;
 		}
 		for(Map.Entry<GuildMember, GuildMemberInfo> memberEntry : guild.members.entrySet()) {
@@ -61,13 +61,13 @@ public class TransferCommand extends ACommand {
 			break;
 		}
 		if(targetEntry == null) {
-			AOutput.color(player, "That player is not in your guild");
+			AOutput.error(player, "That player is not in your guild");
 			return;
 		}
 
 		if(!PermissionManager.isAdmin(player)) {
 			if(target.equals(player.getUniqueId())) {
-				AOutput.color(player, "You cannot promote yourself");
+				AOutput.error(player, "You cannot promote yourself");
 				return;
 			}
 		}
@@ -77,7 +77,7 @@ public class TransferCommand extends ACommand {
 			Map.Entry<GuildMember, GuildMemberInfo> targetEntry1 = guild.getMember(target);
 
 			if(entry1 == null || targetEntry1 == null || entry1.getValue().rank != GuildRank.OWNER) {
-				AOutput.color(player, "Something went wrong. Please try again");
+				AOutput.error(player, "Something went wrong. Please try again");
 				return;
 			}
 

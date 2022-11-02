@@ -30,27 +30,27 @@ public class KickCommand extends ACommand {
 
 		Guild guild = GuildManager.getGuildFromPlayer(player.getUniqueId());
 		if(guild == null) {
-			AOutput.color(player, "You are not in a guild");
+			AOutput.error(player, "You are not in a guild");
 			return;
 		}
 
 		Map.Entry<GuildMember, GuildMemberInfo> entry = guild.getMember(player);
 		if(!PermissionManager.isAdmin(player)) {
 			if(!entry.getValue().rank.isAtLeast(Constants.KICK_PERMISSION)) {
-				AOutput.color(player, "You must be at least " + Constants.KICK_PERMISSION.displayName + " to do this");
+				AOutput.error(player, "You must be at least " + Constants.KICK_PERMISSION.displayName + " to do this");
 				return;
 			}
 		}
 
 		if(args.size() < 1) {
-			AOutput.color(player, "Usage: /kick <player>");
+			AOutput.error(player, "Usage: /kick <player>");
 			return;
 		}
 
 		Map.Entry<GuildMember, GuildMemberInfo> guildTarget = null;
 		UUID target = BungeeMain.getUUID(args.get(0), false);
 		if(target == null) {
-			AOutput.color(player, "That player does not exist");
+			AOutput.error(player, "That player does not exist");
 			return;
 		}
 		for(Map.Entry<GuildMember, GuildMemberInfo> memberEntry : guild.members.entrySet()) {
@@ -59,28 +59,29 @@ public class KickCommand extends ACommand {
 			break;
 		}
 		if(guildTarget == null) {
-			AOutput.color(player, "That player is not in your guild");
+			AOutput.error(player, "That player is not in your guild");
 			return;
 		}
 		if(!PermissionManager.isAdmin(player)) {
 			if(guildTarget.getKey().wasModifiedRecently()) {
-				AOutput.color(player, "That player has changed guilds too recently. Please wait " + guildTarget.getKey().getModifiedTimeRemaining());
+				AOutput.error(player, "That player has changed guilds too recently. Please wait " + guildTarget.getKey().getModifiedTimeRemaining());
 				return;
 			}
 			if(!entry.getValue().rank.isAtLeast(guildTarget.getValue().rank) || entry.getValue().rank == guildTarget.getValue().rank) {
-				AOutput.color(player, "You cannot kick someone of a higher rank");
+				AOutput.error(player, "You cannot kick someone of a higher rank");
 				return;
 			}
 		}
 
 		if(target.equals(player.getUniqueId())) {
-			AOutput.color(player, "You cannot kick yourself");
+			AOutput.error(player, "You cannot kick yourself");
 			return;
 		}
 
 		guildTarget.getKey().leave();
 		guild.save();
-		guild.broadcast("&a&lGUILD! &7 " + target + "has been kicked from the guild");
+		String targetName = BungeeMain.getName(target, false);
+		guild.broadcast("&a&lGUILD! &7 " + targetName + " has been kicked from the guild");
 		ProxiedPlayer targetPlayer = BungeeMain.INSTANCE.getProxy().getPlayer(target);
 		if(targetPlayer != null) AOutput.color(targetPlayer, "&a&lGUILD! &7You have been kicked the guild: " + guild.name);
 	}

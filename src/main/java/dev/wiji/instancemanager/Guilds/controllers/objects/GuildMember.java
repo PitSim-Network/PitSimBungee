@@ -48,6 +48,8 @@ public class GuildMember {
 		APlayer aPlayer = APlayerData.getPlayerData(playerUUID);
 		Configuration playerData = aPlayer.playerData;
 
+		System.out.println(guildUUID);
+
 		if(guildUUID == null) playerData.set("guild", null); else playerData.set("guild", guildUUID.toString());
 		playerData.set("modify-date", lastModify.getTime());
 

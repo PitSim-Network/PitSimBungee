@@ -29,6 +29,8 @@ public class Guild {
 	public String name;
 	public UUID ownerUUID;
 
+	public String nameChange;
+
 	private long balance = 0;
 	public int reputation = 0;
 	public String tag;

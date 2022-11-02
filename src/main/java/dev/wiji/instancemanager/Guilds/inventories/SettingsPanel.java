@@ -5,10 +5,7 @@ import dev.wiji.instancemanager.Guilds.events.InventoryCloseEvent;
 import dev.wiji.instancemanager.Guilds.events.InventoryOpenEvent;
 import dev.wiji.instancemanager.Misc.PreparedGUI;
 import dev.wiji.instancemanager.Misc.PreparedInventoryPanel;
-import dev.wiji.instancemanager.ProxyRunnable;
 import net.md_5.bungee.api.ChatColor;
-
-import java.util.concurrent.TimeUnit;
 
 public class SettingsPanel extends PreparedInventoryPanel {
 	public MenuGUI menuGUI;
@@ -36,6 +33,6 @@ public class SettingsPanel extends PreparedInventoryPanel {
 
 	@Override
 	public void onClose(InventoryCloseEvent event) {
-		((ProxyRunnable) this::openPreviousGUI).runAfter(50, TimeUnit.MILLISECONDS);
+//		((ProxyRunnable) this::openPreviousGUI).runAfter(50, TimeUnit.MILLISECONDS);
 	}
 }

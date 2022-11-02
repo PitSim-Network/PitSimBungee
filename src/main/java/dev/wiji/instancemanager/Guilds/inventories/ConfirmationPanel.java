@@ -9,18 +9,19 @@ import dev.wiji.instancemanager.Misc.ALoreBuilder;
 import dev.wiji.instancemanager.Misc.PreparedGUI;
 import dev.wiji.instancemanager.Misc.PreparedInventoryPanel;
 import dev.wiji.instancemanager.ProxyRunnable;
-import net.md_5.bungee.api.ChatColor;
-
-import java.util.concurrent.TimeUnit;
 
 public class ConfirmationPanel extends PreparedInventoryPanel {
 	public PreparedGUI menuGUI;
 	public ProxyRunnable callback;
+	public String name;
 
-	public ConfirmationPanel(PreparedGUI gui, ProxyRunnable callback, ALoreBuilder yesLore, ALoreBuilder noLore) {
-		super(gui);
+	public ConfirmationPanel(PreparedGUI gui, ProxyRunnable callback, ALoreBuilder yesLore, ALoreBuilder noLore, String name) {
+		super(gui, true);
 		this.menuGUI = gui;
 		this.callback = callback;
+		this.name = name;
+
+		buildInventory();
 
 		DummyItemStack yes = new AItemStackBuilder("STAINED_CLAY", 1, 5)
 				.setName("&a&lCONFIRM")
@@ -37,7 +38,7 @@ public class ConfirmationPanel extends PreparedInventoryPanel {
 
 	@Override
 	public String getName() {
-		return ChatColor.GRAY + "Confirmation GUI";
+		return name;
 	}
 
 	@Override
@@ -61,6 +62,6 @@ public class ConfirmationPanel extends PreparedInventoryPanel {
 
 	@Override
 	public void onClose(InventoryCloseEvent event) {
-		((ProxyRunnable) this::openPreviousGUI).runAfter(50, TimeUnit.MILLISECONDS);
+//		((ProxyRunnable) this::openPreviousGUI).runAfter(50, TimeUnit.MILLISECONDS);
 	}
 }

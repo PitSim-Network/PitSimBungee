@@ -32,6 +32,15 @@ public abstract class AMultiCommand extends ACommandBase {
     }
 
     public void execute(CommandSender sender, List<String> args) {
+
+        if(sender instanceof ProxiedPlayer) {
+            String server = ((ProxiedPlayer) sender).getServer().getInfo().getName();
+            if(!server.contains("pitsim") && !server.contains("darkzone")) {
+                AOutput.error((ProxiedPlayer) sender, "This command is disabled on this server.");
+                return;
+            }
+        }
+
         if (args.isEmpty()) {
             if (sender instanceof ProxiedPlayer) {
                 this.createHelp().send((ProxiedPlayer)sender);

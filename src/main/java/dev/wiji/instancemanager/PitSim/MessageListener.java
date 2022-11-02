@@ -2,16 +2,17 @@ package dev.wiji.instancemanager.PitSim;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.Events.MessageEvent;
-import dev.wiji.instancemanager.Objects.*;
+import dev.wiji.instancemanager.Objects.DarkzoneServer;
+import dev.wiji.instancemanager.Objects.PitSimServer;
+import dev.wiji.instancemanager.Objects.PluginMessage;
+import dev.wiji.instancemanager.Objects.ServerStatus;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import net.md_5.bungee.protocol.packet.Chat;
 
 import java.util.List;
 import java.util.UUID;
@@ -204,12 +205,8 @@ public class MessageListener implements Listener {
 				}
 			}
 
-
-			System.out.println(serverInfo.getName());
 			PluginMessage responseMessage = new PluginMessage().writeBoolean(isOnline);
 			event.getMessage().respond(responseMessage, serverInfo);
-			System.out.println(event.getMessage().messageID);
-			System.out.println(responseMessage.responseID);
 
 			if(isOnline) {
 				ServerInfo playerServer = player.getServer().getInfo();

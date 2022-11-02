@@ -75,11 +75,9 @@ public class MenuPanel extends PreparedInventoryPanel {
 
 	@Override
 	public void onClick(InventoryClickEvent event) {
-		System.out.println(event.getSlot());
 		if(!event.getPlayer().getUniqueId().equals(player.getUniqueId()) || !event.getInventoryName().equals(getName())) {
 			return;
 		}
-		System.out.println(event.getSlot());
 
 		int slot = event.getSlot();
 		if(slot == 10) {
@@ -111,7 +109,7 @@ public class MenuPanel extends PreparedInventoryPanel {
 
 	@Override
 	public void onClose(InventoryCloseEvent event) {
-		PreparedInventoryPanel.panels.remove(this);
+//		PreparedInventoryPanel.panels.remove(this);
 	}
 
 	public void setInventory() {

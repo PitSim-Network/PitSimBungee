@@ -2,12 +2,14 @@ package dev.wiji.instancemanager.Guilds.commands.guildcommands;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.Guilds.ArcticGuilds;
+import dev.wiji.instancemanager.Guilds.GuildMessaging;
 import dev.wiji.instancemanager.Guilds.controllers.GuildManager;
 import dev.wiji.instancemanager.Guilds.controllers.objects.Guild;
 import dev.wiji.instancemanager.Guilds.events.GuildDepositEvent;
 import dev.wiji.instancemanager.Misc.ACommand;
 import dev.wiji.instancemanager.Misc.AMultiCommand;
 import dev.wiji.instancemanager.Misc.AOutput;
+import dev.wiji.instancemanager.ProxyRunnable;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -25,12 +27,12 @@ public class DepositCommand extends ACommand {
 
 		Guild guild = GuildManager.getGuildFromPlayer(player.getUniqueId());
 		if(guild == null) {
-			AOutput.color(player, "You are not in a guild");
+			AOutput.error(player, "You are not in a guild");
 			return;
 		}
 
 		if(args.size() < 1) {
-			AOutput.color(player, "Usage: /deposit <amount>");
+			AOutput.error(player, "Usage: /deposit <amount>");
 			return;
 		}
 
@@ -39,26 +41,31 @@ public class DepositCommand extends ACommand {
 			amount = Integer.parseInt(args.get(0));
 			if(amount <= 0) throw new IllegalArgumentException();
 		} catch(Exception ignored) {
-			AOutput. color(player, "Invalid amount");
+			AOutput. error(player, "Invalid amount");
 			return;
 		}
-
-		//TODO: Check if the amount is more than the player's balance
-//		if(amount > ArcticGuilds.VAULT.getBalance(player)) {
-//			AOutput.color(player, "You do not have enough money to do this");
-//			return;
-//		}
 
 		if(guild.getBalance() + amount > guild.getMaxBank()) {
-			AOutput.color(player, "Bank is too full");
+			AOutput.error(player, "Bank is too full");
 			return;
 		}
 
-		//TODO: Withdraw money from the player
-//		ArcticGuilds.VAULT.withdrawPlayer(player, amount);
-		guild.deposit(amount);
+		ProxyRunnable success = () -> {
+			Guild depositGuild = GuildManager.getGuildFromPlayer(player.getUniqueId());
+			if(depositGuild == null) {
+				AOutput.error(player, "You are not in a guild");
+				return;
+			}
+			depositGuild.deposit(amount);
 
-		guild.broadcast("&a&lGUILD! &7" + player.getName() + " has deposited &6" + ArcticGuilds.decimalFormat.format(amount) + "g");
+			depositGuild.broadcast("&a&lGUILD! &7" + player.getName() + " has deposited &6" + ArcticGuilds.decimalFormat.format(amount) + "g");
+		};
+
+		ProxyRunnable fail = () -> {
+			AOutput.error(player,"You do not have enough funds");
+		};
+
+		GuildMessaging.deposit(player, amount, success, fail);
 
 		GuildDepositEvent event = new GuildDepositEvent(player, guild, amount);
 		BungeeMain.INSTANCE.getProxy().getPluginManager().callEvent(event);

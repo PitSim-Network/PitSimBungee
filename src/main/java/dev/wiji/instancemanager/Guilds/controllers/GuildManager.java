@@ -27,7 +27,6 @@ public class GuildManager implements Listener {
 		guildFile = new AData("guilds", "", false);
 
 		for(Map.Entry<UUID, APlayer> entry : APlayerData.getAllData().entrySet()) {
-			System.out.println(entry);
 
 			UUID uuid = entry.getKey();
 			APlayer aPlayer = entry.getValue();
@@ -87,7 +86,6 @@ public class GuildManager implements Listener {
 		APlayer player = APlayerData.getPlayerData(playerUUID);
 		String guildUUID = player.playerData.getString("guild");
 		if(guildUUID == null || guildUUID.equals("")) return null;
-		System.out.println("GuildUUID: " + guildUUID);
 		return getGuildFromGuildUUID(UUID.fromString(guildUUID));
 	}
 

@@ -9,6 +9,7 @@ import dev.wiji.instancemanager.Misc.ALoreBuilder;
 import dev.wiji.instancemanager.Misc.AMultiCommand;
 import dev.wiji.instancemanager.Misc.AOutput;
 import dev.wiji.instancemanager.ProxyRunnable;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -26,13 +27,13 @@ public class DisbandCommand extends ACommand {
 
 		Guild guild = GuildManager.getGuildFromPlayer(player.getUniqueId());
 		if(guild == null) {
-			AOutput.color(player, "You are not in a guild");
+			AOutput.error(player, "You are not in a guild");
 			return;
 		}
 
 		if(!PermissionManager.isAdmin(player)) {
 			if(!guild.ownerUUID.equals(player.getUniqueId())) {
-				AOutput.color(player, "you are not the owner of your guild");
+				AOutput.error(player, "You are not the owner of your guild");
 				return;
 			}
 		}
@@ -40,13 +41,20 @@ public class DisbandCommand extends ACommand {
 		ProxyRunnable disband = new ProxyRunnable() {
 			@Override
 			public void run() {
-				guild.disband();
-				AOutput.color(player, "&a&lGUILD! &7You have disbanded the guild " + guild.name);
+				Guild disbandGuild = GuildManager.getGuildFromPlayer(player.getUniqueId());
+				if(disbandGuild == null) {
+					AOutput.error(player, "You are not in a guild");
+					return;
+				}
+				disbandGuild.disband();
+				AOutput.color(player, "&a&lGUILD! &7You have disbanded the guild " + disbandGuild.name);
 			}
 		};
 		ALoreBuilder yesLore = new ALoreBuilder("&7Clicking here will disband", "&7your guild " + guild.name);
 		ALoreBuilder noLore = new ALoreBuilder("&7Click to cancel");
 
-		new ConfirmationGUI(player, disband, yesLore, noLore).open();
+		String name = ChatColor.GRAY + "Disband Confirmation GUI";
+
+		new ConfirmationGUI(player, disband, yesLore, noLore, name).open();
 	}
 }

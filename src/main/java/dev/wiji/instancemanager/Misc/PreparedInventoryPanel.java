@@ -20,6 +20,8 @@ public abstract class PreparedInventoryPanel {
 	public PreparedGUI gui;
 	public PreparedInventoryPanel previousGUI;
 
+	public long creationTime;
+
 	private final Map<Integer, DummyItemStack> inventory = new HashMap<>();
 	public AInventoryBuilder inventoryBuilder = new AInventoryBuilder(inventory);
 
@@ -28,6 +30,8 @@ public abstract class PreparedInventoryPanel {
 	public PreparedInventoryPanel(PreparedGUI gui) {
 		this(gui, false);
 		panels.add(this);
+
+		this.creationTime = System.currentTimeMillis();
 	}
 
 	/**
@@ -61,17 +65,15 @@ public abstract class PreparedInventoryPanel {
 	}
 
 	public void openPreviousGUI() {
-		System.out.println(1);
 		if(previousGUI == null) return;
-		System.out.println(2);
 
-		previousGUI.sendPanelToPlayer();
+		openPanel(previousGUI);
 		previousGUI = null;
 	}
 
-	public void updateInventory() {
-
-		sendPanelToPlayer();
+	public void updateInventory(PreparedInventoryPanel panel) {
+		panel.previousGUI = previousGUI;
+		panel.sendPanelToPlayer();
 	}
 
 	private static int getSlots(int rows) {
@@ -106,12 +108,12 @@ public abstract class PreparedInventoryPanel {
 	}
 
 	public void sendPanelToPlayer() {
-		for(PreparedInventoryPanel panel : panels) {
-			if(panel.player.equals(player)) {
-				panels.remove(panel);
-				break;
-			}
-		}
+//		for(PreparedInventoryPanel panel : panels) {
+//			if(panel.player.equals(player)) {
+//				panels.remove(panel);
+//				break;
+//			}
+//		}
 
 		buildInventory().send();
 	}

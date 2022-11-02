@@ -6,8 +6,10 @@ import dev.wiji.instancemanager.Guilds.controllers.PermissionManager;
 import dev.wiji.instancemanager.Guilds.controllers.objects.Guild;
 import dev.wiji.instancemanager.Guilds.controllers.objects.GuildMember;
 import dev.wiji.instancemanager.Guilds.controllers.objects.GuildMemberInfo;
+import dev.wiji.instancemanager.Guilds.inventories.ConfirmationGUI;
 import dev.wiji.instancemanager.Misc.*;
 import dev.wiji.instancemanager.ProxyRunnable;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -29,20 +31,20 @@ public class RenameCommand extends ACommand {
 
 		Guild guild = GuildManager.getGuildFromPlayer(player.getUniqueId());
 		if(guild == null) {
-			AOutput.color(player, "You are not in a guild");
+			AOutput.error(player, "You are not in a guild");
 			return;
 		}
 
 		Map.Entry<GuildMember, GuildMemberInfo> entry = guild.getMember(player);
 		if(!PermissionManager.isAdmin(player)) {
 			if(!entry.getValue().rank.isAtLeast(Constants.RENAME_PERMISSION)) {
-				AOutput.color(player, "You must be at least " + Constants.RENAME_PERMISSION.displayName + " to do this");
+				AOutput.error(player, "You must be at least " + Constants.RENAME_PERMISSION.displayName + " to do this");
 				return;
 			}
 		}
 
 		if(args.size() < 1) {
-			AOutput.color(player, "Usage: /guild rename <name>");
+			AOutput.error(player, "Usage: /guild rename <name>");
 			return;
 		}
 
@@ -53,42 +55,55 @@ public class RenameCommand extends ACommand {
 
 		String name = args.get(0);
 		if(name.length() > 16) {
-			AOutput.color(player, "Your guild's name cannot be longer than 16 characters");
+			AOutput.error(player, "Your guild's name cannot be longer than 16 characters");
 			return;
 		}
 		Pattern pattern = Pattern.compile("[^a-z0-9]", Pattern.CASE_INSENSITIVE);
 		if(pattern.matcher(name).find()) {
-			AOutput.color(player, "Names can only contain numbers and letters");
+			AOutput.error(player, "Names can only contain numbers and letters");
 			return;
 		}
 
 		if(guild.name.equals(name)) {
-			AOutput.color(player, "Your guild already has that name");
+			AOutput.error(player, "Your guild already has that name");
 			return;
 		}
 
 		for(Guild testGuild : GuildManager.guildList) {
 			if(testGuild == guild || !testGuild.name.equalsIgnoreCase(name)) continue;
-			AOutput.color(player, "A guild with that name already exists");
+			AOutput.error(player, "A guild with that name already exists");
 			return;
 		}
 
+		guild.nameChange = name;
+
 		ProxyRunnable rename = () -> {
-			if(guild.getBalance() < GUILD_RENAME_COST) {
-				AOutput.color(player, "You no longer have sufficient funds to do this");
+			Guild renameGuild = GuildManager.getGuildFromPlayer(player.getUniqueId());
+			if(renameGuild == null) {
+				AOutput.error(player, "You are not in a guild");
 				return;
 			}
-			guild.withdraw(GUILD_RENAME_COST);
-			guild.name = name;
-			guild.save();
-			guild.broadcast("&a&lGUILD! &7Guild name changed to: " + name);
+
+			if(renameGuild.getBalance() < GUILD_RENAME_COST) {
+				AOutput.error(player, "You no longer have sufficient funds to do this");
+				return;
+			}
+
+			if(renameGuild.nameChange == null) {
+				AOutput.error(player, "You no longer have a pending rename");
+				return;
+			}
+
+			renameGuild.withdraw(GUILD_RENAME_COST);
+			renameGuild.name = renameGuild.nameChange;
+				renameGuild.save();
+			renameGuild.broadcast("&a&lGUILD! &7Guild name changed to: " + renameGuild.nameChange);
 		};
 		ALoreBuilder yesLore = new ALoreBuilder("&7Clicking here will rename", "&7your guild to " + name, "",
 				"&7Doing so costs &6" + ArcticGuilds.decimalFormat.format(GUILD_RENAME_COST) + "g");
 		ALoreBuilder noLore = new ALoreBuilder("&7Click to cancel");
 
-
-		//TODO: Open confirmation GUI on frontend
-//		new ConfirmationGUI(player, rename, yesLore, noLore).open();
+		String invName = ChatColor.GRAY + "Rename Confirmation GUI";
+		new ConfirmationGUI(player, rename, yesLore, noLore, invName).open();
 	}
 }

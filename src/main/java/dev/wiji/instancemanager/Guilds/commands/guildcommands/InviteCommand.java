@@ -35,20 +35,20 @@ public class InviteCommand extends ACommand {
 
 		Guild guild = GuildManager.getGuildFromPlayer(player.getUniqueId());
 		if(guild == null) {
-			AOutput.color(player, "You are not in a guild");
+			AOutput.error(player, "You are not in a guild");
 			return;
 		}
 
 		Map.Entry<GuildMember, GuildMemberInfo> info = guild.getMember(player);
 		if(!PermissionManager.isAdmin(player)) {
 			if(!info.getValue().rank.isAtLeast(Constants.INVITE_PERMISSION)) {
-				AOutput.color(player, "You must be at least " + Constants.INVITE_PERMISSION.displayName + " to do this");
+				AOutput.error(player, "You must be at least " + Constants.INVITE_PERMISSION.displayName + " to do this");
 				return;
 			}
 		}
 
 		if(args.size() < 1) {
-			AOutput.color(player, "Usage: /invite <player>");
+			AOutput.error(player, "Usage: /invite <player>");
 			return;
 		}
 
@@ -60,29 +60,29 @@ public class InviteCommand extends ACommand {
 			break;
 		}
 		if(target == null) {
-			AOutput.color(player, "Could not find that player");
+			AOutput.error(player, "Could not find that player");
 			return;
 		}
 
 		for(Map.Entry<GuildMember, GuildMemberInfo> entry : guild.members.entrySet()) {
 			if(!entry.getKey().playerUUID.equals(target.getUniqueId())) continue;
-			AOutput.color(player, "That player is already in your group");
+			AOutput.error(player, "That player is already in your guild");
 			return;
 		}
 
 		if(guild.activeInvites.contains(target.getUniqueId())) {
-			AOutput.color(player, "You have already sent an invite to that player");
+			AOutput.error(player, "You have already sent an invite to that player");
 			return;
 		}
 
 		if(guild.members.size() >= guild.getMaxMembers()) {
-			AOutput.color(player, "Your guild at its maximum size");
+			AOutput.error(player, "Your guild at its maximum size");
 			return;
 		}
 
 		if(!PermissionManager.isAdmin(player)) {
 			if(cooldownList.contains(target.getUniqueId())) {
-				AOutput.color(player, "Please wait before trying to invite this player again");
+				AOutput.error(player, "Please wait before trying to invite this player again");
 				return;
 			}
 			cooldownList.add(target.getUniqueId());
@@ -93,6 +93,6 @@ public class InviteCommand extends ACommand {
 		guild.activeInvites.add(target.getUniqueId());
 
 		guild.broadcast("&a&lGUILD! &7" + target.getName() + " has been invited to the guild by " + player.getName());
-		AOutput.color(target, "&a&lGUILD! &7You have been invited to join " + guild.name + " by " + player.getName());
+		AOutput.error(target, "&a&lGUILD! &7You have been invited to join " + guild.name + " by " + player.getName());
 	}
 }

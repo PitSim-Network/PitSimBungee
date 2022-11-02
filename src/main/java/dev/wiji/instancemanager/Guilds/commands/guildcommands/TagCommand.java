@@ -28,42 +28,42 @@ public class TagCommand extends ACommand {
 
 		Guild guild = GuildManager.getGuildFromPlayer(player.getUniqueId());
 		if(guild == null) {
-			AOutput.color(player, "You are not in a guild");
+			AOutput.error(player, "You are not in a guild");
 			return;
 		}
 
 		Map.Entry<GuildMember, GuildMemberInfo> entry = guild.getMember(player);
 		if(!PermissionManager.isAdmin(player)) {
 			if(!entry.getValue().rank.isAtLeast(Constants.TAG_PERMISSION)) {
-				AOutput.color(player, "You must be at least " + Constants.TAG_PERMISSION.displayName + " to do this");
+				AOutput.error(player, "You must be at least " + Constants.TAG_PERMISSION.displayName + " to do this");
 				return;
 			}
 		}
 
 		if(args.size() < 1) {
-			AOutput.color(player, "Usage: /tag <name>");
+			AOutput.error(player, "Usage: /tag <name>");
 			return;
 		}
 
 		String tag = args.get(0);
 		if(tag.length() > 5) {
-			AOutput.color(player, "Your guild's tag cannot be longer than 5 characters");
+			AOutput.error(player, "Your guild's tag cannot be longer than 5 characters");
 			return;
 		}
 		Pattern pattern = Pattern.compile("[^a-z]", Pattern.CASE_INSENSITIVE);
 		if(pattern.matcher(tag).find()) {
-			AOutput.color(player, "Tags can only contain letters");
+			AOutput.error(player, "Tags can only contain letters");
 			return;
 		}
 
 		for(Guild testGuild : GuildManager.guildList) {
 			if(testGuild.tag == null || !testGuild.tag.equalsIgnoreCase(tag) || testGuild == guild) continue;
-			AOutput.color(player, "A guild with that tag already exists");
+			AOutput.error(player, "A guild with that tag already exists");
 			return;
 		}
 
 		guild.tag = tag;
 		guild.save();
-		guild.broadcast("&aGUILD! &7Your guild's tag is now " + guild.getColor() + "#" + guild.tag);
+		guild.broadcast("&a&lGUILD! &7Your guild's tag is now " + guild.getColor() + "#" + guild.tag);
 	}
 }

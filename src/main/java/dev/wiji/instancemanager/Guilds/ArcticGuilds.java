@@ -10,10 +10,13 @@ import dev.wiji.instancemanager.Guilds.guildupgrades.BankLimit;
 import dev.wiji.instancemanager.Guilds.guildupgrades.GuildBuffs;
 import dev.wiji.instancemanager.Guilds.guildupgrades.GuildSize;
 import dev.wiji.instancemanager.Guilds.guildupgrades.ReputationIncrease;
+import dev.wiji.instancemanager.Misc.AMultiCommand;
 import dev.wiji.instancemanager.Misc.APlayerData;
 import dev.wiji.instancemanager.Misc.InventoryManager;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ArcticGuilds {
 	public static BungeeMain INSTANCE;
@@ -37,27 +40,33 @@ public class ArcticGuilds {
 	}
 
 	private static void registerCommands() {
-		GuildCommand guildCommand = new GuildCommand("guild");
-		new HelpCommand(guildCommand, "help");
-		new InfoCommand(guildCommand, "info");
-		new CreateCommand(guildCommand, "create");
-		new TransferCommand(guildCommand, "transfer");
-		new DisbandCommand(guildCommand, "disband");
-		new ChatCommand(guildCommand, "chat");
-		new MenuCommand(guildCommand, "menu");
-		new TagCommand(guildCommand, "tag");
-		new RenameCommand(guildCommand, "rename");
+
+		List<AMultiCommand> guildCommands = new ArrayList<>();
+		guildCommands.add(new GuildCommand("guild"));
+		guildCommands.add(new GuildCommand("g"));
+
+		for(AMultiCommand guildCommand : guildCommands) {
+			new HelpCommand(guildCommand, "help");
+			new InfoCommand(guildCommand, "info");
+			new CreateCommand(guildCommand, "create");
+			new TransferCommand(guildCommand, "transfer");
+			new DisbandCommand(guildCommand, "disband");
+			new ChatCommand(guildCommand, "chat");
+			new MenuCommand(guildCommand, "menu");
+			new TagCommand(guildCommand, "tag");
+			new RenameCommand(guildCommand, "rename");
 //
-		new InviteCommand(guildCommand, "invite");
-		new JoinCommand(guildCommand, "join");
-		new PromoteCommand(guildCommand, "promote");
-		new DemoteCommand(guildCommand, "demote");
-		new LeaveCommand(guildCommand, "leave");
-		new KickCommand(guildCommand, "kick");
+			new InviteCommand(guildCommand, "invite");
+			new JoinCommand(guildCommand, "join");
+			new PromoteCommand(guildCommand, "promote");
+			new DemoteCommand(guildCommand, "demote");
+			new LeaveCommand(guildCommand, "leave");
+			new KickCommand(guildCommand, "kick");
 //
-		new BalanceCommand(guildCommand, "bal");
-		new DepositCommand(guildCommand, "deposit");
-		new WithdrawalCommand(guildCommand, "withdrawal");
+			new BalanceCommand(guildCommand, "bal");
+			new DepositCommand(guildCommand, "deposit");
+			new WithdrawCommand(guildCommand, "withdraw");
+		}
 //
 		GuildAdminCommand adminCommand = new GuildAdminCommand("gadmin");
 		new ReputationCommand(adminCommand, "rep");

@@ -1,6 +1,7 @@
 package dev.wiji.instancemanager.Guilds.inventories;
 
 import dev.wiji.instancemanager.Guilds.controllers.UpgradeManager;
+import dev.wiji.instancemanager.Guilds.controllers.objects.DummyItemStack;
 import dev.wiji.instancemanager.Guilds.controllers.objects.GuildUpgrade;
 import dev.wiji.instancemanager.Guilds.events.InventoryClickEvent;
 import dev.wiji.instancemanager.Guilds.events.InventoryCloseEvent;
@@ -9,10 +10,10 @@ import dev.wiji.instancemanager.Misc.AOutput;
 import dev.wiji.instancemanager.Misc.AUtil;
 import dev.wiji.instancemanager.Misc.PreparedGUI;
 import dev.wiji.instancemanager.Misc.PreparedInventoryPanel;
-import dev.wiji.instancemanager.ProxyRunnable;
 import net.md_5.bungee.api.ChatColor;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Collections;
+import java.util.List;
 
 public class UpgradePanel extends PreparedInventoryPanel {
 	public MenuGUI menuGUI;
@@ -22,6 +23,13 @@ public class UpgradePanel extends PreparedInventoryPanel {
 		this.menuGUI = (MenuGUI) gui;
 
 		inventoryBuilder.createBorder("STAINED_GLASS_PANE", 7, getRows() * 9);
+
+		DummyItemStack back = new DummyItemStack("ARROW");
+		back.setDisplayName(ChatColor.GREEN + "Go Back!");
+		List<String> lore = Collections.singletonList(ChatColor.GRAY + "To Guild Menu");
+		back.setLore(lore);
+
+		getInventory().put(22, back);
 
 		for(int i = 0; i < UpgradeManager.upgradeList.size(); i++) {
 			GuildUpgrade upgrade = UpgradeManager.upgradeList.get(i);
@@ -43,6 +51,12 @@ public class UpgradePanel extends PreparedInventoryPanel {
 	@Override
 	public void onClick(InventoryClickEvent event) {
 		int slot = event.getSlot();
+
+		if(event.getSlot() == 22) {
+			openPreviousGUI();
+			return;
+		}
+
 		for(GuildUpgrade upgrade : UpgradeManager.upgradeList) {
 			if(upgrade.slot != slot) continue;
 
@@ -64,7 +78,7 @@ public class UpgradePanel extends PreparedInventoryPanel {
 			menuGUI.guild.save();
 
 			getInventory().put(upgrade.slot, upgrade.getDisplayStack(menuGUI.guild, level + 1));
-			updateInventory();
+			updateInventory(new UpgradePanel(gui));
 
 			playSound("UPGRADE");
 			menuGUI.guild.broadcast("&a&lGUILD! &7Upgraded " + upgrade.displayName + " &7to level &a" + AUtil.toRoman(level + 1));
@@ -76,6 +90,6 @@ public class UpgradePanel extends PreparedInventoryPanel {
 
 	@Override
 	public void onClose(InventoryCloseEvent event) {
-		((ProxyRunnable) this::openPreviousGUI).runAfter(50, TimeUnit.MILLISECONDS);
+//		((ProxyRunnable) this::openPreviousGUI).runAfter(50, TimeUnit.MILLISECONDS);
 	}
 }

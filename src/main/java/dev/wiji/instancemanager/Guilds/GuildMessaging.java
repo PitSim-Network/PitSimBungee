@@ -17,11 +17,16 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class GuildMessaging implements Listener {
+
+	public static Map<ProxiedPlayer, Callback> waitingForBalance = new HashMap<>();
+	public static Map<ProxiedPlayer, Callback> waitingForWithdraw = new HashMap<>();
 
 	static {
 		((ProxyRunnable) () -> {
@@ -37,6 +42,7 @@ public class GuildMessaging implements Listener {
 		PluginMessage message = event.getMessage();
 		List<String> strings = message.getStrings();
 		List<Integer> integers = message.getIntegers();
+		List<Boolean> booleans = message.getBooleans();
 
 		if(strings.size() >= 1 && strings.get(0).equals("INVENTORY CLICK")) {
 
@@ -58,6 +64,36 @@ public class GuildMessaging implements Listener {
 
 			InventoryCloseEvent inventoryClickEvent = new InventoryCloseEvent(player, inventoryName);
 			BungeeMain.INSTANCE.getProxy().getPluginManager().callEvent(inventoryClickEvent);
+		}
+
+		if(strings.size() >= 2 && strings.get(0).equals("ADD REPUTATION")) {
+			Guild guild = GuildManager.getGuildFromGuildUUID(UUID.fromString(strings.get(1)));
+			if(guild == null) return;
+			guild.addReputation(integers.get(0));
+		}
+
+		if(strings.size() >= 2 && strings.get(0).equals("DEPOSIT")) {
+			ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(UUID.fromString(strings.get(1)));
+			if(player == null) return;
+
+			boolean success = booleans.get(0);
+			if(waitingForBalance.containsKey(player)) {
+				if(success) waitingForBalance.get(player).success.run();
+				else waitingForBalance.get(player).fail.run();
+				waitingForBalance.remove(player);
+			}
+		}
+
+		if(strings.size() >= 2 && strings.get(0).equals("WITHDRAW")) {
+			ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(UUID.fromString(strings.get(1)));
+			if(player == null) return;
+
+			boolean success = booleans.get(0);
+			if(waitingForWithdraw.containsKey(player)) {
+				if(success) waitingForWithdraw.get(player).success.run();
+				else waitingForWithdraw.get(player).fail.run();
+				waitingForWithdraw.remove(player);
+			}
 		}
 	}
 
@@ -81,6 +117,29 @@ public class GuildMessaging implements Listener {
 		message.send();
 	}
 
+	public static void withdraw(ProxiedPlayer player, int amount, ProxyRunnable success, ProxyRunnable fail, boolean lol) {
+
+		if(waitingForWithdraw.containsKey(player)) {
+			fail.run();
+			return;
+		}
+
+
+		waitingForWithdraw.put(player, new Callback(success, fail));
+
+		((ProxyRunnable) () -> {
+			if(!waitingForWithdraw.containsKey(player)) return;
+			waitingForWithdraw.remove(player);
+			fail.run();
+		}).runAfter(1, TimeUnit.SECONDS);
+
+		PluginMessage message = new PluginMessage().writeString("WITHDRAW").writeString(player.getUniqueId().toString());
+		message.writeInt(amount);
+		message.addServer(player.getServer().getInfo());
+		message.send();
+
+	}
+
 	public static void sendGuildData(ProxiedPlayer player) {
 
 		Guild guild = GuildManager.getGuildFromPlayer(player.getUniqueId());
@@ -88,9 +147,16 @@ public class GuildMessaging implements Listener {
 
 		PluginMessage message = new PluginMessage().writeString("GUILD DATA");
 		message.writeString(player.getUniqueId().toString());
+
 		message.writeString(guild.uuid.toString());
+
 		message.writeString(guild.tag);
+
 		message.writeString(guild.getColor().name());
+
+		for(Integer value : guild.buffLevels.values()) {
+			message.writeInt(value);
+		}
 
 		for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
 			if(pitSimServer.status.isOnline()) message.addServer(pitSimServer.getServerInfo());
@@ -100,5 +166,38 @@ public class GuildMessaging implements Listener {
 			if(darkzoneServer.status.isOnline()) message.addServer(darkzoneServer.getServerInfo());
 		}
 		message.send();
+	}
+
+	public static void deposit(ProxiedPlayer player, int amount, ProxyRunnable success, ProxyRunnable fail) {
+
+		if(waitingForBalance.containsKey(player)) {
+			fail.run();
+			return;
+		}
+
+
+		waitingForBalance.put(player, new Callback(success, fail));
+
+		((ProxyRunnable) () -> {
+			if(!waitingForBalance.containsKey(player)) return;
+			waitingForBalance.remove(player);
+			fail.run();
+		}).runAfter(1, TimeUnit.SECONDS);
+
+		PluginMessage message = new PluginMessage().writeString("DEPOSIT").writeString(player.getUniqueId().toString());
+		message.writeInt(amount);
+		message.addServer(player.getServer().getInfo());
+		message.send();
+	}
+
+	public static class Callback {
+
+		public ProxyRunnable success;
+		public ProxyRunnable fail;
+
+		public Callback(ProxyRunnable success, ProxyRunnable fail) {
+			this.success = success;
+			this.fail = fail;
+		}
 	}
 }

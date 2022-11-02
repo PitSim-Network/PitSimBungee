@@ -8,14 +8,9 @@ import dev.wiji.instancemanager.Guilds.events.InventoryClickEvent;
 import dev.wiji.instancemanager.Guilds.events.InventoryCloseEvent;
 import dev.wiji.instancemanager.Guilds.events.InventoryOpenEvent;
 import dev.wiji.instancemanager.Misc.*;
-import dev.wiji.instancemanager.ProxyRunnable;
 import net.md_5.bungee.api.ChatColor;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
 
 public class BuffPanel extends PreparedInventoryPanel {
 	public MenuGUI menuGUI;
@@ -23,6 +18,13 @@ public class BuffPanel extends PreparedInventoryPanel {
 	public BuffPanel(PreparedGUI gui) {
 		super(gui);
 		this.menuGUI = (MenuGUI) gui;
+
+		DummyItemStack back = new DummyItemStack("ARROW");
+		back.setDisplayName(ChatColor.GREEN + "Go Back!");
+		List<String> lore = Collections.singletonList(ChatColor.GRAY + "To Guild Menu");
+		back.setLore(lore);
+
+		getInventory().put(49, back);
 
 		setInventory();
 	}
@@ -40,6 +42,12 @@ public class BuffPanel extends PreparedInventoryPanel {
 	@Override
 	public void onClick(InventoryClickEvent event) {
 		int slot = event.getSlot();
+
+		if(event.getSlot() == 49) {
+			openPreviousGUI();
+			return;
+		}
+
 		int row = slot / 9;
 		int level = slot % 9;
 		boolean isMain = slot % 9 == 0;
@@ -66,6 +74,7 @@ public class BuffPanel extends PreparedInventoryPanel {
 				playSound("UPGRADE");
 			}
 		}
+		updateInventory(new BuffPanel(gui));
 	}
 
 	@Override
@@ -73,12 +82,12 @@ public class BuffPanel extends PreparedInventoryPanel {
 
 	@Override
 	public void onClose(InventoryCloseEvent event) {
-		new ProxyRunnable() {
-			@Override
-			public void run() {
-				openPreviousGUI();
-			}
-		}.runAfter(50, TimeUnit.MILLISECONDS);
+//		new ProxyRunnable() {
+//			@Override
+//			public void run() {
+//				openPreviousGUI();
+//			}
+//		}.runAfter(50, TimeUnit.MILLISECONDS);
 	}
 
 	public void setInventory() {

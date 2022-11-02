@@ -7,8 +7,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class ConfirmationGUI extends PreparedGUI {
 
-	public ConfirmationGUI(ProxiedPlayer player, ProxyRunnable disband, ALoreBuilder yesLore, ALoreBuilder noLore) {
+	public ConfirmationGUI(ProxiedPlayer player, ProxyRunnable disband, ALoreBuilder yesLore, ALoreBuilder noLore, String name) {
 		super(player);
-		setHomePanel(new ConfirmationPanel(this, disband, yesLore, noLore));
+		setHomePanel(new ConfirmationPanel(this, disband, yesLore, noLore, name));
 	}
 }

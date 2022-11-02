@@ -65,7 +65,7 @@ public class RestartManager {
 	}
 
 	public static void init() {
-		System.out.println("Init!");
+		System.out.println("Restart manager Init!");
 	}
 
 
