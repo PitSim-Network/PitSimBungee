@@ -13,7 +13,7 @@ public class ConfigManager {
 	public static Configuration configuration;
 
 	public static void onEnable() {
-		file = new File(ProxyServer.getInstance().getPluginsFolder() + "/conifg.yml");
+		file = new File(ProxyServer.getInstance().getPluginsFolder() + "/config.yml");
 
 		try {
 			if(!file.exists()) {
@@ -63,6 +63,8 @@ public class ConfigManager {
 		return configuration.getString("lobby");
 	}
 
-
+	public static boolean isDev() {
+		return getProxyServer().equals("0b42b386");
+	}
 
 }
