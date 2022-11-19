@@ -6,4 +6,4 @@ commands:
   play:
   toggle:
   dev:
-depends: [PitSimBungeeDependencies]
+depends: [PitSimBungeeDependencies, PlayerStatus]
