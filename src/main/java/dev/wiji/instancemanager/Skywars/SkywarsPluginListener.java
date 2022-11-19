@@ -1,14 +1,13 @@
 package dev.wiji.instancemanager.Skywars;
 
-import com.mattmalec.pterodactyl4j.UtilizationState;
 import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.Events.MessageEvent;
-import dev.wiji.instancemanager.Objects.PluginMessage;
 import dev.wiji.instancemanager.ProxyRunnable;
-import dev.wiji.instancemanager.ServerManager;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
-import net.md_5.bungee.api.event.*;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+import net.md_5.bungee.api.event.PluginMessageEvent;
+import net.md_5.bungee.api.event.ServerDisconnectEvent;
+import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.event.EventHandler;
@@ -145,9 +144,9 @@ public class SkywarsPluginListener implements Listener {
 	@EventHandler
 	public void onLeave(PlayerDisconnectEvent event) {
 		for(Map.Entry<String, ScheduledTask> entry : SkywarsGameManager.activeServers.entrySet()) {
-			System.out.println(entry.getKey());
+//			System.out.println(entry.getKey());
 			int size = BungeeMain.INSTANCE.getProxy().getServerInfo(entry.getKey()).getPlayers().size();
-			System.out.println(size);
+//			System.out.println(size);
 			if(size == 1) {
 				SkywarsGameManager.endGame(entry.getKey());
 				System.out.println("Skywars game ended on " + entry.getKey());
