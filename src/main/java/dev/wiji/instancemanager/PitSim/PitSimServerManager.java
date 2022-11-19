@@ -11,12 +11,15 @@ import dev.wiji.instancemanager.ServerManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.event.EventHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class PitSimServerManager {
+public class PitSimServerManager implements Listener {
 	public static List<PitSimServer> serverList = new ArrayList<>();
 
 	public static final int START_THRESHOLD = 10;
@@ -67,13 +70,22 @@ public class PitSimServerManager {
 		}).runAfterEvery(10, 10, TimeUnit.SECONDS);
 	}
 
+	@EventHandler
+	public void onJoin(PostLoginEvent event) {
+		ProxiedPlayer player = event.getPlayer();
+		((ProxyRunnable) () -> queue(player, 0, false)).runAfter(1, TimeUnit.SECONDS);
+	}
+
 	public static void init() {
 		for(String value : ServerManager.pitSimServers.values()) serverList.add(new PitSimServer(value));
 
 		for(PitSimServer server : serverList) {
 			if(serverList.get(0) == server) {
-				server.status = ServerStatus.STARTING;
-				ServerManager.restartServer(server.getPteroID());
+//				server.status = ServerStatus.STARTING;
+//				ServerManager.restartServer(server.getPteroID());
+
+//				TODO: Remove and uncomment out above
+				server.status = ServerStatus.RUNNING;
 				continue;
 			}
 
