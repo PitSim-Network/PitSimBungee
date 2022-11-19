@@ -10,6 +10,7 @@ import de.sumafu.PlayerStatus.PlayerStatusAPI;
 import dev.wiji.instancemanager.Commands.*;
 import dev.wiji.instancemanager.Guilds.ArcticGuilds;
 import dev.wiji.instancemanager.PitSim.*;
+import dev.wiji.instancemanager.alogging.ServerLogManager;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import septogeddon.pluginquery.PluginQuery;
@@ -45,7 +46,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new MessageListener());
 		getProxy().getPluginManager().registerListener(this, new ServerDataManager());
 		getProxy().getPluginManager().registerListener(this, new ServerChangeListener());
-//		getProxy().getPluginManager().registerListener(this, new ServerLogManager());
+		getProxy().getPluginManager().registerListener(this, new ServerLogManager());
 		getProxy().getPluginManager().registerListener(this, new PitSimServerManager());
 		ConfigManager.onEnable();
 		ConfigManager.getMiniServerList();
