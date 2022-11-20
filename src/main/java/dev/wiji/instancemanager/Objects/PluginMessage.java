@@ -3,7 +3,6 @@ package dev.wiji.instancemanager.Objects;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.PitSim.PluginMessageManager;
 import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.api.connection.Server;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -15,6 +14,7 @@ public class PluginMessage {
 
     private final List<String> strings = new ArrayList<>();
     private final List<Integer> integers = new ArrayList<>();
+    private final List<Long> longs = new ArrayList<>();
     private final List<Boolean> booleans = new ArrayList<>();
 
     private final List<ServerInfo> servers = new ArrayList<>();
@@ -32,6 +32,7 @@ public class PluginMessage {
 
         int stringCount = data.readInt();
         int integerCount = data.readInt();
+        int longCount = data.readInt();
         int booleanCount = data.readInt();
 
         for(int i = 0; i < stringCount; i++) {
@@ -42,17 +43,19 @@ public class PluginMessage {
             integers.add(data.readInt());
         }
 
+        for(int i = 0; i < longCount; i++) {
+            longs.add(data.readLong());
+        }
+
         for(int i = 0; i < booleanCount; i++) {
             booleans.add(data.readBoolean());
         }
-
     }
 
     public PluginMessage() {
         messageID  = UUID.randomUUID();
         responseID = null;
     }
-
 
     public PluginMessage writeString(String string) {
         strings.add(string);
@@ -61,6 +64,11 @@ public class PluginMessage {
 
     public PluginMessage writeInt(int integer) {
         integers.add(integer);
+        return this;
+    }
+
+    public PluginMessage writeLong(long longValue) {
+        longs.add(longValue);
         return this;
     }
 
@@ -95,6 +103,10 @@ public class PluginMessage {
 
     public List<Integer> getIntegers() {
         return integers;
+    }
+
+    public List<Long> getLongs() {
+        return longs;
     }
 
     public List<Boolean> getBooleans() {

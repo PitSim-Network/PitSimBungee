@@ -36,13 +36,19 @@ public class PluginMessageManager implements QueryMessageListener, Listener {
 
 			msgout.writeInt(message.getStrings().size());
 			msgout.writeInt(message.getIntegers().size());
+			msgout.writeInt(message.getLongs().size());
 			msgout.writeInt(message.getBooleans().size());
 
 			for(String string : message.getStrings()) {
 				msgout.writeUTF(string);
 			}
+
 			for(int integer : message.getIntegers()) {
 				msgout.writeInt(integer);
+			}
+
+			for(long longValue : message.getLongs()) {
+				msgout.writeLong(longValue);
 			}
 
 			for(Boolean bool : message.getBooleans()) {

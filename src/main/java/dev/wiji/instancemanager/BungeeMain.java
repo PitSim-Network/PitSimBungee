@@ -69,7 +69,8 @@ public class BungeeMain extends Plugin {
 		ConfigManager.getDarkzoneServerList();
 		PitSimServerManager.init();
 		DarkzoneServerManager.init();
-		RestartManager.init();
+//		TODO: add check for server starting thing
+//		RestartManager.init();
 
 		ArcticGuilds.onEnable(this);
 	}
