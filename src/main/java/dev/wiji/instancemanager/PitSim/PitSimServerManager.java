@@ -72,6 +72,7 @@ public class PitSimServerManager implements Listener {
 
 	@EventHandler
 	public void onJoin(PostLoginEvent event) {
+		if(!ConfigManager.isDev()) return;
 		ProxiedPlayer player = event.getPlayer();
 		((ProxyRunnable) () -> queue(player, 0, false)).runAfter(1, TimeUnit.SECONDS);
 	}
@@ -97,7 +98,12 @@ public class PitSimServerManager implements Listener {
 
 	public static boolean queue(ProxiedPlayer player, int requestedServer, boolean fromDarkzone) {
 
-		LeaderboardCalc.sendLeaderboardPlayerData(player.getUniqueId());
+		try {
+			LeaderboardCalc.sendLeaderboardPlayerData(player.getUniqueId());
+		} catch(Exception e) {
+			System.out.println("Player leaderboard data send failed. (Proxy has just started)");
+		}
+
 		GuildMessaging.sendGuildData(player);
 
 		PitSimServer previousServer = null;
