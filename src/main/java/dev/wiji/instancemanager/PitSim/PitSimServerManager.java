@@ -85,6 +85,7 @@ public class PitSimServerManager implements Listener {
 
 				if(ConfigManager.isDev()) {
 					server.status = ServerStatus.RUNNING;
+					server.setStartTime(System.currentTimeMillis());
 					continue;
 				}
 
