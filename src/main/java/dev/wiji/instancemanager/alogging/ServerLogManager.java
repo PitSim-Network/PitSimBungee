@@ -1,7 +1,7 @@
 package dev.wiji.instancemanager.alogging;
 
 import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.Events.MessageEvent;
+import dev.wiji.instancemanager.events.MessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
