@@ -2,12 +2,13 @@ package dev.wiji.instancemanager.pitsim;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
+import dev.wiji.instancemanager.ProxyRunnable;
+import dev.wiji.instancemanager.ServerManager;
 import dev.wiji.instancemanager.guilds.GuildMessaging;
 import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.objects.ServerStatus;
-import dev.wiji.instancemanager.ProxyRunnable;
-import dev.wiji.instancemanager.ServerManager;
+import dev.wiji.instancemanager.storage.StorageManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -181,6 +182,7 @@ public class PitSimServerManager implements Listener {
 			return false;
 		}
 
+		StorageManager.getStorage(player).sendToServer(targetServer);
 
 		player.sendMessage((new ComponentBuilder("Sending you to " + targetServer.getServerInfo().getName()).color(ChatColor.GREEN).create()));
 
