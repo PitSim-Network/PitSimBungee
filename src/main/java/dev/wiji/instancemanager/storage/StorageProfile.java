@@ -1,5 +1,6 @@
 package dev.wiji.instancemanager.storage;
 
+import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.md_5.bungee.api.ChatColor;
@@ -73,17 +74,20 @@ public class StorageProfile {
 		message.send();
 	}
 
-	public void updateEnderchest(PluginMessage message) {
+	public void updateEnderchest(PluginMessage message, String server) {
 		for(int i = 0; i < enderChestPages; i++) {
 			for(int j = 0; j < 27; j++) {
 				enderchest[i][j] = message.getStrings().get(i * 27 + j);
 			}
 		}
 
+		PluginMessage response = new PluginMessage().writeString("ENDERCHEST SAVE").writeString(player.getUniqueId().toString());
+		message.respond(response, player.getServer().getInfo());
+
 		save();
 	}
 
-	public void updateInventory(PluginMessage message) {
+	public void updateInventory(PluginMessage message, String server) {
 		for(int i = 0; i < 36; i++) {
 			inventoryStrings[i] = message.getStrings().get(i);
 		}
@@ -91,6 +95,9 @@ public class StorageProfile {
 		for(int i = 0; i < 4; i++) {
 			armor[i] = message.getStrings().get(i + 36);
 		}
+
+		PluginMessage response = new PluginMessage().writeString("INVENTORY SAVE").writeString(player.getUniqueId().toString());
+		message.respond(response, BungeeMain.INSTANCE.getProxy().getServerInfo(server));
 
 		save();
 	}

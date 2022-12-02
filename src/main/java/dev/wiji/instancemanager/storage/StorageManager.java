@@ -43,10 +43,12 @@ public class StorageManager implements Listener {
 			if(player == null) return;
 
 			StorageProfile profile = getStorage(player);
+			String server = strings.get(2);
 
 			strings.remove(0);
 			strings.remove(0);
-			profile.updateEnderchest(message);
+			strings.remove(0);
+			profile.updateEnderchest(message, server);
 		}
 
 		if(strings.get(0).equals("INVENTORY")) {
@@ -54,10 +56,12 @@ public class StorageManager implements Listener {
 			if(player == null) return;
 
 			StorageProfile profile = getStorage(player);
+			String server = strings.get(2);
 
 			strings.remove(0);
 			strings.remove(0);
-			profile.updateInventory(message);
+			strings.remove(0);
+			profile.updateInventory(message, server);
 		}
 	}
 
