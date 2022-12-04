@@ -13,23 +13,22 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 public class ServerLogManager implements Listener {
 
 	@EventHandler
-	public void onChat(GuildChatEvent event) {
+	public void onGuildChat(GuildChatEvent event) {
 		ProxiedPlayer player = event.getPlayer();
-		sendLogMessage(LogType.GUILD_CHAT, null, "[" + event.getGuild().name + "] " +
-				player.getName() + " >> " + event.getMessage(), Misc.convertToEST(new Date()));
+		logProxyMessage(LogType.GUILD_CHAT, "[" + event.getGuild().name + "] " + player.getName() + " >> " + event.getMessage());
 	}
 
 	@EventHandler
 	public void onGuildCreate(GuildCreateEvent event) {
 		ProxiedPlayer player = event.getPlayer();
-		sendLogMessage(LogType.GUILD_CREATE, null,
-				player.getName() + " created " + event.getGuild().name, Misc.convertToEST(new Date()));
+		logProxyMessage(LogType.GUILD_CREATE, player.getName() + " created " + event.getGuild().name);
 	}
 
 	@EventHandler
@@ -42,11 +41,11 @@ public class ServerLogManager implements Listener {
 			String serverName = strings.remove(0);
 			String logMessage = strings.remove(0);
 			Date date = Misc.convertToEST(new Date(event.getMessage().getLongs().remove(0)));
-			sendLogMessage(logType, serverName, logMessage, date);
+			logMessage(logType, serverName, logMessage, date);
 		}
 	}
 
-	public static void sendLogMessage(LogType logType, String serverName, String logMessage, Date date) {
+	public static void logMessage(LogType logType, String serverName, String logMessage, Date date) {
 		for(LogType.LogFile logFile : logType.logFiles) {
 			try {
 				String dir = BungeeMain.INSTANCE.getDataFolder() + logFile.getRelativePath(serverName, date);
@@ -59,5 +58,11 @@ public class ServerLogManager implements Listener {
 				throw new RuntimeException(exception);
 			}
 		}
+	}
+
+	public static void logProxyMessage(LogType logType, String logMessage) {
+		Date date = Misc.convertToEST(new Date());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+		logMessage(logType, null, "[" + dateFormat.format(date) + "][proxy][" + logType + "]: " + logMessage, date);
 	}
 }
