@@ -87,6 +87,8 @@ public class StorageProfile {
 	}
 
 	public void updateEnderchest(PluginMessage message, String server) {
+		System.out.println("echest update");
+
 		for(int i = 0; i < enderChestPages; i++) {
 			for(int j = 0; j < 27; j++) {
 				enderchest[i][j] = message.getStrings().get(i * 27 + j);
@@ -94,8 +96,10 @@ public class StorageProfile {
 		}
 
 		PluginMessage response = new PluginMessage().writeString("ENDERCHEST SAVE").writeString(player.getUniqueId().toString());
-		message.respond(response, BungeeMain.INSTANCE.getProxy().getServerInfo(server));
+		response.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
+		response.send();
 
+		System.out.println("saving");
 		save();
 	}
 
@@ -109,7 +113,8 @@ public class StorageProfile {
 		}
 
 		PluginMessage response = new PluginMessage().writeString("INVENTORY SAVE").writeString(player.getUniqueId().toString());
-		message.respond(response, BungeeMain.INSTANCE.getProxy().getServerInfo(server));
+		response.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
+		response.send();
 
 		save();
 	}

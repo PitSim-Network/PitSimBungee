@@ -1,5 +1,6 @@
 package dev.wiji.instancemanager.pitsim;
 
+import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import dev.wiji.instancemanager.BungeeMain;
@@ -13,6 +14,7 @@ import septogeddon.pluginquery.api.QueryMessageListener;
 import septogeddon.pluginquery.bungeecord.BungeePluginQuery;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.Collection;
 
 public class PluginMessageManager implements QueryMessageListener, Listener {
@@ -36,13 +38,19 @@ public class PluginMessageManager implements QueryMessageListener, Listener {
 
 			msgout.writeInt(message.getStrings().size());
 			msgout.writeInt(message.getIntegers().size());
+			msgout.writeInt(message.getLongs().size());
 			msgout.writeInt(message.getBooleans().size());
 
 			for(String string : message.getStrings()) {
 				msgout.writeUTF(string);
 			}
+
 			for(int integer : message.getIntegers()) {
 				msgout.writeInt(integer);
+			}
+
+			for(long longValue : message.getLongs()) {
+				msgout.writeLong(longValue);
 			}
 
 			for(Boolean bool : message.getBooleans()) {
@@ -53,7 +61,7 @@ public class PluginMessageManager implements QueryMessageListener, Listener {
 			exception.printStackTrace();
 		}
 
-		out.writeShort(msgbytes.toByteArray().length);
+		out.writeInt(msgbytes.toByteArray().length);
 		out.write(msgbytes.toByteArray());
 
 		ProxiedPlayer player = getPlayer(server.getName());
@@ -83,14 +91,16 @@ public class PluginMessageManager implements QueryMessageListener, Listener {
 		if(channel.equals("BungeeCord")) {
 			try {
 
-				DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
+				System.out.println(Arrays.toString(message));
+
+				ByteArrayDataInput in = ByteStreams.newDataInput(message);
 				String type = in.readUTF();
 				String server = in.readUTF();
 				String subChannel = in.readUTF();
 
 				if(!subChannel.equals("PitSim")) return;
 
-				short len = in.readShort();
+				int len = in.readInt();
 				byte[] msgbytes = new byte[len];
 				in.readFully(msgbytes);
 				DataInputStream subDIS = new DataInputStream(new ByteArrayInputStream(msgbytes));

@@ -12,6 +12,7 @@ import net.md_5.bungee.event.EventHandler;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class StorageManager implements Listener {
 
@@ -45,8 +46,21 @@ public class StorageManager implements Listener {
 		PluginMessage message = event.getMessage();
 		List<String> strings = message.getStrings();
 
+		if(strings.size() == 0) {
+			System.out.println("Strings: " + strings.toString());
+			System.out.println("Integer: " + message.getIntegers().toString());
+			System.out.println("Booleans: " + message.getBooleans().toString());
+			System.out.println(message.messageID);
+		}
+
+		System.out.println(strings.get(0));
+		if(message.getIntegers().size() > 0) System.out.println(message.getIntegers().get(0));
+
 		if(strings.get(0).equals("ENDERCHEST")) {
-			ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(strings.get(1));
+			System.out.println("Enderchest data");
+			ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(UUID.fromString(strings.get(1)));
+			System.out.println(player);
+
 			if(player == null) return;
 
 			StorageProfile profile = getStorage(player);

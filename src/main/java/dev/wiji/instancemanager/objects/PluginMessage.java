@@ -15,6 +15,7 @@ public class PluginMessage {
     private final List<String> strings = new ArrayList<>();
     private final List<Integer> integers = new ArrayList<>();
     private final List<Boolean> booleans = new ArrayList<>();
+    private final List<Long> longs = new ArrayList<>();
 
     private final List<ServerInfo> servers = new ArrayList<>();
 
@@ -33,8 +34,18 @@ public class PluginMessage {
         int integerCount = data.readInt();
         int booleanCount = data.readInt();
 
+        System.out.println(stringCount);
+        System.out.println(integerCount);
+
+        data.readUTF();
+        data.readUTF();
+
         for(int i = 0; i < stringCount; i++) {
-            strings.add(data.readUTF());
+            System.out.println("Reading string: " + i);
+            String string = data.readUTF();
+            strings.add(string);
+            System.out.println(string);
+            System.out.println(string.isEmpty());
         }
 
         for(int i = 0; i < integerCount; i++) {
@@ -55,6 +66,11 @@ public class PluginMessage {
 
     public PluginMessage writeString(String string) {
         strings.add(string);
+        return this;
+    }
+
+    public PluginMessage writeLong(long longValue) {
+        longs.add(longValue);
         return this;
     }
 
@@ -98,6 +114,10 @@ public class PluginMessage {
 
     public List<Boolean> getBooleans() {
         return booleans;
+    }
+
+    public List<Long> getLongs() {
+        return longs;
     }
 
     public List<ServerInfo> getServers() {
