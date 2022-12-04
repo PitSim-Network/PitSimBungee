@@ -36,11 +36,11 @@ public class ServerLogManager implements Listener {
 		List<String> strings = event.getMessage().getStrings();
 		if(strings.isEmpty()) return;
 
-		if(strings.remove(0).equals("LOG")) {
-			LogType logType = LogType.valueOf(strings.remove(0));
-			String serverName = strings.remove(0);
-			String logMessage = strings.remove(0);
-			Date date = Misc.convertToEST(new Date(event.getMessage().getLongs().remove(0)));
+		if(strings.get(0).equals("LOG")) {
+			LogType logType = LogType.valueOf(strings.get(1));
+			String serverName = strings.get(2);
+			String logMessage = strings.get(3);
+			Date date = Misc.convertToEST(new Date(event.getMessage().getLongs().get(0)));
 			logMessage(logType, serverName, logMessage, date);
 		}
 	}
