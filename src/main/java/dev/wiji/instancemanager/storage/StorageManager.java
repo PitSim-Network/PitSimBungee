@@ -27,8 +27,15 @@ public class StorageManager implements Listener {
 			if(profile.getPlayer() == player) return profile;
 		}
 
-		StorageProfile profile = gson.fromJson(getStorageFile(player).toString(), StorageProfile.class);
+		StorageProfile profile;
+
+		try {
+			profile = gson.fromJson(getStorageFile(player).toString(), StorageProfile.class);
+		} catch(Exception e) {
+			profile = new StorageProfile();
+		}
 		profile.init(player);
+
 		profiles.add(profile);
 		return profile;
 	}
@@ -73,6 +80,12 @@ public class StorageManager implements Listener {
 
 		profile.save();
 		profiles.remove(profile);
+	}
+
+	public static void loadPlayerData(ProxiedPlayer player) {
+		System.out.println("Sent load request");
+		PluginMessage message = new PluginMessage().writeString("LOAD REQUEST").writeString(player.getUniqueId().toString());
+		message.addServer("pitsim-1").send();
 	}
 
 

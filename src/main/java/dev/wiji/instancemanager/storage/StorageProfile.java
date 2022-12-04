@@ -10,6 +10,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class StorageProfile {
 
@@ -17,7 +18,7 @@ public class StorageProfile {
 	private transient File saveFile;
 	private int enderChestPages = 1;
 	private final String[] inventoryStrings = new String[36];
-	private final String[][] enderchest = new String[enderChestPages][27];
+	private final String[][] enderchest = new String[27][enderChestPages];
 	private final String[] armor = new String[4];
 
 
@@ -61,8 +62,19 @@ public class StorageProfile {
 
 	}
 
-	public void sendToServer(PitSimServer server) {
+	public void	sendToServer(PitSimServer server) {
+
+		if(enderchest[0][0] == null) {
+			return;
+		}
+
 		PluginMessage message = new PluginMessage().addServer(server.getServerInfo());
+
+		System.out.println(player.getUniqueId().toString());
+		System.out.println(enderChestPages);
+		System.out.println(inventoryStrings.length);
+		System.out.println(Arrays.deepToString(enderchest));
+
 		message.writeString("ENDERCHEST").writeString(player.getUniqueId().toString()).writeInt(enderChestPages);
 
 		for(String[] itemStrings : enderchest) {
@@ -82,7 +94,7 @@ public class StorageProfile {
 		}
 
 		PluginMessage response = new PluginMessage().writeString("ENDERCHEST SAVE").writeString(player.getUniqueId().toString());
-		message.respond(response, player.getServer().getInfo());
+		message.respond(response, BungeeMain.INSTANCE.getProxy().getServerInfo(server));
 
 		save();
 	}
