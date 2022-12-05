@@ -9,6 +9,7 @@ import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.objects.ServerStatus;
 import dev.wiji.instancemanager.storage.StorageManager;
+import dev.wiji.instancemanager.storage.StorageProfile;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -182,12 +183,17 @@ public class PitSimServerManager implements Listener {
 			return false;
 		}
 
-		StorageManager.getStorage(player).sendToServer(targetServer);
+		StorageProfile profile = StorageManager.getStorage(player.getUniqueId());
+		profile.sendInventoryToServer(targetServer);
+		profile.sendEnderchestToServer(targetServer);
 
 		player.sendMessage((new ComponentBuilder("Sending you to " + targetServer.getServerInfo().getName()).color(ChatColor.GREEN).create()));
 
 		if(fromDarkzone) new PluginMessage().writeString("DARKZONE JOIN").writeString(player.getUniqueId().toString()).writeBoolean(true).addServer(targetServer.getServerInfo().getName()).send();
-		player.connect(targetServer.getServerInfo());
+
+		PitSimServer finalTargetServer = targetServer;
+		((ProxyRunnable) () -> player.connect(finalTargetServer.getServerInfo())).runAfter(1, TimeUnit.SECONDS);
+
 		return true;
 	}
 

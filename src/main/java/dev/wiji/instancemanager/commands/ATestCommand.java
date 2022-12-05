@@ -13,11 +13,11 @@ public class ATestCommand extends Command {
 
 	@Override
 	public void execute(CommandSender commandSender, String[] strings) {
-		if(!(commandSender instanceof ProxiedPlayer)) return;
-		ProxiedPlayer player = (ProxiedPlayer) commandSender;
+//		if(!(commandSender instanceof ProxiedPlayer)) return;
+		if(commandSender instanceof ProxiedPlayer) return;
 //		if(!player.hasPermission("pitsim.admin")) return;
 
 
-		StorageManager.loadPlayerData(player);
+		StorageManager.loadPlayerData(strings[0]);
 	}
 }

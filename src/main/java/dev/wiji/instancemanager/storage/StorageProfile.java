@@ -11,26 +11,27 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.UUID;
 
 public class StorageProfile {
 
-	private transient ProxiedPlayer player;
+	private transient UUID uuid;
 	private transient File saveFile;
 	private int enderChestPages = 1;
 	private final String[] inventoryStrings = new String[36];
-	private final String[][] enderchest = new String[27][enderChestPages];
+	private final String[][] enderchest = new String[enderChestPages][27];
 	private final String[] armor = new String[4];
 
 
 	public StorageProfile() { }
 
-	public void init(ProxiedPlayer player) {
-		this.player = player;
+	public void init(UUID player) {
+		this.uuid = player;
 		this.saveFile = StorageManager.getStorageFile(player);
 	}
 
-	public ProxiedPlayer getPlayer() {
-		return player;
+	public UUID getUuid() {
+		return uuid;
 	}
 
 	public File getSaveFile() {
@@ -57,25 +58,33 @@ public class StorageProfile {
 		try {
 			StorageManager.gson.toJson(this, new FileWriter(saveFile.toPath().toString()));
 		} catch(IOException e) {
+			e.printStackTrace();
+
+			ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(uuid);
+			if(player == null) return;
+
 			player.disconnect(TextComponent.fromLegacyText(ChatColor.RED + "An error occurred while saving your data. Please contact a staff member."));
 		}
 
 	}
 
-	public void	sendToServer(PitSimServer server) {
+	public void	sendEnderchestToServer(PitSimServer server) {
+
+		System.out.println(Arrays.deepToString(enderchest));
 
 		if(enderchest[0][0] == null) {
 			return;
 		}
 
+		System.out.println("ec 2");
+
 		PluginMessage message = new PluginMessage().addServer(server.getServerInfo());
 
-		System.out.println(player.getUniqueId().toString());
 		System.out.println(enderChestPages);
 		System.out.println(inventoryStrings.length);
 		System.out.println(Arrays.deepToString(enderchest));
 
-		message.writeString("ENDERCHEST").writeString(player.getUniqueId().toString()).writeInt(enderChestPages);
+		message.writeString("ENDERCHEST").writeString(uuid.toString()).writeInt(enderChestPages);
 
 		for(String[] itemStrings : enderchest) {
 			for(String itemString : itemStrings) {
@@ -86,16 +95,38 @@ public class StorageProfile {
 		message.send();
 	}
 
+		public void sendInventoryToServer(PitSimServer server) {
+		if(inventoryStrings[0] == null) {
+			return;
+		}
+
+		PluginMessage message = new PluginMessage().addServer(server.getServerInfo());
+
+		message.writeString("INVENTORY").writeString(uuid.toString());
+
+		for(String itemString : inventoryStrings) {
+			message.writeString(itemString);
+		}
+
+		message.send();
+	}
+
+
+
 	public void updateEnderchest(PluginMessage message, String server) {
 		System.out.println("echest update");
+		System.out.println("Size: " + message.getStrings().size());
+
+		int totalIndex = 0;
 
 		for(int i = 0; i < enderChestPages; i++) {
 			for(int j = 0; j < 27; j++) {
-				enderchest[i][j] = message.getStrings().get(i * 27 + j);
+				enderchest[i][j] = message.getStrings().get(totalIndex);
+				totalIndex++;
 			}
 		}
 
-		PluginMessage response = new PluginMessage().writeString("ENDERCHEST SAVE").writeString(player.getUniqueId().toString());
+		PluginMessage response = new PluginMessage().writeString("ENDERCHEST SAVE").writeString(uuid.toString());
 		response.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
 		response.send();
 
@@ -112,7 +143,7 @@ public class StorageProfile {
 			armor[i] = message.getStrings().get(i + 36);
 		}
 
-		PluginMessage response = new PluginMessage().writeString("INVENTORY SAVE").writeString(player.getUniqueId().toString());
+		PluginMessage response = new PluginMessage().writeString("INVENTORY SAVE").writeString(uuid.toString());
 		response.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
 		response.send();
 

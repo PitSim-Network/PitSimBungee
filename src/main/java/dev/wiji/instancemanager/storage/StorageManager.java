@@ -10,6 +10,8 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
 import java.io.File;
+import java.io.Reader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -19,20 +21,31 @@ public class StorageManager implements Listener {
 	public static List<StorageProfile> profiles = new ArrayList<>();
 	public static Gson gson = new Gson();
 
-	protected static File getStorageFile(ProxiedPlayer player) {
-		return new File("plugins/PitSimInstanceManager/Storage/" + player.getUniqueId() + ".json");
+	protected static File getStorageFile(UUID player) {
+		File file = new File(BungeeMain.INSTANCE.getDataFolder() + "/itemstorage/" + player + ".json");
+		if(!file.exists()) {
+			try {
+				file.createNewFile();
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return file;
 	}
 
-	public static StorageProfile getStorage(ProxiedPlayer player) {
+	public static StorageProfile getStorage(UUID player) {
 		for(StorageProfile profile : profiles) {
-			if(profile.getPlayer() == player) return profile;
+			if(profile.getUuid() == player) return profile;
 		}
 
 		StorageProfile profile;
 
 		try {
-			profile = gson.fromJson(getStorageFile(player).toString(), StorageProfile.class);
+			Reader reader = Files.newBufferedReader(getStorageFile(player).toPath());
+			profile = gson.fromJson(reader, StorageProfile.class);
 		} catch(Exception e) {
+			e.printStackTrace();
+			System.out.println("Retard code");
 			profile = new StorageProfile();
 		}
 		profile.init(player);
@@ -46,24 +59,16 @@ public class StorageManager implements Listener {
 		PluginMessage message = event.getMessage();
 		List<String> strings = message.getStrings();
 
-		if(strings.size() == 0) {
-			System.out.println("Strings: " + strings.toString());
-			System.out.println("Integer: " + message.getIntegers().toString());
-			System.out.println("Booleans: " + message.getBooleans().toString());
-			System.out.println(message.messageID);
-		}
+		if(strings.size() < 2) return;
 
 		System.out.println(strings.get(0));
 		if(message.getIntegers().size() > 0) System.out.println(message.getIntegers().get(0));
 
 		if(strings.get(0).equals("ENDERCHEST")) {
 			System.out.println("Enderchest data");
-			ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(UUID.fromString(strings.get(1)));
-			System.out.println(player);
+			UUID uuid = UUID.fromString(strings.get(1));
 
-			if(player == null) return;
-
-			StorageProfile profile = getStorage(player);
+			StorageProfile profile = getStorage(uuid);
 			String server = strings.get(2);
 
 			strings.remove(0);
@@ -73,10 +78,10 @@ public class StorageManager implements Listener {
 		}
 
 		if(strings.get(0).equals("INVENTORY")) {
-			ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(strings.get(1));
+			ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(UUID.fromString(strings.get(1)));
 			if(player == null) return;
 
-			StorageProfile profile = getStorage(player);
+			StorageProfile profile = getStorage(player.getUniqueId());
 			String server = strings.get(2);
 
 			strings.remove(0);
@@ -90,15 +95,18 @@ public class StorageManager implements Listener {
 	public void onLeave(PlayerDisconnectEvent event) {
 		ProxiedPlayer player = event.getPlayer();
 
-		StorageProfile profile = getStorage(player);
+		StorageProfile profile = getStorage(player.getUniqueId());
 
 		profile.save();
 		profiles.remove(profile);
 	}
 
-	public static void loadPlayerData(ProxiedPlayer player) {
+	public static void loadPlayerData(String playerName) {
+		UUID uuid = BungeeMain.getUUID(playerName, false);
+
 		System.out.println("Sent load request");
-		PluginMessage message = new PluginMessage().writeString("LOAD REQUEST").writeString(player.getUniqueId().toString());
+		assert uuid != null;
+		PluginMessage message = new PluginMessage().writeString("LOAD REQUEST").writeString(uuid.toString());
 		message.addServer("pitsim-1").send();
 	}
 

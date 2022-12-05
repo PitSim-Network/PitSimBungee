@@ -34,18 +34,12 @@ public class PluginMessage {
         int integerCount = data.readInt();
         int booleanCount = data.readInt();
 
-        System.out.println(stringCount);
-        System.out.println(integerCount);
-
         data.readUTF();
         data.readUTF();
 
         for(int i = 0; i < stringCount; i++) {
-            System.out.println("Reading string: " + i);
             String string = data.readUTF();
             strings.add(string);
-            System.out.println(string);
-            System.out.println(string.isEmpty());
         }
 
         for(int i = 0; i < integerCount; i++) {

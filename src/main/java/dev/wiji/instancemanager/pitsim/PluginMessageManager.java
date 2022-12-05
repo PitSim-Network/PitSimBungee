@@ -14,7 +14,6 @@ import septogeddon.pluginquery.api.QueryMessageListener;
 import septogeddon.pluginquery.bungeecord.BungeePluginQuery;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.Collection;
 
 public class PluginMessageManager implements QueryMessageListener, Listener {
@@ -90,8 +89,6 @@ public class PluginMessageManager implements QueryMessageListener, Listener {
 	public void onQueryReceived(QueryConnection connection, String channel, byte[] message) {
 		if(channel.equals("BungeeCord")) {
 			try {
-
-				System.out.println(Arrays.toString(message));
 
 				ByteArrayDataInput in = ByteStreams.newDataInput(message);
 				String type = in.readUTF();
