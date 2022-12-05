@@ -1,5 +1,7 @@
 package dev.wiji.instancemanager.storage;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
@@ -15,9 +17,11 @@ import java.util.UUID;
 
 public class StorageProfile {
 
+	public static final int ENDERCHEST_PAGES = 18;
+
 	private transient UUID uuid;
 	private transient File saveFile;
-	private int enderChestPages = 1;
+	private int enderChestPages = ENDERCHEST_PAGES;
 	private final String[] inventoryStrings = new String[36];
 	private final String[][] enderchest = new String[enderChestPages][27];
 	private final String[] armor = new String[4];
@@ -56,7 +60,12 @@ public class StorageProfile {
 
 	public void save() {
 		try {
-			StorageManager.gson.toJson(this, new FileWriter(saveFile.toPath().toString()));
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			String json = gson.toJson(this);
+			FileWriter writer = new FileWriter(saveFile.toPath().toString());
+			writer.write(json);
+			writer.close();
+
 		} catch(IOException e) {
 			e.printStackTrace();
 
@@ -70,8 +79,6 @@ public class StorageProfile {
 
 	public void	sendEnderchestToServer(PitSimServer server) {
 
-		System.out.println(Arrays.deepToString(enderchest));
-
 		if(enderchest[0][0] == null) {
 			return;
 		}
@@ -82,7 +89,6 @@ public class StorageProfile {
 
 		System.out.println(enderChestPages);
 		System.out.println(inventoryStrings.length);
-		System.out.println(Arrays.deepToString(enderchest));
 
 		message.writeString("ENDERCHEST").writeString(uuid.toString()).writeInt(enderChestPages);
 

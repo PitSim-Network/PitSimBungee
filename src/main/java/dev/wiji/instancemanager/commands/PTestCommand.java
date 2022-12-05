@@ -6,9 +6,9 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
 
-public class ATestCommand extends Command {
-	public ATestCommand(Plugin bungeeMain) {
-		super("atest");
+public class PTestCommand extends Command {
+	public PTestCommand(Plugin bungeeMain) {
+		super("ptest");
 	}
 
 	@Override

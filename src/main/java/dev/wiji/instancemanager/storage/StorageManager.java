@@ -44,9 +44,10 @@ public class StorageManager implements Listener {
 			Reader reader = Files.newBufferedReader(getStorageFile(player).toPath());
 			profile = gson.fromJson(reader, StorageProfile.class);
 		} catch(Exception e) {
+			profile = new StorageProfile();
 			e.printStackTrace();
 			System.out.println("Retard code");
-			profile = new StorageProfile();
+
 		}
 		profile.init(player);
 
@@ -58,7 +59,6 @@ public class StorageManager implements Listener {
 	public void onMessage(MessageEvent event) {
 		PluginMessage message = event.getMessage();
 		List<String> strings = message.getStrings();
-
 		if(strings.size() < 2) return;
 
 		System.out.println(strings.get(0));
