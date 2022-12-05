@@ -12,7 +12,6 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.UUID;
 
 public class StorageProfile {
@@ -112,6 +111,10 @@ public class StorageProfile {
 
 		for(String itemString : inventoryStrings) {
 			message.writeString(itemString);
+		}
+
+		for(String armorString : armor) {
+			message.writeString(armorString);
 		}
 
 		message.send();
