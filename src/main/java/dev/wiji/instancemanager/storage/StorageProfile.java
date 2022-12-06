@@ -7,6 +7,7 @@ import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.io.File;
@@ -76,15 +77,11 @@ public class StorageProfile {
 
 	}
 
-	public void	sendEnderchestToServer(PitSimServer server) {
-
-		if(enderchest[0][0] == null) {
-			return;
-		}
+	public void	sendEnderchestToServer(ServerInfo server) {
 
 		System.out.println("ec 2");
 
-		PluginMessage message = new PluginMessage().addServer(server.getServerInfo());
+		PluginMessage message = new PluginMessage().addServer(server);
 
 		System.out.println(enderChestPages);
 		System.out.println(inventoryStrings.length);
@@ -100,12 +97,9 @@ public class StorageProfile {
 		message.send();
 	}
 
-		public void sendInventoryToServer(PitSimServer server) {
-		if(inventoryStrings[0] == null) {
-			return;
-		}
+		public void sendInventoryToServer(ServerInfo server) {
 
-		PluginMessage message = new PluginMessage().addServer(server.getServerInfo());
+		PluginMessage message = new PluginMessage().addServer(server);
 
 		message.writeString("INVENTORY").writeString(uuid.toString());
 
@@ -144,6 +138,7 @@ public class StorageProfile {
 	}
 
 	public void updateInventory(PluginMessage message, String server) {
+		System.out.println("Updating inv");
 		for(int i = 0; i < 36; i++) {
 			inventoryStrings[i] = message.getStrings().get(i);
 		}

@@ -7,6 +7,8 @@ import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.objects.ServerStatus;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
+import dev.wiji.instancemanager.storage.StorageManager;
+import dev.wiji.instancemanager.storage.StorageProfile;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -153,6 +155,9 @@ public class DarkzoneServerManager {
 			return false;
 		}
 
+		StorageProfile profile = StorageManager.getStorage(player.getUniqueId());
+		profile.sendInventoryToServer(targetServer.getServerInfo());
+		profile.sendEnderchestToServer(targetServer.getServerInfo());
 
 		player.sendMessage((new ComponentBuilder("Sending you to " + targetServer.getServerInfo().getName()).color(ChatColor.GREEN).create()));
 

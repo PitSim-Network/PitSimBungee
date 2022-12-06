@@ -184,8 +184,8 @@ public class PitSimServerManager implements Listener {
 		}
 
 		StorageProfile profile = StorageManager.getStorage(player.getUniqueId());
-		profile.sendInventoryToServer(targetServer);
-		profile.sendEnderchestToServer(targetServer);
+		profile.sendInventoryToServer(targetServer.getServerInfo());
+		profile.sendEnderchestToServer(targetServer.getServerInfo());
 
 		player.sendMessage((new ComponentBuilder("Sending you to " + targetServer.getServerInfo().getName()).color(ChatColor.GREEN).create()));
 

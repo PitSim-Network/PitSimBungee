@@ -39,16 +39,23 @@ public class StorageManager implements Listener {
 		}
 
 		StorageProfile profile;
+		System.out.println("Length: " + getStorageFile(player).length());
 
-		try {
-			Reader reader = Files.newBufferedReader(getStorageFile(player).toPath());
-			profile = gson.fromJson(reader, StorageProfile.class);
-		} catch(Exception e) {
+		if(getStorageFile(player).length() == 0) {
 			profile = new StorageProfile();
-			e.printStackTrace();
-			System.out.println("Retard code");
+		} else {
 
-		}
+			try {
+				Reader reader = Files.newBufferedReader(getStorageFile(player).toPath());
+				profile = gson.fromJson(reader, StorageProfile.class);
+			} catch(Exception e) {
+				profile = new StorageProfile();
+				e.printStackTrace();
+				System.out.println("Retard code");
+
+
+			}
+	    }
 		profile.init(player);
 
 		profiles.add(profile);
@@ -78,10 +85,11 @@ public class StorageManager implements Listener {
 		}
 
 		if(strings.get(0).equals("INVENTORY")) {
-			ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(UUID.fromString(strings.get(1)));
-			if(player == null) return;
+			System.out.println("inv rec 0");
+			UUID uuid = UUID.fromString(strings.get(1));
+			System.out.println("inv rec 1");
 
-			StorageProfile profile = getStorage(player.getUniqueId());
+			StorageProfile profile = getStorage(uuid);
 			String server = strings.get(2);
 
 			strings.remove(0);
