@@ -34,11 +34,16 @@ public class PluginMessage {
         int integerCount = data.readInt();
         int booleanCount = data.readInt();
 
-        data.readUTF();
-        data.readUTF();
+        String firstData = data.readUTF();
+        String secondData = data.readUTF();
+
+        System.out.println("Header1: " + firstData);
+        System.out.println("Header2: " + secondData);
 
         for(int i = 0; i < stringCount; i++) {
             String string = data.readUTF();
+
+            System.out.println("Append: " + string);
             strings.add(string);
         }
 
