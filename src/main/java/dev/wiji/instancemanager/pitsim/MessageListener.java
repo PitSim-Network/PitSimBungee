@@ -137,8 +137,8 @@ public class MessageListener implements Listener {
 			}
 
 			boolean fromDarkzone = false;
-			if(strings.size() >= 3) {
-				fromDarkzone = Boolean.parseBoolean(strings.get(2));
+			if(booleans.size() >= 1) {
+				fromDarkzone = booleans.get(0);
 			}
 
 			PitSimServerManager.queue(player, requested, fromDarkzone);

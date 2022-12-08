@@ -32,23 +32,20 @@ public class PluginMessage {
 
         int stringCount = data.readInt();
         int integerCount = data.readInt();
+        int longCount = data.readInt();
         int booleanCount = data.readInt();
-
-        String firstData = data.readUTF();
-        String secondData = data.readUTF();
-
-        System.out.println("Header1: " + firstData);
-        System.out.println("Header2: " + secondData);
 
         for(int i = 0; i < stringCount; i++) {
             String string = data.readUTF();
-
-            System.out.println("Append: " + string);
             strings.add(string);
         }
 
         for(int i = 0; i < integerCount; i++) {
             integers.add(data.readInt());
+        }
+
+        for(int i = 0; i < longCount; i++) {
+            longs.add(data.readLong());
         }
 
         for(int i = 0; i < booleanCount; i++) {
