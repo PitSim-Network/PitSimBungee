@@ -99,12 +99,11 @@ public class StorageProfile {
 
 		public void sendInventoryToServer(ServerInfo server) {
 
-		((ProxyRunnable) () -> {
 			PluginMessage message = new PluginMessage().addServer(server);
 
 			message.writeString("INVENTORY").writeString(uuid.toString());
 
-			System.out.println(inventoryStrings[0]);
+			System.out.println("TestItem1:" + inventoryStrings[0]);
 
 			for(String itemString : inventoryStrings) {
 				message.writeString(itemString);
@@ -115,7 +114,6 @@ public class StorageProfile {
 			}
 
 			message.send();
-		}).runAfter(500, TimeUnit.MILLISECONDS);
 	}
 
 
@@ -143,7 +141,6 @@ public class StorageProfile {
 	public void updateInventory(PluginMessage message, String server) {
 		System.out.println("size: " + message.getStrings().size());
 		for(int i = 0; i < 36; i++) {
-			if(i == 0) System.out.println("ItemTest:" + message.getStrings().get(i));
 			inventoryStrings[i] = message.getStrings().get(i);
 		}
 
@@ -152,16 +149,10 @@ public class StorageProfile {
 		}
 
 		System.out.println("TestItem2:" + inventoryStrings[0]);
+		PluginMessage response = new PluginMessage().writeString("INVENTORY SAVE").writeString(uuid.toString());
+		response.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
+		response.send();
 
-		((ProxyRunnable) () -> {
-			PluginMessage response = new PluginMessage().writeString("INVENTORY SAVE").writeString(uuid.toString());
-			response.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
-			response.send();
-
-			save();
-		}).runAfter(1, TimeUnit.SECONDS);
-
-
+		save();
 	}
-
 }
