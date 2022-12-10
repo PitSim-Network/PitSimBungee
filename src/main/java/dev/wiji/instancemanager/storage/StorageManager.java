@@ -21,8 +21,8 @@ public class StorageManager implements Listener {
 	public static List<StorageProfile> profiles = new ArrayList<>();
 	public static Gson gson = new Gson();
 
-	protected static File getStorageFile(UUID player) {
-		File file = new File(BungeeMain.INSTANCE.getDataFolder() + "/itemstorage/" + player + ".json");
+	protected static File getStorageFile(UUID uuid) {
+		File file = new File(BungeeMain.INSTANCE.getDataFolder() + "/itemstorage/" + uuid + ".json");
 		if(!file.exists()) {
 			try {
 				file.createNewFile();
@@ -33,25 +33,25 @@ public class StorageManager implements Listener {
 		return file;
 	}
 
-	public static StorageProfile getStorage(UUID player) {
+	public static StorageProfile getStorage(UUID uuid) {
 		for(StorageProfile profile : profiles) {
-			if(profile.getUuid() == player) return profile;
+			if(profile.getUuid().equals(uuid)) return profile;
 		}
 
 		StorageProfile profile;
 
-		if(getStorageFile(player).length() == 0) {
+		if(getStorageFile(uuid).length() == 0) {
 			profile = new StorageProfile();
 		} else {
 			try {
-				Reader reader = Files.newBufferedReader(getStorageFile(player).toPath());
+				Reader reader = Files.newBufferedReader(getStorageFile(uuid).toPath());
 				profile = gson.fromJson(reader, StorageProfile.class);
 			} catch(Exception exception) {
 				profile = new StorageProfile();
 				exception.printStackTrace();
 			}
 	    }
-		profile.init(player);
+		profile.init(uuid);
 
 		profiles.add(profile);
 		return profile;
