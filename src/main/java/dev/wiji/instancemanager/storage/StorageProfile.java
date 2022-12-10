@@ -3,7 +3,7 @@ package dev.wiji.instancemanager.storage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.objects.PitSimServer;
+import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class StorageProfile {
 
@@ -79,14 +80,13 @@ public class StorageProfile {
 
 	public void	sendEnderchestToServer(ServerInfo server) {
 
-		System.out.println("ec 2");
-
 		PluginMessage message = new PluginMessage().addServer(server);
 
-		System.out.println(enderChestPages);
-		System.out.println(inventoryStrings.length);
+
 
 		message.writeString("ENDERCHEST").writeString(uuid.toString()).writeInt(enderChestPages);
+
+		System.out.println("Test number 2");
 
 		for(String[] itemStrings : enderchest) {
 			for(String itemString : itemStrings) {
@@ -99,26 +99,28 @@ public class StorageProfile {
 
 		public void sendInventoryToServer(ServerInfo server) {
 
-		PluginMessage message = new PluginMessage().addServer(server);
+		((ProxyRunnable) () -> {
+			PluginMessage message = new PluginMessage().addServer(server);
 
-		message.writeString("INVENTORY").writeString(uuid.toString());
+			message.writeString("INVENTORY").writeString(uuid.toString());
 
-		for(String itemString : inventoryStrings) {
-			message.writeString(itemString);
-		}
+			System.out.println(inventoryStrings[0]);
 
-		for(String armorString : armor) {
-			message.writeString(armorString);
-		}
+			for(String itemString : inventoryStrings) {
+				message.writeString(itemString);
+			}
 
-		message.send();
+			for(String armorString : armor) {
+				message.writeString(armorString);
+			}
+
+			message.send();
+		}).runAfter(500, TimeUnit.MILLISECONDS);
 	}
 
 
 
 	public void updateEnderchest(PluginMessage message, String server) {
-		System.out.println("echest update");
-		System.out.println("Size: " + message.getStrings().size());
 
 		int totalIndex = 0;
 
@@ -129,17 +131,19 @@ public class StorageProfile {
 			}
 		}
 
+		System.out.println("Test number 1");
+
 		PluginMessage response = new PluginMessage().writeString("ENDERCHEST SAVE").writeString(uuid.toString());
 		response.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
 		response.send();
 
-		System.out.println("saving");
 		save();
 	}
 
 	public void updateInventory(PluginMessage message, String server) {
-		System.out.println("Updating inv");
+		System.out.println("size: " + message.getStrings().size());
 		for(int i = 0; i < 36; i++) {
+			if(i == 0) System.out.println("ItemTest:" + message.getStrings().get(i));
 			inventoryStrings[i] = message.getStrings().get(i);
 		}
 
@@ -147,11 +151,17 @@ public class StorageProfile {
 			armor[i] = message.getStrings().get(i + 36);
 		}
 
-		PluginMessage response = new PluginMessage().writeString("INVENTORY SAVE").writeString(uuid.toString());
-		response.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
-		response.send();
+		System.out.println("TestItem2:" + inventoryStrings[0]);
 
-		save();
+		((ProxyRunnable) () -> {
+			PluginMessage response = new PluginMessage().writeString("INVENTORY SAVE").writeString(uuid.toString());
+			response.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
+			response.send();
+
+			save();
+		}).runAfter(1, TimeUnit.SECONDS);
+
+
 	}
 
 }
