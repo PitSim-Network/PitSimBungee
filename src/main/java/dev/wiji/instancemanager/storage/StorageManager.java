@@ -26,8 +26,8 @@ public class StorageManager implements Listener {
 		if(!file.exists()) {
 			try {
 				file.createNewFile();
-			} catch(Exception e) {
-				e.printStackTrace();
+			} catch(Exception exception) {
+				exception.printStackTrace();
 			}
 		}
 		return file;
@@ -43,16 +43,12 @@ public class StorageManager implements Listener {
 		if(getStorageFile(player).length() == 0) {
 			profile = new StorageProfile();
 		} else {
-
 			try {
 				Reader reader = Files.newBufferedReader(getStorageFile(player).toPath());
 				profile = gson.fromJson(reader, StorageProfile.class);
-			} catch(Exception e) {
+			} catch(Exception exception) {
 				profile = new StorageProfile();
-				e.printStackTrace();
-				System.out.println("Retard code");
-
-
+				exception.printStackTrace();
 			}
 	    }
 		profile.init(player);
