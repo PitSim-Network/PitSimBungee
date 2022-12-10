@@ -105,6 +105,4 @@ public class StorageManager implements Listener {
 		PluginMessage message = new PluginMessage().writeString("LOAD REQUEST").writeString(uuid.toString());
 		message.addServer("pitsim-1").send();
 	}
-
-
 }

@@ -114,8 +114,6 @@ public class StorageProfile {
 			message.send();
 	}
 
-
-
 	public void updateEnderchest(PluginMessage message, String server) {
 
 		int totalIndex = 0;
