@@ -3,7 +3,6 @@ package dev.wiji.instancemanager.storage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -14,7 +13,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class StorageProfile {
 
@@ -35,7 +33,7 @@ public class StorageProfile {
 		this.saveFile = StorageManager.getStorageFile(player);
 	}
 
-	public UUID getUuid() {
+	public UUID getUUID() {
 		return uuid;
 	}
 
