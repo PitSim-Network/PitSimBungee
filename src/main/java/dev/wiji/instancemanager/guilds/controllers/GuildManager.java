@@ -1,19 +1,16 @@
 package dev.wiji.instancemanager.guilds.controllers;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.guilds.controllers.objects.Guild;
 import dev.wiji.instancemanager.guilds.controllers.objects.GuildMember;
 import dev.wiji.instancemanager.guilds.events.GuildReputationEvent;
 import dev.wiji.instancemanager.misc.AData;
-import dev.wiji.instancemanager.misc.APlayer;
-import dev.wiji.instancemanager.misc.APlayerData;
-import dev.wiji.instancemanager.ProxyRunnable;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -75,9 +72,9 @@ public class GuildManager implements Listener {
 	public static Guild getGuildFromPlayer(UUID playerUUID) {
 		GuildMember member = GuildManager.getMember(playerUUID);
 		System.out.println("Guild: " + member.getGuildUUID());
-		String guildUUID = member.getGuildUUID().toString();
-		if(guildUUID.equals("")) return null;
-		return getGuildFromGuildUUID(UUID.fromString(guildUUID));
+		UUID guildUUID = member.getGuildUUID();
+		if(guildUUID == null) return null;
+		return getGuildFromGuildUUID(guildUUID);
 	}
 
 	public static GuildMember getMember(UUID playerUUID) {
