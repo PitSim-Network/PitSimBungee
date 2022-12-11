@@ -3,7 +3,6 @@ package dev.wiji.instancemanager.storage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -14,10 +13,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class StorageProfile {
-
 	public static final int ENDERCHEST_PAGES = 18;
 
 	private transient UUID uuid;
@@ -26,7 +23,6 @@ public class StorageProfile {
 	private final String[] inventoryStrings = new String[36];
 	private final String[][] enderchest = new String[enderChestPages][27];
 	private final String[] armor = new String[4];
-
 
 	public StorageProfile() { }
 
@@ -59,6 +55,14 @@ public class StorageProfile {
 		return armor[index];
 	}
 
+	public String[] getArmor() {
+		return armor;
+	}
+
+	public String[][] getEnderchest() {
+		return enderchest;
+	}
+
 	public void save() {
 		try {
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -83,8 +87,6 @@ public class StorageProfile {
 
 		message.writeString("PLAYER DATA").writeString(uuid.toString());
 		message.writeInt(inventoryStrings.length + armor.length);
-
-		System.out.println("TestItem1:" + inventoryStrings[0]);
 
 		for(String itemString : inventoryStrings) {
 			message.writeString(itemString);
@@ -126,8 +128,6 @@ public class StorageProfile {
 		for(int i = 0; i < 4; i++) {
 			armor[i] = message.getStrings().get((i + totalIndex) + 36);
 		}
-
-		System.out.println("Test number 1");
 
 		PluginMessage response = new PluginMessage().writeString("SAVE CONFIRMATION").writeString(uuid.toString());
 		response.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));

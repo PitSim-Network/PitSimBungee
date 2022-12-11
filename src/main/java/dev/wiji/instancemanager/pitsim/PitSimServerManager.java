@@ -25,8 +25,11 @@ import java.util.concurrent.TimeUnit;
 public class PitSimServerManager implements Listener {
 	public static List<PitSimServer> serverList = new ArrayList<>();
 
-	public static final int START_THRESHOLD = 10;
-	public static final int STOP_THRESHOLD = 6;
+	//	The next server turns on when the player count reaches a multiple of this number
+	public static final int NEW_SERVER_THRESHOLD = 10;
+	//	When the player count drops this many below a multiple of the number above, that server enabled by hitting
+//	that threshold is no longer needed and gets shut down
+	public static final int REQUIRED_DROP_FOR_SHUTDOWN = 4;
 
 	public static boolean networkIsShuttingDown = false;
 
@@ -40,7 +43,7 @@ public class PitSimServerManager implements Listener {
 				if(pitSimServer.status == ServerStatus.STARTING) return;
 			}
 
-			for(int i = 0; i < Math.min(players / 10 + 1, serverList.size()); i++) {
+			for(int i = 0; i < Math.min(players / NEW_SERVER_THRESHOLD + 1, serverList.size()); i++) {
 				PitSimServer server = serverList.get(i);
 				if(server.status.isOnline()) {
 					if(server.status == ServerStatus.SHUTTING_DOWN_INITIAL) {
@@ -57,7 +60,7 @@ public class PitSimServerManager implements Listener {
 				System.out.println("Turning on server: " + (i + 1));
 			}
 
-			for(int i = 1 + (players + (START_THRESHOLD - STOP_THRESHOLD - 1)) / 10; i < serverList.size(); i++) {
+			for(int i = 1 + (players + REQUIRED_DROP_FOR_SHUTDOWN - 1) / 10; i < serverList.size(); i++) {
 				PitSimServer server = serverList.get(i);
 				if(server.status.isShuttingDown() || server.status == ServerStatus.OFFLINE) continue;
 				if(server.status == ServerStatus.RESTARTING_INITIAL) {
