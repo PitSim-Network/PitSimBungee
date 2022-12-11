@@ -4,8 +4,14 @@ import com.google.gson.Gson;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.objects.PluginMessage;
+import dev.wiji.instancemanager.pitsim.PitSimServerManager;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -63,7 +69,7 @@ public class StorageManager implements Listener {
 		List<String> strings = message.getStrings();
 		if(strings.size() < 2) return;
 
-		if(strings.get(0).equals("ENDERCHEST")) {
+		if(strings.get(0).equals("ITEM DATA SAVE")) {
 			UUID uuid = UUID.fromString(strings.get(1));
 
 			StorageProfile profile = getStorage(uuid);
@@ -72,19 +78,7 @@ public class StorageManager implements Listener {
 			strings.remove(0);
 			strings.remove(0);
 			strings.remove(0);
-			profile.updateEnderchest(message, server);
-		}
-
-		if(strings.get(0).equals("INVENTORY")) {
-			UUID uuid = UUID.fromString(strings.get(1));
-
-			StorageProfile profile = getStorage(uuid);
-			String server = strings.get(2);
-
-			strings.remove(0);
-			strings.remove(0);
-			strings.remove(0);
-			profile.updateInventory(message, server);
+			profile.updateData(message, server);
 		}
 	}
 
@@ -98,6 +92,22 @@ public class StorageManager implements Listener {
 		profiles.remove(profile);
 	}
 
+	@EventHandler
+	public void onJoin(PostLoginEvent event) {
+		File file = new File(BungeeMain.INSTANCE.getDataFolder() + "/itemstorage/" + event.getPlayer().getUniqueId() + ".json");
+		if(file.exists()) return;
+
+		if(!PitSimServerManager.serverList.get(0).status.isOnline()) {
+			event.getPlayer().disconnect(TextComponent.fromLegacyText(ChatColor.RED + "We were unable to migrate your playerdata. Please report this issue."));
+			return;
+		}
+
+		PluginMessage message = new PluginMessage().writeString("MIGRATE").writeString(event.getPlayer().getUniqueId().toString());
+		message.addServer(PitSimServerManager.serverList.get(0).getServerInfo());
+		message.send();
+		StorageManager.loadPlayerData(event.getPlayer().getUniqueId());
+	}
+
 	public static void loadPlayerData(String playerName) {
 		UUID uuid = BungeeMain.getUUID(playerName, false);
 
@@ -105,4 +115,13 @@ public class StorageManager implements Listener {
 		PluginMessage message = new PluginMessage().writeString("LOAD REQUEST").writeString(uuid.toString());
 		message.addServer("pitsim-1").send();
 	}
+
+	public static void loadPlayerData(UUID uuid) {
+
+		assert uuid != null;
+		PluginMessage message = new PluginMessage().writeString("LOAD REQUEST").writeString(uuid.toString());
+		message.addServer("pitsim-1").send();
+	}
+
+
 }
