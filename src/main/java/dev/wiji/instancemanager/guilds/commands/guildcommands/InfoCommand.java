@@ -59,7 +59,7 @@ public class InfoCommand extends ACommand {
 		if(guild == null) {
 			guild = GuildManager.getGuildFromPlayer(player.getUniqueId());
 			if(guild == null) {
-				AOutput.color(player, "You are not in a guild");
+				AOutput.error(player, "You are not in a guild");
 				return;
 			}
 		}

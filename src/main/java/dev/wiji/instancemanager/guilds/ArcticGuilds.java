@@ -79,7 +79,6 @@ public class ArcticGuilds {
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new GuildManager());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new PlayerManager());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new PermissionManager());
-
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new GuildMessaging());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new InventoryManager());
 	}

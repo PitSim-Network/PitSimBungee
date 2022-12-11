@@ -16,19 +16,9 @@ public class GuildMember {
 	private UUID guildUUID;
 	public Date lastModify = new Date(0);
 
-	public GuildMember(UUID playerUUID) {
+	public GuildMember(UUID playerUUID, UUID guildUUID) {
 		this.playerUUID = playerUUID;
-
-		save();
-
-		GuildManager.guildMemberList.add(this);
-	}
-
-	public GuildMember(UUID playerUUID, Configuration playerData) {
-		this.playerUUID = playerUUID;
-
-		if(playerData.get("guild") != null) this.guildUUID = UUID.fromString(playerData.getString("guild"));
-		if(playerData.get("modify-date") != null) this.lastModify = new Date(playerData.getLong("modify-date"));
+		this.guildUUID = guildUUID;
 
 		GuildManager.guildMemberList.add(this);
 	}
@@ -40,19 +30,18 @@ public class GuildMember {
 			guild.save();
 		}
 		setGuildUUID(null);
-		save();
 	}
 
 //	This writes to the player's data, not the guild's
-	public void save() {
-		APlayer aPlayer = APlayerData.getPlayerData(playerUUID);
-		Configuration playerData = aPlayer.playerData;
-
-		if(guildUUID == null) playerData.set("guild", null); else playerData.set("guild", guildUUID.toString());
-		playerData.set("modify-date", lastModify.getTime());
-
-		aPlayer.save();
-	}
+//	public void save() {
+//		APlayer aPlayer = APlayerData.getPlayerData(playerUUID);
+//		Configuration playerData = aPlayer.playerData;
+//
+//		if(guildUUID == null) playerData.set("guild", null); else playerData.set("guild", guildUUID.toString());
+//		playerData.set("modify-date", lastModify.getTime());
+//
+//		aPlayer.save();
+//	}
 
 	public UUID getGuildUUID() {
 		return guildUUID;

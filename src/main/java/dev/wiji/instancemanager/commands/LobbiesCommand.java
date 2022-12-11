@@ -25,11 +25,11 @@ public class LobbiesCommand extends Command {
 		if(overridePlayers) {
 			overridePlayers = false;
 			message = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes(
-					'&', "&2&lLOBBIES!&7 Disabled the first lobby!"));
+					'&', "&2&lLOBBIES!&7 Disabled the second lobby!"));
 		} else {
 			overridePlayers = true;
 			message = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes(
-					'&', "&2&lLOBBIES!&7 Enabled the first lobby!"));
+					'&', "&2&lLOBBIES!&7 Enabled the second lobby!"));
 		}
 		player.sendMessage(message);
 	}

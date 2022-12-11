@@ -9,13 +9,10 @@ import dev.wiji.instancemanager.guilds.enums.DyeColor;
 import dev.wiji.instancemanager.guilds.enums.GuildRank;
 import dev.wiji.instancemanager.guilds.events.GuildCreateEvent;
 import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.misc.APlayer;
-import dev.wiji.instancemanager.misc.APlayerData;
 import dev.wiji.instancemanager.misc.ColorConverter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
-
 
 import java.util.*;
 
@@ -76,9 +73,7 @@ public class Guild {
 			Configuration memberData = guildData.getSection("members." + uuidString);
 			UUID playerUUID = UUID.fromString(uuidString);
 
-			APlayer player = APlayerData.getPlayerData(playerUUID);
-
-			GuildMember guildMember = GuildManager.getMember(playerUUID);
+			GuildMember guildMember = new GuildMember(playerUUID, uuid);
 			members.put(guildMember, new GuildMemberInfo(memberData));
 		}
 
@@ -108,7 +103,6 @@ public class Guild {
 		for(Map.Entry<GuildMember, GuildMemberInfo> entry : members.entrySet()) {
 			String key = "members." + entry.getKey().playerUUID;
 			Configuration memberData = guildData.getSection(key);
-			entry.getKey().save();
 			entry.getValue().save(memberData);
 		}
 	}

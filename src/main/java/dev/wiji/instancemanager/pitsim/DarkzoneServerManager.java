@@ -3,6 +3,7 @@ package dev.wiji.instancemanager.pitsim;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.objects.DarkzoneServer;
+import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.objects.ServerStatus;
 import dev.wiji.instancemanager.ProxyRunnable;
@@ -73,13 +74,14 @@ public class DarkzoneServerManager {
 		for(String value : ServerManager.darkzoneServers.values()) serverList.add(new DarkzoneServer(value));
 
 		for(DarkzoneServer server : serverList) {
-			if(serverList.get(0) == server) {
-				server.status = ServerStatus.STARTING;
-				ServerManager.restartServer(server.getPteroID());
+			if(ConfigManager.isDev()) {
+				server.status = ServerStatus.RUNNING;
+				server.setStartTime(System.currentTimeMillis());
 				continue;
 			}
 
-			server.hardShutDown();
+			server.status = ServerStatus.STARTING;
+			ServerManager.restartServer(server.getPteroID());
 		}
 	}
 

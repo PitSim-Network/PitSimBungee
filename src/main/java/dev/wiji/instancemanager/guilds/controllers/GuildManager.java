@@ -26,15 +26,6 @@ public class GuildManager implements Listener {
 	static {
 		guildFile = new AData("guilds", "", false);
 
-		for(Map.Entry<UUID, APlayer> entry : APlayerData.getAllData().entrySet()) {
-
-			UUID uuid = entry.getKey();
-			APlayer aPlayer = entry.getValue();
-
-			GuildMember guildMember = new GuildMember(uuid, aPlayer.playerData);
-			guildMemberList.add(guildMember);
-		}
-
 		for(String key : guildFile.getConfiguration().getKeys()) {
 			Configuration guildData = guildFile.getConfiguration().getSection(key);
 			new Guild(key, guildData);
@@ -82,9 +73,10 @@ public class GuildManager implements Listener {
 	}
 
 	public static Guild getGuildFromPlayer(UUID playerUUID) {
-		APlayer player = APlayerData.getPlayerData(playerUUID);
-		String guildUUID = player.playerData.getString("guild");
-		if(guildUUID == null || guildUUID.equals("")) return null;
+		GuildMember member = GuildManager.getMember(playerUUID);
+		System.out.println("Guild: " + member.getGuildUUID());
+		String guildUUID = member.getGuildUUID().toString();
+		if(guildUUID.equals("")) return null;
 		return getGuildFromGuildUUID(UUID.fromString(guildUUID));
 	}
 
@@ -93,7 +85,7 @@ public class GuildManager implements Listener {
 			if(!guildMember.playerUUID.equals(playerUUID)) continue;
 			return guildMember;
 		}
-		return new GuildMember(playerUUID);
+		return new GuildMember(playerUUID, null);
 	}
 
 	private static void sortGuilds() {
