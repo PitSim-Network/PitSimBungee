@@ -1,10 +1,10 @@
 package dev.wiji.instancemanager.pitsim;
 
+import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.objects.Leaderboard;
 import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PlayerData;
 import dev.wiji.instancemanager.objects.PluginMessage;
-import dev.wiji.instancemanager.ProxyRunnable;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -47,18 +47,17 @@ public class LeaderboardCalc {
 		PluginMessage message = new PluginMessage();
 		message.writeString("LEADERBOARD DATA");
 		for(Leaderboard value : Leaderboard.values()) {
-			StringBuilder builder = new StringBuilder();
+			List<String> leaderboardStrings = new ArrayList<>();
 			for(int i = 0; i < 10; i++) {
-				if(i + 1 > leaderboardPositions.size()) continue;
+				if(i + 1 > leaderboardPositions.get(value).size()) continue;
 				PlayerData data = leaderboardPositions.get(value).get(i);
 				int prestige = Objects.requireNonNull(data.getDocument().getLong("prestige")).intValue();
 				int level = Objects.requireNonNull(data.getDocument().getLong("level")).intValue();
 
-				builder.append(data.getPlayerUUID().toString()).append(",").append(prestige).append(" ").append(level)
-						.append(",").append(BigDecimal.valueOf(data.getData(value)).toPlainString());
-				if(i != 9) builder.append("|");
+				leaderboardStrings.add(data.getPlayerUUID().toString() + "," + prestige + " " + level + "," +
+						BigDecimal.valueOf(data.getData(value)).toPlainString());
 			}
-			message.writeString(builder.toString());
+			message.writeString(String.join("|", leaderboardStrings));
 		}
 		message.addServer(server.getServerInfo());
 		message.send();
