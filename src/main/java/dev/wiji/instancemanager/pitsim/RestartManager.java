@@ -9,6 +9,9 @@ import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.connection.Connection;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -80,7 +83,12 @@ public class RestartManager {
 			if(minutes.get() == 0) {
 				BungeeMain.INSTANCE.getProxy().broadcast(new ComponentBuilder("Proxy restarting!").color(ChatColor.RED).create());
 
-				ServerManager.stopServer(ConfigManager.getProxyServer());
+				for(ProxiedPlayer player : BungeeMain.INSTANCE.getProxy().getPlayers()) {
+					player.disconnect(TextComponent.fromLegacyText(ChatColor.RED + "Proxy Restarting"));
+				}
+
+				((ProxyRunnable) () -> ServerManager.stopServer(ConfigManager.getProxyServer())).runAfter(5, TimeUnit.SECONDS);
+
 			}
 
 			BungeeMain.INSTANCE.getProxy().broadcast(new ComponentBuilder("Proxy restarting in " + minutes + " minutes!").color(ChatColor.RED).create());
