@@ -49,6 +49,7 @@ public class LeaderboardCalc {
 		for(Leaderboard value : Leaderboard.values()) {
 			StringBuilder builder = new StringBuilder();
 			for(int i = 0; i < 10; i++) {
+				if(i + 1 > leaderboardPositions.size()) continue;
 				PlayerData data = leaderboardPositions.get(value).get(i);
 				int prestige = Objects.requireNonNull(data.getDocument().getLong("prestige")).intValue();
 				int level = Objects.requireNonNull(data.getDocument().getLong("level")).intValue();
