@@ -126,7 +126,7 @@ public class PitSimServerManager implements Listener {
 			}
 		}
 
-		if(getTotalServers() == 0) {
+		if(getTotalServersOnline() == 0) {
 			player.sendMessage(new ComponentBuilder("There are currently no available servers. Please try again later.").color(ChatColor.RED).create());
 			return false;
 		}
@@ -154,7 +154,7 @@ public class PitSimServerManager implements Listener {
 			for(PitSimServer activeServer : serverList) {
 				if(activeServer.status != ServerStatus.RUNNING) continue;
 
-				if(activeServer.getPlayers().size() > players / getTotalServers()) continue;
+				if(activeServer.getPlayers().size() > players / getTotalServersOnline()) continue;
 				else {
 					targetServer = activeServer;
 					break;
@@ -206,11 +206,13 @@ public class PitSimServerManager implements Listener {
 		return total;
 	}
 
-	public static int getTotalServers() {
+	public static int getTotalServersOnline() {
 		int total = 0;
 		for(PitSimServer server : serverList) {
 			if(server.status == ServerStatus.RUNNING || server.status == ServerStatus.RESTARTING_INITIAL) total++;
 		}
+
+		System.out.println("Total online servers: " + total);
 		return total;
 	}
 
