@@ -35,7 +35,7 @@ public class StorageProfile {
 		this.saveFile = StorageManager.getStorageFile(player);
 	}
 
-	public UUID getUuid() {
+	public UUID getUUID() {
 		return uuid;
 	}
 
@@ -157,6 +157,17 @@ public class StorageProfile {
 			}
 		}
 
+		System.out.println("Test number 1");
+
+		PluginMessage response = new PluginMessage().writeString("ENDERCHEST SAVE").writeString(uuid.toString());
+		response.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
+		response.send();
+
+		save();
+	}
+
+	public void updateInventory(PluginMessage message, String server) {
+		System.out.println("size: " + message.getStrings().size());
 		for(int i = 0; i < 36; i++) {
 			inventoryStrings[i] = message.getStrings().get(i + totalIndex);
 		}
