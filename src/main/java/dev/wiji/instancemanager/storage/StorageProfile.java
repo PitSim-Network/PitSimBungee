@@ -166,22 +166,22 @@ public class StorageProfile {
 		save();
 	}
 
-	public void updateInventory(PluginMessage message, String server) {
-		System.out.println("size: " + message.getStrings().size());
-		for(int i = 0; i < 36; i++) {
-			inventoryStrings[i] = message.getStrings().get(i + totalIndex);
-		}
-
-		for(int i = 0; i < 4; i++) {
-			armor[i] = message.getStrings().get((i + totalIndex) + 36);
-		}
-
-		PluginMessage response = new PluginMessage().writeString("SAVE CONFIRMATION").writeString(uuid.toString());
-		response.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
-		response.send();
-
-		save();
-	}
+//	public void updateInventory(PluginMessage message, String server) {
+//		System.out.println("size: " + message.getStrings().size());
+//		for(int i = 0; i < 36; i++) {
+//			inventoryStrings[i] = message.getStrings().get(i + totalIndex);
+//		}
+//
+//		for(int i = 0; i < 4; i++) {
+//			armor[i] = message.getStrings().get((i + totalIndex) + 36);
+//		}
+//
+//		PluginMessage response = new PluginMessage().writeString("SAVE CONFIRMATION").writeString(uuid.toString());
+//		response.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
+//		response.send();
+//
+//		save();
+//	}
 
 
 
