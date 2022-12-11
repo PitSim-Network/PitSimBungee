@@ -63,7 +63,7 @@ public class StorageManager implements Listener {
 		List<String> strings = message.getStrings();
 		if(strings.size() < 2) return;
 
-		if(strings.get(0).equals("ENDERCHEST")) {
+		if(strings.get(0).equals("ITEM DATA SAVE")) {
 			UUID uuid = UUID.fromString(strings.get(1));
 
 			StorageProfile profile = getStorage(uuid);
@@ -72,19 +72,7 @@ public class StorageManager implements Listener {
 			strings.remove(0);
 			strings.remove(0);
 			strings.remove(0);
-			profile.updateEnderchest(message, server);
-		}
-
-		if(strings.get(0).equals("INVENTORY")) {
-			UUID uuid = UUID.fromString(strings.get(1));
-
-			StorageProfile profile = getStorage(uuid);
-			String server = strings.get(2);
-
-			strings.remove(0);
-			strings.remove(0);
-			strings.remove(0);
-			profile.updateInventory(message, server);
+			profile.updateData(message, server);
 		}
 	}
 
@@ -100,6 +88,13 @@ public class StorageManager implements Listener {
 
 	public static void loadPlayerData(String playerName) {
 		UUID uuid = BungeeMain.getUUID(playerName, false);
+
+		assert uuid != null;
+		PluginMessage message = new PluginMessage().writeString("LOAD REQUEST").writeString(uuid.toString());
+		message.addServer("pitsim-1").send();
+	}
+
+	public static void loadPlayerData(UUID uuid) {
 
 		assert uuid != null;
 		PluginMessage message = new PluginMessage().writeString("LOAD REQUEST").writeString(uuid.toString());

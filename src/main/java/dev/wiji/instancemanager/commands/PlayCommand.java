@@ -51,7 +51,7 @@ public class PlayCommand extends Command {
 
 			Server currentServer = player.getServer();
 
-			if(currentServer.getInfo().getName().contains("pitsim")) {
+			if(currentServer.getInfo().getName().contains("pitsim") || currentServer.getInfo().getName().contains("darkzone")) {
 				boolean canChange = false;
 				for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
 					if(pitSimServer.getServerInfo() == currentServer.getInfo()) continue;
@@ -64,8 +64,9 @@ public class PlayCommand extends Command {
 					return;
 				}
 
+				System.out.println("SWITCH FROM: " + currentServer);
 				commandSender.sendMessage((new ComponentBuilder("Looking for a server...").color(ChatColor.GREEN).create()));
-				new PluginMessage().writeString("SAVE DATA").writeString(player.getName()).addServer(currentServer.getInfo()).send();
+				new PluginMessage().writeString("REQUEST SWITCH").writeString(player.getUniqueId().toString()).addServer(currentServer.getInfo()).send();
 				return;
 
 			}

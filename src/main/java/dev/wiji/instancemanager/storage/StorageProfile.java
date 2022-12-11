@@ -78,47 +78,75 @@ public class StorageProfile {
 
 	}
 
-	public void	sendEnderchestToServer(ServerInfo server) {
+//	public void	sendEnderchestToServer(ServerInfo server) {
+//
+//		PluginMessage message = new PluginMessage().addServer(server);
+//
+//
+//
+//		message.writeString("ENDERCHEST").writeString(uuid.toString()).writeInt(enderChestPages);
+//
+//		System.out.println("Test number 2");
+//
+//		for(String[] itemStrings : enderchest) {
+//			for(String itemString : itemStrings) {
+//				message.writeString(itemString);
+//			}
+//		}
+//
+//		message.send();
+//	}
 
+//	public void sendInventoryToServer(ServerInfo server) {
+//
+//		PluginMessage message = new PluginMessage().addServer(server);
+//
+//		message.writeString("INVENTORY").writeString(uuid.toString());
+//
+//		System.out.println("TestItem1:" + inventoryStrings[0]);
+//
+//		for(String itemString : inventoryStrings) {
+//			message.writeString(itemString);
+//		}
+//
+//		for(String armorString : armor) {
+//			message.writeString(armorString);
+//		}
+//
+//		message.send();
+//	}
+
+	public void sendToServer(ServerInfo server) {
 		PluginMessage message = new PluginMessage().addServer(server);
 
+		message.writeString("PLAYER DATA").writeString(uuid.toString());
+		message.writeInt(inventoryStrings.length + armor.length);
 
+		System.out.println("TestItem1:" + inventoryStrings[0]);
 
-		message.writeString("ENDERCHEST").writeString(uuid.toString()).writeInt(enderChestPages);
+		for(String itemString : inventoryStrings) {
+			message.writeString(itemString);
+		}
 
-		System.out.println("Test number 2");
+		for(String armorString : armor) {
+			message.writeString(armorString);
+		}
+
+		int count = 0;
 
 		for(String[] itemStrings : enderchest) {
 			for(String itemString : itemStrings) {
 				message.writeString(itemString);
+				count++;
 			}
 		}
+
+		message.writeInt(count);
 
 		message.send();
 	}
 
-		public void sendInventoryToServer(ServerInfo server) {
-
-			PluginMessage message = new PluginMessage().addServer(server);
-
-			message.writeString("INVENTORY").writeString(uuid.toString());
-
-			System.out.println("TestItem1:" + inventoryStrings[0]);
-
-			for(String itemString : inventoryStrings) {
-				message.writeString(itemString);
-			}
-
-			for(String armorString : armor) {
-				message.writeString(armorString);
-			}
-
-			message.send();
-	}
-
-
-
-	public void updateEnderchest(PluginMessage message, String server) {
+	public void updateData(PluginMessage message, String server) {
 
 		int totalIndex = 0;
 
@@ -129,30 +157,56 @@ public class StorageProfile {
 			}
 		}
 
-		System.out.println("Test number 1");
-
-		PluginMessage response = new PluginMessage().writeString("ENDERCHEST SAVE").writeString(uuid.toString());
-		response.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
-		response.send();
-
-		save();
-	}
-
-	public void updateInventory(PluginMessage message, String server) {
-		System.out.println("size: " + message.getStrings().size());
 		for(int i = 0; i < 36; i++) {
-			inventoryStrings[i] = message.getStrings().get(i);
+			inventoryStrings[i] = message.getStrings().get(i + totalIndex);
 		}
 
 		for(int i = 0; i < 4; i++) {
-			armor[i] = message.getStrings().get(i + 36);
+			armor[i] = message.getStrings().get((i + totalIndex) + 36);
 		}
 
-		System.out.println("TestItem2:" + inventoryStrings[0]);
-		PluginMessage response = new PluginMessage().writeString("INVENTORY SAVE").writeString(uuid.toString());
+		PluginMessage response = new PluginMessage().writeString("SAVE CONFIRMATION").writeString(uuid.toString());
 		response.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
 		response.send();
 
 		save();
 	}
+
+
+
+//	public void updateEnderchest(PluginMessage message, String server) {
+//
+//		int totalIndex = 0;
+//
+//		for(int i = 0; i < enderChestPages; i++) {
+//			for(int j = 0; j < 27; j++) {
+//				enderchest[i][j] = message.getStrings().get(totalIndex);
+//				totalIndex++;
+//			}
+//		}
+//
+//		System.out.println("Test number 1");
+//
+//
+//
+//		save();
+//	}
+//
+//	public void updateInventory(PluginMessage message, String server) {
+//		System.out.println("size: " + message.getStrings().size());
+//		for(int i = 0; i < 36; i++) {
+//			inventoryStrings[i] = message.getStrings().get(i);
+//		}
+//
+//		for(int i = 0; i < 4; i++) {
+//			armor[i] = message.getStrings().get(i + 36);
+//		}
+//
+//		System.out.println("TestItem2:" + inventoryStrings[0]);
+//		PluginMessage response = new PluginMessage().writeString("INVENTORY SAVE").writeString(uuid.toString());
+//		response.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
+//		response.send();
+//
+//		save();
+//	}
 }
