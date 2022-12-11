@@ -4,6 +4,7 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
+import dev.wiji.instancemanager.commands.LobbiesCommand;
 import dev.wiji.instancemanager.guilds.GuildMessaging;
 import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
@@ -198,6 +199,7 @@ public class PitSimServerManager implements Listener {
 	}
 
 	public static int getTotalPlayers() {
+		if(LobbiesCommand.overridePlayers) return 10;
 		int total = 0;
 		for(PitSimServer server : serverList) {
 			total += server.getPlayers().size();

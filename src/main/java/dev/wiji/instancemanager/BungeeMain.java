@@ -66,6 +66,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerCommand(this, new DevCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new AdminCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new PTestCommand(this));
+		getProxy().getPluginManager().registerCommand(this, new LobbiesCommand(this));
 
 		ConfigManager.getPitSimServerList();
 		ConfigManager.getDarkzoneServerList();
