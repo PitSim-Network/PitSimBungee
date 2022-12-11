@@ -3,7 +3,6 @@ package dev.wiji.instancemanager;
 import com.mattmalec.pterodactyl4j.UtilizationState;
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 import com.mattmalec.pterodactyl4j.client.entities.Utilization;
-import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,5 +51,4 @@ public class ServerManager {
 		ClientServer server = BungeeMain.client.retrieveServerByIdentifier(identifier).execute();
 		BungeeMain.client.sendCommand(server, command).execute();
 	}
-
 }
