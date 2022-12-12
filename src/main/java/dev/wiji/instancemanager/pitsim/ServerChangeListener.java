@@ -3,6 +3,7 @@ package dev.wiji.instancemanager.pitsim;
 import dev.wiji.instancemanager.ProxyRunnable;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerDisconnectEvent;
+import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 

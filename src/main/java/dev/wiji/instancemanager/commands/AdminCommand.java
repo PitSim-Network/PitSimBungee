@@ -2,6 +2,7 @@ package dev.wiji.instancemanager.commands;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
+import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.DarkzoneServer;
 import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
@@ -33,7 +34,7 @@ public class AdminCommand extends Command {
 
 
 		if(args.length < 1) {
-			player.sendMessage(new ComponentBuilder("Usage: /admin <status|shutdown|stopnetwork|startnetwork|killnetwork>").color(ChatColor.RED).create());
+			player.sendMessage(new ComponentBuilder("Usage: /admin <status|shutdown|stopnetwork|startnetwork|killnetwork|suspend>").color(ChatColor.RED).create());
 			return;
 		}
 
@@ -110,7 +111,6 @@ public class AdminCommand extends Command {
 			PitSimServerManager.networkIsShuttingDown = true;
 			DarkzoneServerManager.networkIsShuttingDown = true;
 
-			Server server = player.getServer();
 			for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
 				for(ProxiedPlayer pitSimServerPlayer : pitSimServer.getPlayers()) {
 					pitSimServerPlayer.connect(BungeeMain.INSTANCE.getProxy().getServerInfo(ConfigManager.getLobbyServer()));
@@ -120,13 +120,11 @@ public class AdminCommand extends Command {
 			}
 
 			for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
-				if(server.getInfo() == darkzoneServer.getServerInfo()) {
-					for(ProxiedPlayer darkzoneServerPlayer : darkzoneServer.getPlayers()) {
-						darkzoneServerPlayer.connect(BungeeMain.INSTANCE.getProxy().getServerInfo(ConfigManager.getLobbyServer()));
-					}
-
-					darkzoneServer.hardShutDown();
+				for(ProxiedPlayer darkzoneServerPlayer : darkzoneServer.getPlayers()) {
+					darkzoneServerPlayer.connect(BungeeMain.INSTANCE.getProxy().getServerInfo(ConfigManager.getLobbyServer()));
 				}
+
+				darkzoneServer.hardShutDown();
 			}
 
 			player.sendMessage((new ComponentBuilder("Initiated immediate network shutdown!").color(ChatColor.GREEN).create()));
@@ -167,6 +165,63 @@ public class AdminCommand extends Command {
 
 			player.sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&8&m-------------------------------")));
 
+		}
+
+		if(args[0].equalsIgnoreCase("suspend")) {
+
+			if(args.length < 2) {
+				AOutput.error(player, "&cUsage: /admin suspend <KickPlayers?>");
+				return;
+			}
+
+			boolean kickPlayers;
+			try {
+				kickPlayers = Boolean.parseBoolean(args[1]);
+			} catch(Exception e) {
+				AOutput.error(player, "&cUsage: /admin suspend <KickPlayers?>");
+				return;
+			}
+
+			boolean suspend = false;
+
+			Server server = player.getServer();
+			for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
+				if(server.getInfo() == pitSimServer.getServerInfo()) {
+					if(pitSimServer.status != ServerStatus.SUSPENDED) {
+						suspend = true;
+						pitSimServer.status = ServerStatus.SUSPENDED;
+						AOutput.color(player, "&aServer has been suspended!");
+					} else {
+						pitSimServer.status = ServerStatus.RUNNING;
+						AOutput.color(player, "&aServer has been un-suspended!");
+					}
+
+				}
+			}
+
+			boolean darkzone = false;
+
+			for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
+				if(server.getInfo() == darkzoneServer.getServerInfo()) {
+					darkzone = true;
+					if(darkzoneServer.status != ServerStatus.SUSPENDED) {
+						suspend = true;
+						darkzoneServer.status = ServerStatus.SUSPENDED;
+						AOutput.color(player, "&aServer has been suspended!");
+					} else {
+						darkzoneServer.status = ServerStatus.RUNNING;
+						AOutput.color(player, "&aServer has been un-suspended!");
+					}
+				}
+			}
+
+			if(kickPlayers && suspend) {
+				for(ProxiedPlayer proxiedPlayer : server.getInfo().getPlayers()) {
+					if(proxiedPlayer == player) continue;
+					PitSimServerManager.queue(proxiedPlayer, 0, darkzone);
+					//TODO: Change to move to other darkzone servers if more are added
+				}
+			}
 		}
 	}
 }

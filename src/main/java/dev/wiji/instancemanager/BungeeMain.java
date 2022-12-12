@@ -10,6 +10,7 @@ import de.sumafu.PlayerStatus.PlayerStatusAPI;
 import dev.wiji.instancemanager.commands.*;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
 import dev.wiji.instancemanager.pitsim.*;
+import dev.wiji.instancemanager.storage.DupeManager;
 import dev.wiji.instancemanager.storage.StorageManager;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -49,6 +50,7 @@ public class BungeeMain extends Plugin {
 //		getProxy().getPluginManager().registerListener(this, new ServerLogManager());
 		getProxy().getPluginManager().registerListener(this, new PitSimServerManager());
 		getProxy().getPluginManager().registerListener(this, new StorageManager());
+//		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new DupeManager());
 		ConfigManager.onEnable();
 		ConfigManager.getMiniServerList();
 
@@ -67,6 +69,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerCommand(this, new AdminCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new PTestCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new LobbiesCommand(this));
+		getProxy().getPluginManager().registerCommand(this, new ServerCommand());
 
 		ConfigManager.getPitSimServerList();
 		ConfigManager.getDarkzoneServerList();

@@ -56,7 +56,7 @@ public class DarkzoneServerManager {
 
 			for(int i = 1 + (players + (START_THRESHOLD - STOP_THRESHOLD - 1)) / 10; i < serverList.size(); i++) {
 				DarkzoneServer server = serverList.get(i);
-				if(server.status.isShuttingDown() || server.status == ServerStatus.OFFLINE) continue;
+				if(server.status.isShuttingDown() || server.status == ServerStatus.OFFLINE || server.status == ServerStatus.SUSPENDED) continue;
 				if(server.status == ServerStatus.RESTARTING_INITIAL) {
 					server.status = ServerStatus.SHUTTING_DOWN_INITIAL;
 					System.out.println("Switching restart to shut down: " + (i + 1));
@@ -147,7 +147,7 @@ public class DarkzoneServerManager {
 		if(targetServer == null) {
 
 			if(previousServer != null) {
-				if(previousServer.status == ServerStatus.RESTARTING_FINAL || previousServer.status == ServerStatus.SHUTTING_DOWN_FINAL) {
+				if(previousServer.status == ServerStatus.RESTARTING_FINAL || previousServer.status == ServerStatus.SHUTTING_DOWN_FINAL || previousServer.status == ServerStatus.SUSPENDED) {
 					player.connect(BungeeMain.INSTANCE.getProxy().getServerInfo(ConfigManager.getLobbyServer()));
 					return true;
 				}
