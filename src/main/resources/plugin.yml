@@ -6,5 +6,4 @@ commands:
   play:
   toggle:
   dev:
-  server:
-depends: [PitSimBungeeDependencies, PlayerStatus, PluginQuery]
+depends: [PitSimBungeeDependencies, PlayerStatus, LuckPerms, PluginQuery]
