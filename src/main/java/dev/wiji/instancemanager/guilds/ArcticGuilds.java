@@ -13,7 +13,7 @@ import dev.wiji.instancemanager.guilds.guildupgrades.ReputationIncrease;
 import dev.wiji.instancemanager.misc.AMultiCommand;
 import dev.wiji.instancemanager.misc.APlayerData;
 import dev.wiji.instancemanager.misc.InventoryManager;
-import dev.wiji.instancemanager.storage.DupeManager;
+import dev.wiji.instancemanager.storage.dupe.DupeManager;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

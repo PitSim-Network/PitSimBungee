@@ -11,6 +11,8 @@ import dev.wiji.instancemanager.commands.*;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
 import dev.wiji.instancemanager.pitsim.*;
 import dev.wiji.instancemanager.storage.StorageManager;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import septogeddon.pluginquery.PluginQuery;
@@ -31,10 +33,12 @@ public class BungeeMain extends Plugin {
 	public static long STARTUP_TIME;
 
 	public static PlayerStatusAPI psApi;
+	public static LuckPerms LUCKPERMS;
 
 	@Override
 	public void onEnable() {
 		INSTANCE = this;
+		LUCKPERMS = LuckPermsProvider.get();
 		this.getProxy().registerChannel("BungeeCord");
 		STARTUP_TIME = System.currentTimeMillis();
 		FirestoreManager.init();
