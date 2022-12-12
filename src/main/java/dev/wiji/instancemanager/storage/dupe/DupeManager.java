@@ -6,6 +6,8 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.storage.StorageProfile;
 import net.luckperms.api.node.matcher.NodeMatcher;
 import net.md_5.bungee.api.plugin.Listener;
+import net.minecraft.server.v1_8_R3.MojangsonParseException;
+import net.minecraft.server.v1_8_R3.MojangsonParser;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Material;
 
@@ -41,6 +43,10 @@ public class DupeManager implements Listener {
 				throw new RuntimeException(exception);
 			}
 
+			try {
+				MojangsonParser.parse("{}");
+			} catch(MojangsonParseException ignored) {}
+
 			List<TrackedItem> trackedItems = new ArrayList<>();
 			System.out.println("Stage 1 initiated");
 
@@ -59,12 +65,14 @@ public class DupeManager implements Listener {
 					String itemString = storageProfile.getInventoryStrings()[j];
 					if(itemString == null || itemString.isEmpty()) continue;
 					LimitedItemStack itemStack = deserialize(itemString);
+					if(itemStack.nbtData == null) continue;
 					playerItemMap.put(itemStack, new ItemLocation.InventoryLocation(j));
 				}
 				for(int j = 0; j < storageProfile.getArmor().length; j++) {
 					String itemString = storageProfile.getArmor()[j];
 					if(itemString == null || itemString.isEmpty()) continue;
 					LimitedItemStack itemStack = deserialize(itemString);
+					if(itemStack.nbtData == null) continue;
 					playerItemMap.put(itemStack, new ItemLocation.ArmorLocation(j));
 				}
 				for(int j = 0; j < storageProfile.getEnderchest().length; j++) {
@@ -72,6 +80,7 @@ public class DupeManager implements Listener {
 						String itemString = storageProfile.getEnderchest()[j][k];
 						if(itemString == null || itemString.isEmpty()) continue;
 						LimitedItemStack itemStack = deserialize(itemString);
+						if(itemStack.nbtData == null) continue;
 						playerItemMap.put(itemStack, new ItemLocation.EnderchestLocation(j + 1, k + 9));
 					}
 				}
@@ -84,8 +93,8 @@ public class DupeManager implements Listener {
 					if(!itemStack.nbtData.hasKey(NBTTag.ITEM_UUID.getRef()) || !itemStack.nbtData.hasKey(NBTTag.ITEM_JEWEL_ENCHANT.getRef())) continue;
 					trackedItems.add(new TrackedItem(playerUUID, itemStack, entry.getValue()));
 				}
-				checkForDuplicates(trackedItems, exemptPlayers);
 			}
+			checkForDuplicates(trackedItems, exemptPlayers);
 		}).start();
 	}
 
@@ -184,7 +193,7 @@ public class DupeManager implements Listener {
 	}
 
 	public static LimitedItemStack deserialize(String p) {
-		String[] a = p.split(";");
+		String[] a = p.split("\t");
 		return new LimitedItemStack(a[0], a[1], a[2], a[3], a[6]);
 	}
 
@@ -246,7 +255,9 @@ public class DupeManager implements Listener {
 			this.amount = Integer.parseInt(amount);
 			this.data = Short.parseShort(data);
 			this.displayName = displayName;
-//			this.nbtData = (NBTTagCompound) new NBTContainer(nbtData).getCompound();
+			try {
+				this.nbtData = MojangsonParser.parse(nbtData);
+			} catch(MojangsonParseException ignored) {}
 		}
 	}
 }

@@ -23,7 +23,6 @@ dependencies {
     compileOnly 'com.google.firebase:firebase-admin:8.0.0'
     compileOnly files('libs/craftbukkit-1.8.8-R0.1-SNAPSHOT-latest.jar')
     compileOnly 'net.luckperms:api:5.4'
-    compile("me.nullicorn:Nedit:2.2.0")
 }
 
 shadowJar {
