@@ -135,11 +135,6 @@ public class PitSimServerManager implements Listener {
 			}
 		}
 
-		if(getTotalServersOnline() == 0) {
-			player.sendMessage(new ComponentBuilder("There are currently no available servers. Please try again later.").color(ChatColor.RED).create());
-			return false;
-		}
-
 		if(ServerChangeListener.recentlyLeft.contains(player)) {
 			player.sendMessage(new ComponentBuilder("You recently left a server. Please wait a few seconds before rejoining.").color(ChatColor.RED).create());
 			return false;
@@ -151,10 +146,21 @@ public class PitSimServerManager implements Listener {
 
 		if(requestedServer != 0) {
 			targetServer = serverList.get(requestedServer - 1);
-			if(targetServer.status != ServerStatus.RUNNING) {
+
+			if(player.hasPermission("pitsim.join")) {
+				if(!targetServer.status.isOnline()) {
+					player.sendMessage(new ComponentBuilder("This server is currently unavailable!").color(ChatColor.RED).create());
+					return false;
+				}
+			} else if(targetServer.status != ServerStatus.RUNNING) {
 				player.sendMessage(new ComponentBuilder("This server is currently unavailable!").color(ChatColor.RED).create());
 				return false;
 			}
+		}
+
+		if(getTotalServersOnline() == 0) {
+			player.sendMessage(new ComponentBuilder("There are currently no available servers. Please try again later.").color(ChatColor.RED).create());
+			return false;
 		}
 
 		int players = getTotalPlayers();

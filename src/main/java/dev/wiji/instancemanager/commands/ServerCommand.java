@@ -16,6 +16,7 @@ import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Command;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -89,6 +90,10 @@ public class ServerCommand extends Command {
 			textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + server.getName()));
 			textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(server.getPlayers().size() + " players")));
 			textComponent.setColor(ChatColor.GOLD);
+
+			if(server == player.getServer().getInfo()) {
+				textComponent.addExtra(ChatColor.DARK_GRAY + " (current)");
+			}
 
 			player.sendMessage(textComponent);
 		}
