@@ -158,7 +158,7 @@ public class PitSimServerManager implements Listener {
 			}
 		}
 
-		if(getTotalServersOnline() == 0) {
+		if(getTotalServersOnline() == 0 && targetServer == null) {
 			player.sendMessage(new ComponentBuilder("There are currently no available servers. Please try again later.").color(ChatColor.RED).create());
 			return false;
 		}
