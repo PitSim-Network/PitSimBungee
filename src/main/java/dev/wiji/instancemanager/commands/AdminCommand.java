@@ -9,6 +9,7 @@ import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.objects.ServerStatus;
 import dev.wiji.instancemanager.pitsim.DarkzoneServerManager;
 import dev.wiji.instancemanager.pitsim.PitSimServerManager;
+import dev.wiji.instancemanager.storage.EditSessionManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -44,7 +45,7 @@ public class AdminCommand extends Command {
 				player.sendMessage((new ComponentBuilder("Invalid arguments! /admin shutdown <minutes>").color(ChatColor.RED).create()));
 			}
 
-			int minutes = 0;
+			int minutes;
 
 			try {
 				minutes = Integer.parseInt(args[1]);
@@ -222,6 +223,16 @@ public class AdminCommand extends Command {
 					//TODO: Change to move to other darkzone servers if more are added
 				}
 			}
+		}
+
+		if(args[0].equalsIgnoreCase("edit")) {
+
+			if(args.length < 2) {
+				AOutput.error(player, "&cUsage: /admin edit <player>");
+				return;
+			}
+
+			EditSessionManager.createSession(player.getUniqueId(), args[1]);
 		}
 	}
 }
