@@ -114,6 +114,11 @@ public class DarkzoneServerManager {
 			return false;
 		}
 
+		if(ServerChangeListener.recentlyLeft.contains(player)) {
+			player.sendMessage(new ComponentBuilder("You recently left a server. Please wait a few seconds before rejoining.").color(ChatColor.RED).create());
+			return false;
+		}
+
 		ServerDataManager.sendServerData();
 
 		DarkzoneServer targetServer = null;

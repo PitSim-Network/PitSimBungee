@@ -4,6 +4,7 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.DarkzoneServer;
 import dev.wiji.instancemanager.objects.PitSimServer;
+import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.pitsim.DarkzoneServerManager;
 import dev.wiji.instancemanager.pitsim.PitSimServerManager;
 import net.md_5.bungee.api.ChatColor;
@@ -33,6 +34,8 @@ public class ServerCommand extends Command {
 			return;
 		}
 
+		ServerInfo previousServer = player.getServer().getInfo();
+
 		String requestedServerString = args[0];
 		ServerInfo requestedServer = BungeeMain.INSTANCE.getProxy().getServerInfo(requestedServerString);
 
@@ -43,6 +46,12 @@ public class ServerCommand extends Command {
 
 		for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
 			if(pitSimServer.getServerInfo() == requestedServer) {
+				if(previousServer.getName().contains("darkzone") || previousServer.getName().contains("pitsim")) {
+					new PluginMessage().writeString("REQUEST SWITCH").writeString(player.getUniqueId().toString())
+							.writeInt(pitSimServer.getServerIndex()).addServer(previousServer).send();
+					return;
+				}
+
 				PitSimServerManager.queue(player, pitSimServer.getServerIndex(), false);
 				return;
 			}
@@ -50,6 +59,12 @@ public class ServerCommand extends Command {
 
 		for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
 			if(darkzoneServer.getServerInfo() == requestedServer) {
+				if(previousServer.getName().contains("darkzone") || previousServer.getName().contains("pitsim")) {
+					new PluginMessage().writeString("REQUEST DARKZONE SWITCH").writeString(player.getUniqueId().toString())
+							.writeInt(darkzoneServer.getServerIndex()).addServer(previousServer).send();
+					return;
+				}
+
 				DarkzoneServerManager.queue(player, darkzoneServer.getServerIndex());
 				return;
 			}
