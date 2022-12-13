@@ -3,7 +3,7 @@ package dev.wiji.instancemanager.objects;
 public enum Leaderboard {
 	XP("xp", "null"),
 	GOLD_GRINDED("total-gold", "totalGold"),
-	PLAYER_KILLS("player-kills", "playerKills"),
+//	PLAYER_KILLS("player-kills", "playerKills"),
 	BOT_KILLS("bot-kills", "botKills"),
 	PLAYTIME("minutes-played", "minutesPlayed"),
 	UBERS_COMPLETED("ubers-completed", "ubersCompleted"),
