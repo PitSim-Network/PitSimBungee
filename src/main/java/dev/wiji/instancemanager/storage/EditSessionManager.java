@@ -29,6 +29,18 @@ public class EditSessionManager implements Listener {
 			playerUUID = BungeeMain.getUUID(playerName, false);
 		}
 
+		if(isBeingEdited(playerUUID)) {
+			staff.sendMessage(new TextComponent(ChatColor.RED + "That player is already being edited!"));
+			return;
+		}
+
+		for(EditSession editSession : editSessions) {
+			if(editSession.getStaffUUID().equals(staffUUID)) {
+				staff.sendMessage(new TextComponent(ChatColor.RED + "You are already editing a player!"));
+				return;
+			}
+		}
+
 		if(playerUUID == null) {
 			staff.sendMessage(TextComponent.fromLegacyText(ChatColor.RED + "Player not found. (Try UUID?)"));
 			return;
