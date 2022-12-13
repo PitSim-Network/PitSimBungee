@@ -37,6 +37,11 @@ public class StorageManager implements Listener {
 		return file;
 	}
 
+	protected static boolean hasStorageFile(UUID uuid) {
+		File file = new File(BungeeMain.INSTANCE.getDataFolder() + "/itemstorage/" + uuid + ".json");
+		return file.exists();
+	}
+
 	public static StorageProfile getStorage(UUID uuid) {
 		for(StorageProfile profile : profiles) {
 			if(profile.getUUID().equals(uuid)) return profile;

@@ -2,12 +2,12 @@ package dev.wiji.instancemanager.pitsim;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
-import dev.wiji.instancemanager.objects.DarkzoneServer;
-import dev.wiji.instancemanager.objects.PitSimServer;
-import dev.wiji.instancemanager.objects.PluginMessage;
-import dev.wiji.instancemanager.objects.ServerStatus;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
+import dev.wiji.instancemanager.objects.DarkzoneServer;
+import dev.wiji.instancemanager.objects.PluginMessage;
+import dev.wiji.instancemanager.objects.ServerStatus;
+import dev.wiji.instancemanager.storage.EditSessionManager;
 import dev.wiji.instancemanager.storage.StorageManager;
 import dev.wiji.instancemanager.storage.StorageProfile;
 import net.md_5.bungee.api.ChatColor;
@@ -74,11 +74,11 @@ public class DarkzoneServerManager {
 		for(String value : ServerManager.darkzoneServers.values()) serverList.add(new DarkzoneServer(value));
 
 		for(DarkzoneServer server : serverList) {
-			if(ConfigManager.isDev()) {
-				server.status = ServerStatus.RUNNING;
-				server.setStartTime(System.currentTimeMillis());
-				continue;
-			}
+//			if(ConfigManager.isDev()) {
+//				server.status = ServerStatus.RUNNING;
+//				server.setStartTime(System.currentTimeMillis());
+//				continue;
+//			}
 
 			server.status = ServerStatus.STARTING;
 			ServerManager.restartServer(server.getPteroID());
@@ -86,6 +86,11 @@ public class DarkzoneServerManager {
 	}
 
 	public static boolean queue(ProxiedPlayer player, int requestedServer) {
+
+		if(EditSessionManager.isBeingEdited(player.getUniqueId())) {
+			player.sendMessage(new ComponentBuilder("Your player-data is being modified. Please try again in a moment.").color(ChatColor.RED).create());
+			return false;
+		}
 
 		DarkzoneServer previousServer = null;
 		for(DarkzoneServer server : serverList) {

@@ -9,6 +9,7 @@ import dev.wiji.instancemanager.guilds.GuildMessaging;
 import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.objects.ServerStatus;
+import dev.wiji.instancemanager.storage.EditSessionManager;
 import dev.wiji.instancemanager.storage.StorageManager;
 import dev.wiji.instancemanager.storage.StorageProfile;
 import net.md_5.bungee.api.ChatColor;
@@ -104,6 +105,11 @@ public class PitSimServerManager implements Listener {
 	}
 
 	public static boolean queue(ProxiedPlayer player, int requestedServer, boolean fromDarkzone) {
+
+		if(EditSessionManager.isBeingEdited(player.getUniqueId())) {
+			player.sendMessage(new ComponentBuilder("Your player-data is being modified. Please try again in a moment.").color(ChatColor.RED).create());
+			return false;
+		}
 
 		try {
 			LeaderboardCalc.sendLeaderboardPlayerData(player.getUniqueId());
