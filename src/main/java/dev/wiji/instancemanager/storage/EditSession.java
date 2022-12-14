@@ -77,7 +77,7 @@ public class EditSession {
 	public void prompt() {
 		PluginMessage message = new PluginMessage().writeString("PROMPT EDIT MENU");
 		message.writeString(staffPlayer.getUniqueId().toString()).send();
-		message.writeString(playerUUID.toString()).send();
+		message.writeString(playerUUID.toString());
 		message.writeBoolean(getPlayerServer() != null);
 		message.writeString(getPlayerServer().getName());
 
