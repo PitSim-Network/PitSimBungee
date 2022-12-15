@@ -155,11 +155,6 @@ public class MessageListener implements Listener {
 				requested = integers.get(0);
 			}
 
-			boolean fromDarkzone = false;
-			if(booleans.size() >= 1) {
-				fromDarkzone = booleans.get(0);
-			}
-
 			DarkzoneServerManager.queue(player, requested);
 		}
 

@@ -74,11 +74,11 @@ public class DarkzoneServerManager {
 		for(String value : ServerManager.darkzoneServers.values()) serverList.add(new DarkzoneServer(value));
 
 		for(DarkzoneServer server : serverList) {
-//			if(ConfigManager.isDev()) {
-//				server.status = ServerStatus.RUNNING;
-//				server.setStartTime(System.currentTimeMillis());
-//				continue;
-//			}
+			if(ConfigManager.isDev()) {
+				server.status = ServerStatus.RUNNING;
+				server.setStartTime(System.currentTimeMillis());
+				continue;
+			}
 
 			server.status = ServerStatus.STARTING;
 			ServerManager.restartServer(server.getPteroID());

@@ -7,7 +7,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
-import org.bukkit.event.EventHandler;
+import net.md_5.bungee.event.EventHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,27 +59,47 @@ public class EditSessionManager implements Listener {
 
 	@EventHandler
 	public void onLogout(PlayerDisconnectEvent event) {
+		EditSession finalSession = null;
+		
 		for(EditSession session : editSessions) {
 			if(session.getStaffUUID().equals(event.getPlayer().getUniqueId())) {
-				session.endSession();
+				finalSession = session;
 			}
 		}
+
+		if(finalSession != null) finalSession.endSession();
 	}
 
-	@EventHandler
+	@net.md_5.bungee.event.EventHandler
 	public void onMessage(MessageEvent event) {
 		List<String> strings = event.getMessage().getStrings();
 
+		if(strings.size() < 2) return;
+
 		if(strings.get(0).equals("EDIT RESPONSE")) {
+			System.out.println("Test0");
 			UUID uuid = UUID.fromString(strings.get(1));
 
 			for(EditSession session : editSessions) {
 				if(session.getStaffUUID().equals(uuid)) {
+					System.out.println("Test1");
 					strings.remove(0);
 					strings.remove(0);
 					session.receivePromptResponse(event.getMessage());
 				}
 			}
+		}
+
+		if(strings.get(0).equals("EDIT SESSION END")) {
+			UUID playerUUID = UUID.fromString(strings.get(1));
+
+			EditSession endSession = null;
+
+			for(EditSession editSession : editSessions) {
+				if(editSession.getPlayerUUID().equals(playerUUID)) endSession = editSession;
+			}
+
+			if(endSession != null) endSession.endSession();
 		}
 	}
 

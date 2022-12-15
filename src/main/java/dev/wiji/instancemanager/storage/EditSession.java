@@ -55,6 +55,8 @@ public class EditSession {
 		List<String> strings = message.getStrings();
 		List<Boolean> booleans = message.getBooleans();
 
+		System.out.println("Test2");
+
 		timeoutTask.cancel();
 		timeoutTask = null;
 
@@ -79,7 +81,7 @@ public class EditSession {
 		message.writeString(staffPlayer.getUniqueId().toString()).send();
 		message.writeString(playerUUID.toString());
 		message.writeBoolean(getPlayerServer() != null);
-		message.writeString(getPlayerServer().getName());
+		message.writeString(getPlayerServer() == null ? "" : getPlayerServer().getName());
 
 		timeoutTask = ((ProxyRunnable) this::endSession).runAfter(10, TimeUnit.SECONDS);
 

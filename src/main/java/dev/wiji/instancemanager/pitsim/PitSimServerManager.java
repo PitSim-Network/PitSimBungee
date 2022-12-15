@@ -90,11 +90,11 @@ public class PitSimServerManager implements Listener {
 		for(PitSimServer server : serverList) {
 			if(serverList.get(0) == server) {
 
-//				if(ConfigManager.isDev()) {
-//					server.status = ServerStatus.RUNNING;
-//					server.setStartTime(System.currentTimeMillis());
-//					continue;
-//				}
+				if(ConfigManager.isDev()) {
+					server.status = ServerStatus.RUNNING;
+					server.setStartTime(System.currentTimeMillis());
+					continue;
+				}
 
 				server.status = ServerStatus.STARTING;
 				ServerManager.restartServer(server.getPteroID());
