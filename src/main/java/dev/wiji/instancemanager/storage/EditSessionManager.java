@@ -77,15 +77,15 @@ public class EditSessionManager implements Listener {
 		if(strings.size() < 2) return;
 
 		if(strings.get(0).equals("EDIT RESPONSE")) {
-			System.out.println("Test0");
+
 			UUID uuid = UUID.fromString(strings.get(1));
 
 			for(EditSession session : editSessions) {
 				if(session.getStaffUUID().equals(uuid)) {
-					System.out.println("Test1");
 					strings.remove(0);
 					strings.remove(0);
 					session.receivePromptResponse(event.getMessage());
+					break;
 				}
 			}
 		}
