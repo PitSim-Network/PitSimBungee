@@ -11,6 +11,7 @@ repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     maven { url "https://repo.mattmalec.com/repository/releases" }
     maven { url 'https://jitpack.io' }
+    maven { url 'https://m2.dv8tion.net/releases' }
 }
 
 dependencies {
@@ -23,6 +24,11 @@ dependencies {
     compileOnly 'com.google.firebase:firebase-admin:8.0.0'
     compileOnly files('libs/craftbukkit-1.8.8-R0.1-SNAPSHOT-latest.jar')
     compileOnly 'net.luckperms:api:5.4'
+
+    compileOnly group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
+    compileOnly ('net.dv8tion:JDA:4.2.1_262') {
+        exclude module: 'opus-java'
+    }
 }
 
 shadowJar {

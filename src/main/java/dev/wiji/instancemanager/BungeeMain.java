@@ -8,6 +8,7 @@ import de.sumafu.PlayerStatus.PlayerNeverConnectedException;
 import de.sumafu.PlayerStatus.PlayerStatus;
 import de.sumafu.PlayerStatus.PlayerStatusAPI;
 import dev.wiji.instancemanager.commands.*;
+import dev.wiji.instancemanager.discord.DiscordPlugin;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
 import dev.wiji.instancemanager.pitsim.*;
 import dev.wiji.instancemanager.storage.EditSessionManager;
@@ -45,7 +46,9 @@ public class BungeeMain extends Plugin {
 		STARTUP_TIME = System.currentTimeMillis();
 		FirestoreManager.init();
 
-		 psApi = PlayerStatus.getAPI();
+		psApi = PlayerStatus.getAPI();
+
+		DiscordPlugin.onEnable(this);
 
 //		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
 		getProxy().getPluginManager().registerListener(this, new PluginMessageManager());
@@ -96,6 +99,7 @@ public class BungeeMain extends Plugin {
 			FirestoreManager.registration.remove();
 		}
 
+		DiscordPlugin.onDisable();
 		ArcticGuilds.onDisable(this);
 	}
 
