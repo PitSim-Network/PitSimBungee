@@ -14,8 +14,6 @@ public enum Leaderboard {
 	AUCTIONS_WON("auctions-won", "auctionsWon"),
 	HIGHEST_BID("highest-bid", "highestBid");
 
-
-
 	public String refName;
 	public String fireStore;
 
