@@ -82,7 +82,6 @@ public class ArcticGuilds {
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new PermissionManager());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new GuildMessaging());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new InventoryManager());
-		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new DupeManager());
 	}
 
 	private static void registerBuffs() {

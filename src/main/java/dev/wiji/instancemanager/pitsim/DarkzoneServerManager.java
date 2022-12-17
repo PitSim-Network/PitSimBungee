@@ -56,7 +56,7 @@ public class DarkzoneServerManager {
 
 			for(int i = 1 + (players + (START_THRESHOLD - STOP_THRESHOLD - 1)) / 10; i < serverList.size(); i++) {
 				DarkzoneServer server = serverList.get(i);
-				if(server.status.isShuttingDown() || server.status == ServerStatus.OFFLINE) continue;
+				if(server.status.isShuttingDown() || server.status == ServerStatus.OFFLINE || server.status == ServerStatus.SUSPENDED) continue;
 				if(server.status == ServerStatus.RESTARTING_INITIAL) {
 					server.status = ServerStatus.SHUTTING_DOWN_INITIAL;
 					System.out.println("Switching restart to shut down: " + (i + 1));
@@ -74,11 +74,11 @@ public class DarkzoneServerManager {
 		for(String value : ServerManager.darkzoneServers.values()) serverList.add(new DarkzoneServer(value));
 
 		for(DarkzoneServer server : serverList) {
-//			if(ConfigManager.isDev()) {
-//				server.status = ServerStatus.RUNNING;
-//				server.setStartTime(System.currentTimeMillis());
-//				continue;
-//			}
+			if(ConfigManager.isDev()) {
+				server.status = ServerStatus.RUNNING;
+				server.setStartTime(System.currentTimeMillis());
+				continue;
+			}
 
 			server.status = ServerStatus.STARTING;
 			ServerManager.restartServer(server.getPteroID());
@@ -108,9 +108,8 @@ public class DarkzoneServerManager {
 			}
 		}
 
-
-		if(getTotalServers() == 0) {
-			player.sendMessage(new ComponentBuilder("There are currently no available servers. Please try again later.").color(ChatColor.RED).create());
+		if(ServerChangeListener.recentlyLeft.contains(player)) {
+			player.sendMessage(new ComponentBuilder("You recently left a server. Please wait a few seconds before rejoining.").color(ChatColor.RED).create());
 			return false;
 		}
 
@@ -120,10 +119,21 @@ public class DarkzoneServerManager {
 
 		if(requestedServer != 0) {
 			targetServer = serverList.get(requestedServer - 1);
-			if(targetServer.status != ServerStatus.RUNNING) {
+
+			if(player.hasPermission("pitsim.join")) {
+				if(!targetServer.status.isOnline()) {
+					player.sendMessage(new ComponentBuilder("This server is currently unavailable!").color(ChatColor.RED).create());
+					return false;
+				}
+			} else if(targetServer.status != ServerStatus.RUNNING) {
 				player.sendMessage(new ComponentBuilder("This server is currently unavailable!").color(ChatColor.RED).create());
 				return false;
 			}
+		}
+
+		if(getTotalServers() == 0 && targetServer == null) {
+			player.sendMessage(new ComponentBuilder("There are currently no available servers. Please try again later.").color(ChatColor.RED).create());
+			return false;
 		}
 
 		int players = getTotalPlayers();
@@ -152,7 +162,7 @@ public class DarkzoneServerManager {
 		if(targetServer == null) {
 
 			if(previousServer != null) {
-				if(previousServer.status == ServerStatus.RESTARTING_FINAL || previousServer.status == ServerStatus.SHUTTING_DOWN_FINAL) {
+				if(previousServer.status == ServerStatus.RESTARTING_FINAL || previousServer.status == ServerStatus.SHUTTING_DOWN_FINAL || previousServer.status == ServerStatus.SUSPENDED) {
 					player.connect(BungeeMain.INSTANCE.getProxy().getServerInfo(ConfigManager.getLobbyServer()));
 					return true;
 				}

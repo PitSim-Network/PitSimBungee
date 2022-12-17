@@ -8,10 +8,12 @@ import de.sumafu.PlayerStatus.PlayerNeverConnectedException;
 import de.sumafu.PlayerStatus.PlayerStatus;
 import de.sumafu.PlayerStatus.PlayerStatusAPI;
 import dev.wiji.instancemanager.commands.*;
+import dev.wiji.instancemanager.discord.DiscordPlugin;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
 import dev.wiji.instancemanager.pitsim.*;
 import dev.wiji.instancemanager.storage.EditSessionManager;
 import dev.wiji.instancemanager.storage.StorageManager;
+import dev.wiji.instancemanager.storage.dupe.DupeManager;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -44,7 +46,9 @@ public class BungeeMain extends Plugin {
 		STARTUP_TIME = System.currentTimeMillis();
 		FirestoreManager.init();
 
-		 psApi = PlayerStatus.getAPI();
+		psApi = PlayerStatus.getAPI();
+
+		DiscordPlugin.onEnable(this);
 
 //		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
 		getProxy().getPluginManager().registerListener(this, new PluginMessageManager());
@@ -55,6 +59,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new PitSimServerManager());
 		getProxy().getPluginManager().registerListener(this, new StorageManager());
 		getProxy().getPluginManager().registerListener(this, new EditSessionManager());
+		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new DupeManager());
 		ConfigManager.onEnable();
 		ConfigManager.getMiniServerList();
 
@@ -73,6 +78,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerCommand(this, new AdminCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new PTestCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new LobbiesCommand(this));
+		getProxy().getPluginManager().registerCommand(this, new ServerCommand());
 
 		ConfigManager.getPitSimServerList();
 		ConfigManager.getDarkzoneServerList();
@@ -93,6 +99,7 @@ public class BungeeMain extends Plugin {
 			FirestoreManager.registration.remove();
 		}
 
+		DiscordPlugin.onDisable();
 		ArcticGuilds.onDisable(this);
 	}
 

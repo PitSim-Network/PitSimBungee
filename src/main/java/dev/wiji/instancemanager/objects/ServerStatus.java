@@ -9,6 +9,7 @@ public enum ServerStatus {
 	RESTARTING_FINAL(ChatColor.RED),
 	SHUTTING_DOWN_INITIAL(ChatColor.GOLD),
 	SHUTTING_DOWN_FINAL(ChatColor.RED),
+	SUSPENDED(ChatColor.YELLOW),
 	OFFLINE(ChatColor.RED);
 
 
@@ -19,7 +20,7 @@ public enum ServerStatus {
 	}
 
 	public boolean isOnline() {
-		return this == RUNNING || this == RESTARTING_INITIAL || this == SHUTTING_DOWN_INITIAL;
+		return this == RUNNING || this == RESTARTING_INITIAL || this == SHUTTING_DOWN_INITIAL || this == SUSPENDED;
 	}
 
 	public boolean isShuttingDown() {
