@@ -1,12 +1,11 @@
 package dev.wiji.instancemanager.alogging;
 
 import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.Events.MessageEvent;
-import dev.wiji.instancemanager.Guilds.events.GuildChatEvent;
-import dev.wiji.instancemanager.Guilds.events.GuildCreateEvent;
-import dev.wiji.instancemanager.Misc.Misc;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import dev.wiji.instancemanager.events.MessageEvent;
+import dev.wiji.instancemanager.guilds.events.GuildChatEvent;
+import dev.wiji.instancemanager.guilds.events.GuildCreateEvent;
+import dev.wiji.instancemanager.misc.Misc;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 

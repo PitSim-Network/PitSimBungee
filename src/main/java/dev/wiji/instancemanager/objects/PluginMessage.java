@@ -16,7 +16,6 @@ public class PluginMessage {
     private final List<Integer> integers = new ArrayList<>();
     private final List<Long> longs = new ArrayList<>();
     private final List<Boolean> booleans = new ArrayList<>();
-    private final List<Long> longs = new ArrayList<>();
 
     private final List<ServerInfo> servers = new ArrayList<>();
 
@@ -61,11 +60,6 @@ public class PluginMessage {
 
     public PluginMessage writeString(String string) {
         strings.add(string);
-        return this;
-    }
-
-    public PluginMessage writeLong(long longValue) {
-        longs.add(longValue);
         return this;
     }
 
@@ -118,10 +112,6 @@ public class PluginMessage {
 
     public List<Boolean> getBooleans() {
         return booleans;
-    }
-
-    public List<Long> getLongs() {
-        return longs;
     }
 
     public List<ServerInfo> getServers() {
