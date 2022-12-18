@@ -2,6 +2,7 @@ package dev.wiji.instancemanager.storage;
 
 import com.google.gson.Gson;
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.objects.MainServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class StorageManager implements Listener {
 
@@ -48,9 +50,13 @@ public class StorageManager implements Listener {
 	}
 
 	public static StorageProfile getStorage(UUID uuid) {
+		System.out.println("Profiles: " + profiles);
+
 		for(StorageProfile profile : profiles) {
 			if(profile.getUUID().equals(uuid)) return profile;
 		}
+
+		System.out.println("Failed to fetch profile");
 
 		StorageProfile profile;
 
@@ -96,8 +102,10 @@ public class StorageManager implements Listener {
 
 		StorageProfile profile = getStorage(player.getUniqueId());
 
-		profile.save();
-		profiles.remove(profile);
+		((ProxyRunnable) () -> {
+			profile.save();
+			profiles.remove(profile);
+		}).runAfter(250, TimeUnit.MILLISECONDS);
 	}
 
 	@EventHandler
