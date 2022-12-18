@@ -192,11 +192,6 @@ public class DupeManager implements Listener {
 			}
 		}).start();
 
-		for(TrackedItem dupedItem : dupedItems) {
-			System.out.println(getPlayerName(dupedItem.playerUUID) + ": " + dupedItem.itemUUID.toString() + ", " +
-					dupedItem.itemStack.displayName + ", " + dupedItem.itemLocation.getUnformattedLocation());
-		}
-
 		for(TrackedMiscItem miscItem : miscItems) {
 			for(Map.Entry<UUID, Integer> entry : new ArrayList<>(miscItem.itemMap.entrySet()))
 				if(exemptPlayers.contains(entry.getKey())) miscItem.itemMap.remove(entry.getKey());
