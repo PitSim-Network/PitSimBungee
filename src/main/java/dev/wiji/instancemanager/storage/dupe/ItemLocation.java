@@ -1,8 +1,14 @@
 package dev.wiji.instancemanager.storage.dupe;
 
+import net.md_5.bungee.api.ChatColor;
+
 public abstract class ItemLocation {
 
 	public abstract String getLocation();
+
+	public String getUnformattedLocation() {
+		return ChatColor.stripColor(getLocation());
+	}
 
 	public static class InventoryLocation extends ItemLocation {
 		public int slot;
@@ -41,7 +47,7 @@ public abstract class ItemLocation {
 
 		@Override
 		public String getLocation() {
-			return "&dEnderchest " + enderchest + " &7(Slot &d" + slot + "&7)";
+			return ChatColor.translateAlternateColorCodes('&', "&dEnderchest " + enderchest + " &7(Slot &d" + slot + "&7)");
 		}
 	}
 }

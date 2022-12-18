@@ -3,12 +3,18 @@ package dev.wiji.instancemanager.storage.dupe;
 import com.google.gson.Gson;
 import de.sumafu.PlayerStatus.PlayerNeverConnectedException;
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.discord.Constants;
+import dev.wiji.instancemanager.discord.DiscordManager;
 import dev.wiji.instancemanager.storage.StorageProfile;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.luckperms.api.node.matcher.NodeMatcher;
 import net.md_5.bungee.api.plugin.Listener;
 import net.minecraft.server.v1_8_R3.MojangsonParseException;
 import net.minecraft.server.v1_8_R3.MojangsonParser;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
 import java.awt.*;
@@ -17,6 +23,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,6 +33,7 @@ public class DupeManager implements Listener {
 	public static List<TrackedItem> dupedItems = new ArrayList<>();
 	public static List<TrackedMiscItem> miscItems = new ArrayList<>();
 
+//	TODO: Only let this run on the main server
 	static {
 		miscItems.add(new TrackedMiscItem("Feathers", "feathers",
 				"***REMOVED***"));
@@ -122,23 +130,71 @@ public class DupeManager implements Listener {
 		System.out.println("Stage 3 initiated");
 
 		for(TrackedItem trackedItem : trackedItems) trackedItem.populate();
-		for(UUID playerUUID : playerUUIDs) {
-			System.out.println("player with duped item(s): " + getPlayerName(playerUUID));
-		}
 
 		System.out.println("Check completed, posting results");
+
+		TextChannel dupeChannel = DiscordManager.PRIVATE_GUILD.getTextChannelById(Constants.DUPE_CHANNEL);
+		assert dupeChannel != null;
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		if(!dupedItems.isEmpty()) dupeChannel.sendMessage(".\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" +
+				"Logging " + dupedItems.size() + " duped item" + (dupedItems.size() == 1 ? "" : "s") + " from " + dateFormat.format(new Date())).queue();
+
+		List<MessageEmbed> dupeEmbeds = new ArrayList<>();
+		EmbedBuilder embed = null;
+		List<UUID> players = new ArrayList<>();
+		int timesFound = 0;
+		for(int i = 0; i < dupedItems.size(); i++) {
+			TrackedItem dupedItem = dupedItems.get(i);
+			timesFound++;
+			if(!players.contains(dupedItem.playerUUID)) players.add(dupedItem.playerUUID);
+			if(embed != null) {
+				UUID previousUUID = dupedItems.get(i - 1).itemUUID;
+				if(!previousUUID.equals(dupedItem.itemUUID)) {
+					embed.setDescription("Item found " + timesFound + " time" + (timesFound == 1 ? "" : "s") + " " +
+							(players.size() == 1 ? "on 1 account" : "across " + players.size() + " accounts"));
+					dupeEmbeds.add(embed.build());
+
+					embed = null;
+					players.clear();
+					timesFound = 0;
+				}
+			}
+			if(embed == null){
+				embed = new EmbedBuilder()
+						.setTitle(dupedItem.itemUUID.toString() + " - " + getMaterialDisplayName(dupedItem.itemStack.material))
+						.setColor(getMaterialColor(dupedItem.itemStack.material));
+			}
+
+			embed.addField(ChatColor.stripColor(dupedItem.itemStack.displayName), getPlayerName(dupedItem.playerUUID) + "'s " +
+					dupedItem.itemLocation.getUnformattedLocation(), true);
+		}
+		new Thread(() -> {
+			while(!dupeEmbeds.isEmpty()) {
+				dupeChannel.sendMessage(dupeEmbeds.remove(0)).queue();
+				try {
+					Thread.sleep(1_000);
+				} catch(InterruptedException exception) {
+					throw new RuntimeException(exception);
+				}
+			}
+		}).start();
+
+		for(TrackedItem dupedItem : dupedItems) {
+			System.out.println(getPlayerName(dupedItem.playerUUID) + ": " + dupedItem.itemUUID.toString() + ", " +
+					dupedItem.itemStack.displayName + ", " + dupedItem.itemLocation.getUnformattedLocation());
+		}
 
 		for(TrackedMiscItem miscItem : miscItems) {
 			for(Map.Entry<UUID, Integer> entry : new ArrayList<>(miscItem.itemMap.entrySet()))
 				if(exemptPlayers.contains(entry.getKey())) miscItem.itemMap.remove(entry.getKey());
 			int total = miscItem.itemMap.values().stream().mapToInt(i -> i).sum();
 
-			DiscordWebhook discordWebhook = new DiscordWebhook(miscItem.webhookURI);
-			DiscordWebhook.EmbedObject embedObject = new DiscordWebhook.EmbedObject()
+			DiscordWebhook miscItemWebhook = new DiscordWebhook(miscItem.webhookURI);
+			DiscordWebhook.EmbedObject miscItemEmbed = new DiscordWebhook.EmbedObject()
 					.setTitle(miscItem.displayName)
 					.setDescription("Total " + miscItem.displayName + ": " + total)
 					.setColor(Color.BLACK);
-			discordWebhook.addEmbed(embedObject);
+			miscItemWebhook.addEmbed(miscItemEmbed);
 
 			Stream<Map.Entry<UUID, Integer>> sorted = miscItem.itemMap.entrySet().stream()
 					.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
@@ -146,17 +202,45 @@ public class DupeManager implements Listener {
 			AtomicInteger mapCount = new AtomicInteger(1);
 			sorted.forEach(entry -> {
 				String playerName = getPlayerName(entry.getKey());
-				embedObject.addField(mapCount.getAndIncrement() + ". " + playerName, entry.getValue() + " " + miscItem.displayName, true);
+				miscItemEmbed.addField(mapCount.getAndIncrement() + ". " + playerName, entry.getValue() + " " + miscItem.displayName, true);
 			});
 
 			try {
-				discordWebhook.execute();
+				miscItemWebhook.execute();
 			} catch(IOException e) {
 				e.printStackTrace();
 			}
 		}
 
-		System.out.println("Results posted");
+		System.out.println("Results posted/queued");
+	}
+
+	public static String getMaterialDisplayName(Material material) {
+		switch(material) {
+			case GOLD_SWORD:
+				return "Gold Sword";
+			case BOW:
+				return "Bow";
+			case LEATHER_LEGGINGS:
+				return "Leather Leggings";
+			case LEATHER_CHESTPLATE:
+				return "Leather Chestplate";
+		}
+		return material.toString();
+	}
+
+	public static Color getMaterialColor(Material material) {
+		switch(material) {
+			case GOLD_SWORD:
+				return new Color(0xFFFF55);
+			case BOW:
+				return new Color(0x55FFFF);
+			case LEATHER_LEGGINGS:
+				return new Color(0x00AAAA);
+			case LEATHER_CHESTPLATE:
+				return new Color(0xAA00AA);
+		}
+		return Color.BLACK;
 	}
 
 	public static TrackedMiscItem getTrack(String refName) {
