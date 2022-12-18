@@ -22,8 +22,6 @@ public class DiscordPlugin {
 
 		DiscordManager.registerCommand(new PingCommand());
 //		DiscordManager.registerCommand(new VerifyCommand());
-
-		instance.getProxy().getPluginManager().registerListener(instance, new InGameNitro());
 	}
 
 	public static void onDisable() {
