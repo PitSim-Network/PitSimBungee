@@ -1,7 +1,6 @@
 package dev.wiji.instancemanager.discord;
 
 import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.pitsim.ServerDataManager;
 import net.luckperms.api.LuckPerms;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
@@ -22,8 +21,6 @@ public class DiscordPlugin {
 
 		DiscordManager.registerCommand(new PingCommand());
 //		DiscordManager.registerCommand(new VerifyCommand());
-
-		instance.getProxy().getPluginManager().registerListener(instance, new InGameNitro());
 	}
 
 	public static void onDisable() {
