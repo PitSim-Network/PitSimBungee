@@ -133,8 +133,6 @@ public class StorageProfile {
 	}
 
 	public void updateData(PluginMessage message, String server) {
-
-
 		boolean logout = message.getBooleans().get(0);
 		if(logout) {
 			MainServer mainServer = MainServer.getServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
