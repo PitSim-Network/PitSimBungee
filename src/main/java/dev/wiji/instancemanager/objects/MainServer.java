@@ -105,6 +105,7 @@ public abstract class MainServer {
 
 	public void removeProfile(StorageProfile profile) {
 		System.out.println("Server remove list 1: " + loadedProfiles.toString());
+		System.out.println("Removed Profile: " + profile);
 		if(profile != null) loadedProfiles.remove(profile);
 		System.out.println("Server remove list 2: " + loadedProfiles.toString());
 	}

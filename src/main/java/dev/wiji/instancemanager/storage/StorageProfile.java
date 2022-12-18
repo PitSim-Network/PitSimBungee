@@ -125,8 +125,7 @@ public class StorageProfile {
 		Objects.requireNonNull(MainServer.getServer(server)).addProfile(this);
 	}
 
-	public void updateData(PluginMessage message, String server) {
-		boolean logout = message.getBooleans().get(0);
+	public void updateData(PluginMessage message, String server, boolean logout) {
 		if(logout) {
 			MainServer mainServer = MainServer.getServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
 			if(mainServer == null) {
@@ -142,7 +141,7 @@ public class StorageProfile {
 
 		}
 
-		System.out.println("Updating: " + uuid + " " + logout + " " + hashCode());
+		System.out.println("Updating: " + uuid + " " + logout + " " + this);
 
 		int totalIndex = 0;
 

@@ -91,22 +91,31 @@ public class StorageManager implements Listener {
 			strings.remove(0);
 			strings.remove(0);
 			strings.remove(0);
-			profile.updateData(message, server);
+			boolean logout = message.getBooleans().get(0);
+
+			profile.updateData(message, server, logout);
+
+			if(logout) {
+				ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(uuid);
+				if(player == null) {
+					profiles.remove(profile);
+				}
+			}
+
 		}
 	}
 
-	@EventHandler
-	public void onLeave(PlayerDisconnectEvent event) {
-		ProxiedPlayer player = event.getPlayer();
-
-		StorageProfile profile = getStorage(player.getUniqueId());
-		profile.save();
-		profiles.remove(profile);
-
-//		((ProxyRunnable) () -> {
+//	@EventHandler
+//	public void onLeave(PlayerDisconnectEvent event) {
+//		ProxiedPlayer player = event.getPlayer();
 //
-//		}).runAfter(200, TimeUnit.MILLISECONDS);
-	}
+//		StorageProfile profile = getStorage(player.getUniqueId());
+//
+//
+////		((ProxyRunnable) () -> {
+////
+////		}).runAfter(200, TimeUnit.MILLISECONDS);
+//	}
 
 	@EventHandler
 	public void onJoin(PostLoginEvent event) {

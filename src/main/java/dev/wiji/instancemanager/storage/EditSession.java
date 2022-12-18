@@ -76,6 +76,7 @@ public class EditSession {
 				}
 			}
 
+			System.out.println("Initial Profile: " + editProfile);
 
 			sendTask = new ProxyRunnable() {
 				@Override
