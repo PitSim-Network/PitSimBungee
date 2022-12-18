@@ -3,7 +3,6 @@ package dev.wiji.instancemanager.storage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.objects.MainServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.md_5.bungee.api.ChatColor;
@@ -16,7 +15,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class StorageProfile {
 	public static final int ENDERCHEST_PAGES = 18;
@@ -87,6 +85,11 @@ public class StorageProfile {
 	}
 
 	public void sendToServer(ServerInfo server, boolean wait) {
+//		System.out.println("a");
+//		System.out.println("a");
+//		System.out.println("a");
+//		System.out.println("a");
+//		System.out.println("a");
 
 		MainServer loadedServer = MainServer.getLoadedServer(this);
 
@@ -120,7 +123,7 @@ public class StorageProfile {
 
 		message.writeInt(count);
 
-		System.out.println("Sending: " + uuid + " " + hashCode());
+//		System.out.println("Sending: " + uuid + " " + hashCode());
 		message.send();
 		Objects.requireNonNull(MainServer.getServer(server)).addProfile(this);
 	}
@@ -134,14 +137,13 @@ public class StorageProfile {
 				return;
 			}
 
-			System.out.println("Loaded profiles 1: " + mainServer.getLoadedProfiles());
+//			System.out.println("Loaded profiles 1: " + mainServer.getLoadedProfiles());
 			mainServer.removeProfile(this);
-			System.out.println("Loaded profiles 2: " + mainServer.getLoadedProfiles());
+//			System.out.println("Loaded profiles 2: " + mainServer.getLoadedProfiles());
 			System.out.println(server);
-
 		}
 
-		System.out.println("Updating: " + uuid + " " + logout + " " + this);
+//		System.out.println("Updating: " + uuid + " " + logout + " " + this);
 
 		int totalIndex = 0;
 
@@ -155,8 +157,6 @@ public class StorageProfile {
 		for(int i = 0; i < 36; i++) {
 			inventoryStrings[i] = message.getStrings().get(i + totalIndex);
 		}
-
-		System.out.println(inventoryStrings[0]);
 
 		for(int i = 0; i < 4; i++) {
 			armor[i] = message.getStrings().get((i + totalIndex) + 36);

@@ -58,7 +58,7 @@ public class EditSession {
 		List<String> strings = message.getStrings();
 		List<Boolean> booleans = message.getBooleans();
 
-		System.out.println("Test2");
+//		System.out.println("Test2");
 
 		timeoutTask.cancel();
 		timeoutTask = null;
@@ -76,18 +76,17 @@ public class EditSession {
 				}
 			}
 
-			System.out.println("Initial Profile: " + editProfile);
+//			System.out.println("Initial Profile: " + editProfile);
 
 			sendTask = new ProxyRunnable() {
 				@Override
 				public void run() {
 					MainServer server = MainServer.getLoadedServer(editProfile);
-					System.out.println("Repeat task");
-					System.out.println("Global: " + StorageManager.isLoaded(editProfile));
-					System.out.println("Local:" + (server == null));
-					if(!StorageManager.isLoaded(editProfile) && server == null) {
+//					System.out.println("Repeat task: " + editProfile);
+//					System.out.println("Local: " + (server == null));
+					if(server == null) {
 						StorageManager.getStorage(playerUUID).sendToServer(getStaffServer(), true);
-						System.out.println("Execute");
+//						System.out.println("Execute");
 						sendTask.cancel();
 					}
 				}

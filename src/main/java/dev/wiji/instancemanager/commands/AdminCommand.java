@@ -226,9 +226,6 @@ public class AdminCommand extends Command {
 		}
 
 		if(args[0].equalsIgnoreCase("edit")) {
-
-
-
 			if(args.length < 2) {
 				AOutput.error(player, "&cUsage: /admin edit <player>");
 				return;

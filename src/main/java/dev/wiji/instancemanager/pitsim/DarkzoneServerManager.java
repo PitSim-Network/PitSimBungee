@@ -173,6 +173,7 @@ public class DarkzoneServerManager {
 		}
 
 		StorageProfile profile = StorageManager.getStorage(player.getUniqueId());
+//		System.out.println("the profile that we are sending: " + profile);
 		profile.sendToServer(targetServer.getServerInfo(), false);
 
 		player.sendMessage((new ComponentBuilder("Sending you to " + targetServer.getServerInfo().getName()).color(ChatColor.GREEN).create()));

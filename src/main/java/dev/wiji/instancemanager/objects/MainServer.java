@@ -97,17 +97,14 @@ public abstract class MainServer {
 
 	public static MainServer getLoadedServer(StorageProfile profile) {
 		for(MainServer mainServer : serverList) {
-			System.out.println(mainServer.getServerInfo().getName() + mainServer.loadedProfiles.toString());
 			if(mainServer.loadedProfiles.contains(profile)) return mainServer;
 		}
 		return null;
 	}
 
 	public void removeProfile(StorageProfile profile) {
-		System.out.println("Server remove list 1: " + loadedProfiles.toString());
-		System.out.println("Removed Profile: " + profile);
+//		System.out.println("Removed Profile: " + profile);
 		if(profile != null) loadedProfiles.remove(profile);
-		System.out.println("Server remove list 2: " + loadedProfiles.toString());
 	}
 
 	public List<StorageProfile> getLoadedProfiles() {

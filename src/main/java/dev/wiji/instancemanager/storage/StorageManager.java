@@ -2,30 +2,22 @@ package dev.wiji.instancemanager.storage;
 
 import com.google.gson.Gson;
 import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.events.MessageEvent;
-import dev.wiji.instancemanager.objects.MainServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.pitsim.PitSimServerManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
-import net.md_5.bungee.api.event.ServerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import org.bukkit.craftbukkit.Main;
 
 import java.io.File;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class StorageManager implements Listener {
 
@@ -101,7 +93,6 @@ public class StorageManager implements Listener {
 					profiles.remove(profile);
 				}
 			}
-
 		}
 	}
 
@@ -168,6 +159,4 @@ public class StorageManager implements Listener {
 	public static boolean isLoaded(StorageProfile profile) {
 		return profiles.contains(profile);
 	}
-
-
 }
