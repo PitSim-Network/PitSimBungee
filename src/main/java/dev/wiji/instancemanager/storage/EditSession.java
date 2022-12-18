@@ -64,7 +64,6 @@ public class EditSession {
 			endSession();
 		} else if(strings.get(0).equals("OFFLINE")) {
 			isActive = true;
-			editProfile.sendToServer(getStaffServer());
 
 			boolean kick = booleans.get(0);
 			if(kick && playerIsInPitsim()) {
@@ -73,6 +72,8 @@ public class EditSession {
 					player.disconnect(TextComponent.fromLegacyText(ChatColor.RED + "Your data is being modified. Please rejoin in a moment."));
 				}
 			}
+
+			editProfile.sendToServer(getStaffServer(), true);
 		}
 	}
 

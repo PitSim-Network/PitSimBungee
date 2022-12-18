@@ -11,6 +11,7 @@ import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
 import net.luckperms.api.node.Node;
 import net.luckperms.api.node.NodeEqualityPredicate;
+import net.md_5.bungee.api.plugin.Listener;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-public class InGameNitro {
+public class InGameNitro implements Listener {
 	public Role nitroRole = DiscordManager.GUILD.getRoleById(Constants.NITRO_ROLE_ID);
 
 	public InGameNitro() {
@@ -71,6 +72,7 @@ public class InGameNitro {
 
 	public void sendNitroMessages(List<String> memberIGNs) {
 		PluginMessage message = new PluginMessage().writeString("NITRO PLAYERS");
+		System.out.println("nitro");
 		for(String memberIGN : memberIGNs) {
 			message.writeString(memberIGN);
 		}

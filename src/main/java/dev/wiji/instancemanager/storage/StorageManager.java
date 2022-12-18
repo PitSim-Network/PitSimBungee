@@ -3,21 +3,26 @@ package dev.wiji.instancemanager.storage;
 import com.google.gson.Gson;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.events.MessageEvent;
+import dev.wiji.instancemanager.objects.MainServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.pitsim.PitSimServerManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.event.ServerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import org.bukkit.craftbukkit.Main;
 
 import java.io.File;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class StorageManager implements Listener {
@@ -110,6 +115,23 @@ public class StorageManager implements Listener {
 		message.send();
 		StorageManager.loadPlayerData(event.getPlayer().getUniqueId());
 	}
+
+//	@EventHandler
+//	public void onServerLeave(ServerDisconnectEvent event) {
+//		ProxiedPlayer player = event.getPlayer();
+//		ServerInfo server = event.getTarget();
+//
+//		if(MainServer.getServer(server) == null) return;
+//		StorageProfile profile = getStorage(player.getUniqueId());
+//		List<StorageProfile> profiles = Objects.requireNonNull(MainServer.getServer(server)).loadedProfiles;
+//
+//		if(!profiles.contains(profile)) {
+//			//TODO: Critical Error
+//			return;
+//		}
+//
+//		profiles.remove(profile);
+//	}
 
 	public static void loadPlayerData(String playerName) {
 		UUID uuid = BungeeMain.getUUID(playerName, false);

@@ -3,6 +3,8 @@ package dev.wiji.instancemanager.storage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ProxyRunnable;
+import dev.wiji.instancemanager.objects.MainServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -12,7 +14,9 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class StorageProfile {
 	public static final int ENDERCHEST_PAGES = 18;
@@ -82,7 +86,23 @@ public class StorageProfile {
 
 	}
 
-	public void sendToServer(ServerInfo server) {
+	public void sendToServer(ServerInfo server, boolean wait) {
+
+		MainServer loadedServer = MainServer.getLoadedServer(this);
+		if(loadedServer != null && !wait) {
+			//TODO: Critical error
+			System.out.println("CRITICAL ERROR");
+			return;
+		}
+
+		if(wait && loadedServer != null) {
+			((ProxyRunnable) () -> {
+				sendToServer(server, true);
+				System.out.println("waiting");
+			}).runAfter(250, TimeUnit.MILLISECONDS);
+			return;
+		}
+
 		PluginMessage message = new PluginMessage().addServer(server);
 
 		message.writeString("PLAYER DATA").writeString(uuid.toString());
@@ -107,10 +127,28 @@ public class StorageProfile {
 
 		message.writeInt(count);
 
+		System.out.println("Sending: " + uuid + " " + hashCode());
 		message.send();
+		Objects.requireNonNull(MainServer.getServer(server)).addProfile(this);
 	}
 
 	public void updateData(PluginMessage message, String server) {
+
+
+		boolean logout = message.getBooleans().get(0);
+		if(logout) {
+			MainServer mainServer = MainServer.getServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
+			if(mainServer == null) {
+				System.out.println("Critical Error 1");
+				//TODO: Critical Error
+				return;
+			}
+
+			mainServer.removeProfile(this);
+
+		}
+
+		System.out.println("Updating: " + uuid + " " + logout + " " + hashCode());
 
 		int totalIndex = 0;
 
@@ -124,6 +162,8 @@ public class StorageProfile {
 		for(int i = 0; i < 36; i++) {
 			inventoryStrings[i] = message.getStrings().get(i + totalIndex);
 		}
+
+		System.out.println(inventoryStrings[0]);
 
 		for(int i = 0; i < 4; i++) {
 			armor[i] = message.getStrings().get((i + totalIndex) + 36);
