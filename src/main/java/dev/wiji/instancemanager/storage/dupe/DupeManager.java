@@ -3,12 +3,20 @@ package dev.wiji.instancemanager.storage.dupe;
 import com.google.gson.Gson;
 import de.sumafu.PlayerStatus.PlayerNeverConnectedException;
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ConfigManager;
+import dev.wiji.instancemanager.discord.Constants;
+import dev.wiji.instancemanager.discord.DiscordManager;
+import dev.wiji.instancemanager.misc.Misc;
 import dev.wiji.instancemanager.storage.StorageProfile;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.luckperms.api.node.matcher.NodeMatcher;
 import net.md_5.bungee.api.plugin.Listener;
 import net.minecraft.server.v1_8_R3.MojangsonParseException;
 import net.minecraft.server.v1_8_R3.MojangsonParser;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
 import java.awt.*;
@@ -17,12 +25,14 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 public class DupeManager implements Listener {
+	public static boolean running = false;
 	public static List<TrackedItem> dupedItems = new ArrayList<>();
 	public static List<TrackedMiscItem> miscItems = new ArrayList<>();
 
@@ -34,6 +44,15 @@ public class DupeManager implements Listener {
 		miscItems.add(new TrackedMiscItem("Gems", "gems",
 				"***REMOVED***"));
 
+//		TODO: Uncomment to stop from running on dev server after testing is finished
+//		if(!ConfigManager.isDev()) run();
+		run();
+	}
+
+	public static void run() {
+		if(running) throw new RuntimeException();
+		running = true;
+		dupedItems.clear();
 		new Thread(() -> {
 			Set<UUID> exemptPlayers;
 			try {
@@ -66,7 +85,7 @@ public class DupeManager implements Listener {
 					if(itemString == null || itemString.isEmpty()) continue;
 					LimitedItemStack itemStack = deserialize(itemString);
 					if(itemStack.nbtData == null) continue;
-					playerItemMap.put(itemStack, new ItemLocation.InventoryLocation(j));
+					playerItemMap.put(itemStack, new ItemLocation.InventoryLocation(j + 1));
 				}
 				for(int j = 0; j < storageProfile.getArmor().length; j++) {
 					String itemString = storageProfile.getArmor()[j];
@@ -81,7 +100,7 @@ public class DupeManager implements Listener {
 						if(itemString == null || itemString.isEmpty()) continue;
 						LimitedItemStack itemStack = deserialize(itemString);
 						if(itemStack.nbtData == null) continue;
-						playerItemMap.put(itemStack, new ItemLocation.EnderchestLocation(j + 1, k + 9));
+						playerItemMap.put(itemStack, new ItemLocation.EnderchestLocation(j + 1, k + 1));
 					}
 				}
 
@@ -90,11 +109,15 @@ public class DupeManager implements Listener {
 
 					trackMiscItem(playerUUID, itemStack);
 
-					if(!itemStack.nbtData.hasKey(NBTTag.ITEM_UUID.getRef()) || !itemStack.nbtData.hasKey(NBTTag.ITEM_JEWEL_ENCHANT.getRef())) continue;
+					if(!itemStack.nbtData.hasKey(NBTTag.ITEM_UUID.getRef())) continue;
+					if(!itemStack.nbtData.hasKey(NBTTag.ITEM_JEWEL_ENCHANT.getRef()) && itemStack.material != Material.CHAINMAIL_CHESTPLATE &&
+							itemStack.material != Material.LEATHER_CHESTPLATE && itemStack.material != Material.STONE_HOE &&
+							itemStack.material != Material.GOLD_HOE) continue;
 					trackedItems.add(new TrackedItem(playerUUID, itemStack, entry.getValue()));
 				}
 			}
 			checkForDuplicates(trackedItems, exemptPlayers);
+			running = false;
 		}).start();
 	}
 
@@ -122,23 +145,64 @@ public class DupeManager implements Listener {
 		System.out.println("Stage 3 initiated");
 
 		for(TrackedItem trackedItem : trackedItems) trackedItem.populate();
-		for(UUID playerUUID : playerUUIDs) {
-			System.out.println("player with duped item(s): " + getPlayerName(playerUUID));
-		}
 
 		System.out.println("Check completed, posting results");
+
+		TextChannel dupeChannel = DiscordManager.PRIVATE_GUILD.getTextChannelById(Constants.DUPE_CHANNEL);
+		assert dupeChannel != null;
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		if(!dupedItems.isEmpty()) dupeChannel.sendMessage(".\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" +
+				(ConfigManager.isDev() ? "" : "@everyone ") + "Logging " + dupedItems.size() + " duped item" + (dupedItems.size() == 1 ? "" : "s") + " from " +
+				dateFormat.format(Misc.convertToEST(new Date()))).queue();
+
+		List<MessageEmbed> dupeEmbeds = new ArrayList<>();
+		EmbedBuilder embedBuilder = null;
+		List<UUID> players = new ArrayList<>();
+		int timesFound = 0;
+		for(int i = 0; i < dupedItems.size(); i++) {
+			TrackedItem dupedItem = dupedItems.get(i);
+			if(i == 0) {
+				embedBuilder = getNextEmbed(dupedItem);
+			} else {
+				UUID previousUUID = dupedItems.get(i - 1).itemUUID;
+				if(!previousUUID.equals(dupedItem.itemUUID)) {
+					embedBuilder.setDescription("Item found " + timesFound + " time" + (timesFound == 1 ? "" : "s") + " " +
+							(players.size() == 1 ? "on 1 account" : "across " + players.size() + " accounts"));
+					dupeEmbeds.add(embedBuilder.build());
+
+					embedBuilder = getNextEmbed(dupedItem);
+					players.clear();
+					timesFound = 0;
+				}
+			}
+			timesFound++;
+			if(!players.contains(dupedItem.playerUUID)) players.add(dupedItem.playerUUID);
+
+			embedBuilder.addField(ChatColor.stripColor(dupedItem.itemStack.displayName), getPlayerName(dupedItem.playerUUID) + "'s " +
+					dupedItem.itemLocation.getUnformattedLocation(), true);
+		}
+		new Thread(() -> {
+			while(!dupeEmbeds.isEmpty()) {
+				dupeChannel.sendMessage(dupeEmbeds.remove(0)).queue();
+				try {
+					Thread.sleep(1_000);
+				} catch(InterruptedException exception) {
+					throw new RuntimeException(exception);
+				}
+			}
+		}).start();
 
 		for(TrackedMiscItem miscItem : miscItems) {
 			for(Map.Entry<UUID, Integer> entry : new ArrayList<>(miscItem.itemMap.entrySet()))
 				if(exemptPlayers.contains(entry.getKey())) miscItem.itemMap.remove(entry.getKey());
 			int total = miscItem.itemMap.values().stream().mapToInt(i -> i).sum();
 
-			DiscordWebhook discordWebhook = new DiscordWebhook(miscItem.webhookURI);
-			DiscordWebhook.EmbedObject embedObject = new DiscordWebhook.EmbedObject()
+			DiscordWebhook miscItemWebhook = new DiscordWebhook(miscItem.webhookURI);
+			DiscordWebhook.EmbedObject miscItemEmbed = new DiscordWebhook.EmbedObject()
 					.setTitle(miscItem.displayName)
 					.setDescription("Total " + miscItem.displayName + ": " + total)
 					.setColor(Color.BLACK);
-			discordWebhook.addEmbed(embedObject);
+			miscItemWebhook.addEmbed(miscItemEmbed);
 
 			Stream<Map.Entry<UUID, Integer>> sorted = miscItem.itemMap.entrySet().stream()
 					.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
@@ -146,17 +210,61 @@ public class DupeManager implements Listener {
 			AtomicInteger mapCount = new AtomicInteger(1);
 			sorted.forEach(entry -> {
 				String playerName = getPlayerName(entry.getKey());
-				embedObject.addField(mapCount.getAndIncrement() + ". " + playerName, entry.getValue() + " " + miscItem.displayName, true);
+				miscItemEmbed.addField(mapCount.getAndIncrement() + ". " + playerName, entry.getValue() + " " + miscItem.displayName, true);
 			});
 
 			try {
-				discordWebhook.execute();
+				miscItemWebhook.execute();
 			} catch(IOException e) {
 				e.printStackTrace();
 			}
 		}
 
-		System.out.println("Results posted");
+		System.out.println("Results posted/queued");
+	}
+
+	public static EmbedBuilder getNextEmbed(TrackedItem dupedItem) {
+		return new EmbedBuilder()
+				.setTitle(dupedItem.itemUUID.toString() + " - " + getMaterialDisplayName(dupedItem.itemStack.material))
+				.setColor(getMaterialColor(dupedItem.itemStack.material));
+	}
+
+	public static String getMaterialDisplayName(Material material) {
+		switch(material) {
+			case GOLD_SWORD:
+				return "Gold Sword";
+			case BOW:
+				return "Bow";
+			case LEATHER_LEGGINGS:
+				return "Leather Leggings";
+			case GOLD_HOE:
+				return "Gold Hoe";
+			case STONE_HOE:
+				return "Stone Hoe";
+			case LEATHER_CHESTPLATE:
+				return "Leather Chestplate";
+			case CHAINMAIL_CHESTPLATE:
+				return "Chainmail Chestplate";
+		}
+		return material.toString();
+	}
+
+	public static Color getMaterialColor(Material material) {
+		switch(material) {
+			case GOLD_SWORD:
+				return new Color(0xFFFF55);
+			case BOW:
+				return new Color(0x55FFFF);
+			case LEATHER_LEGGINGS:
+				return new Color(0x00AA00);
+			case GOLD_HOE:
+			case STONE_HOE:
+				return new Color(0xFF55FF);
+			case LEATHER_CHESTPLATE:
+			case CHAINMAIL_CHESTPLATE:
+				return new Color(0xAA00AA);
+		}
+		return Color.BLACK;
 	}
 
 	public static TrackedMiscItem getTrack(String refName) {

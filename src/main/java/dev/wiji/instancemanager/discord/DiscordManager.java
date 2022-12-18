@@ -23,7 +23,8 @@ public class DiscordManager implements EventListener {
 	public static List<DiscordCommand> commands = new ArrayList<>();
 	public static String prefix = ".";
 
-	public static Guild GUILD;
+	public static Guild MAIN_GUILD;
+	public static Guild PRIVATE_GUILD;
 
 	public DiscordManager() {
 
@@ -39,7 +40,8 @@ public class DiscordManager implements EventListener {
 			e.printStackTrace();
 		}
 
-		GUILD = JDA.getGuildById(Constants.GUILD_ROLE_ID);
+		MAIN_GUILD = JDA.getGuildById(Constants.MAIN_GUILD_ROLE_ID);
+		PRIVATE_GUILD = JDA.getGuildById(Constants.PRIVATE_GUILD_ROLE_ID);
 //
 //		DiscordPlugin.INSTANCE.getServer().getPluginManager().registerEvents(new InGameNitro(), DiscordPlugin.INSTANCE);
 //		DiscordPlugin.INSTANCE.getServer().getPluginManager().registerEvents(new MiscManager(), DiscordPlugin.INSTANCE);
