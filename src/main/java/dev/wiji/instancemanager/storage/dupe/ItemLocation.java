@@ -19,7 +19,7 @@ public abstract class ItemLocation {
 
 		@Override
 		public String getLocation() {
-			return "&eInventory &7(Slot &e" + slot + "&7)";
+			return ChatColor.translateAlternateColorCodes('&', "&eInventory &7(Slot &e" + slot + "&7)");
 		}
 	}
 
@@ -32,7 +32,17 @@ public abstract class ItemLocation {
 
 		@Override
 		public String getLocation() {
-			return "&fArmor &7(Slot &f" + slot + "&d)";
+			switch(slot) {
+				case 0:
+					return ChatColor.translateAlternateColorCodes('&', "&fArmor &7(&fBoots&7)");
+				case 1:
+					return ChatColor.translateAlternateColorCodes('&', "&fArmor &7(&fLeggings&7)");
+				case 2:
+					return ChatColor.translateAlternateColorCodes('&', "&fArmor &7(&fChestplate&7)");
+				case 3:
+					return ChatColor.translateAlternateColorCodes('&', "&fArmor &7(&fHelmet&7)");
+			}
+			throw new RuntimeException();
 		}
 	}
 

@@ -3,8 +3,10 @@ package dev.wiji.instancemanager.storage.dupe;
 import com.google.gson.Gson;
 import de.sumafu.PlayerStatus.PlayerNeverConnectedException;
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.discord.Constants;
 import dev.wiji.instancemanager.discord.DiscordManager;
+import dev.wiji.instancemanager.misc.Misc;
 import dev.wiji.instancemanager.storage.StorageProfile;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -30,10 +32,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 public class DupeManager implements Listener {
+	public static boolean running = false;
 	public static List<TrackedItem> dupedItems = new ArrayList<>();
 	public static List<TrackedMiscItem> miscItems = new ArrayList<>();
 
-//	TODO: Only let this run on the main server
 	static {
 		miscItems.add(new TrackedMiscItem("Feathers", "feathers",
 				"***REMOVED***"));
@@ -42,6 +44,15 @@ public class DupeManager implements Listener {
 		miscItems.add(new TrackedMiscItem("Gems", "gems",
 				"***REMOVED***"));
 
+//		TODO: Uncomment to stop from running on dev server after testing is finished
+//		if(!ConfigManager.isDev()) run();
+		run();
+	}
+
+	public static void run() {
+		if(running) throw new RuntimeException();
+		running = true;
+		dupedItems.clear();
 		new Thread(() -> {
 			Set<UUID> exemptPlayers;
 			try {
@@ -74,7 +85,7 @@ public class DupeManager implements Listener {
 					if(itemString == null || itemString.isEmpty()) continue;
 					LimitedItemStack itemStack = deserialize(itemString);
 					if(itemStack.nbtData == null) continue;
-					playerItemMap.put(itemStack, new ItemLocation.InventoryLocation(j));
+					playerItemMap.put(itemStack, new ItemLocation.InventoryLocation(j + 1));
 				}
 				for(int j = 0; j < storageProfile.getArmor().length; j++) {
 					String itemString = storageProfile.getArmor()[j];
@@ -89,7 +100,7 @@ public class DupeManager implements Listener {
 						if(itemString == null || itemString.isEmpty()) continue;
 						LimitedItemStack itemStack = deserialize(itemString);
 						if(itemStack.nbtData == null) continue;
-						playerItemMap.put(itemStack, new ItemLocation.EnderchestLocation(j + 1, k + 9));
+						playerItemMap.put(itemStack, new ItemLocation.EnderchestLocation(j + 1, k + 1));
 					}
 				}
 
@@ -98,11 +109,15 @@ public class DupeManager implements Listener {
 
 					trackMiscItem(playerUUID, itemStack);
 
-					if(!itemStack.nbtData.hasKey(NBTTag.ITEM_UUID.getRef()) || !itemStack.nbtData.hasKey(NBTTag.ITEM_JEWEL_ENCHANT.getRef())) continue;
+					if(!itemStack.nbtData.hasKey(NBTTag.ITEM_UUID.getRef())) continue;
+					if(!itemStack.nbtData.hasKey(NBTTag.ITEM_JEWEL_ENCHANT.getRef()) && itemStack.material != Material.CHAINMAIL_CHESTPLATE &&
+							itemStack.material != Material.LEATHER_CHESTPLATE && itemStack.material != Material.STONE_HOE &&
+							itemStack.material != Material.GOLD_HOE) continue;
 					trackedItems.add(new TrackedItem(playerUUID, itemStack, entry.getValue()));
 				}
 			}
 			checkForDuplicates(trackedItems, exemptPlayers);
+			running = false;
 		}).start();
 	}
 
@@ -137,35 +152,33 @@ public class DupeManager implements Listener {
 		assert dupeChannel != null;
 		SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		if(!dupedItems.isEmpty()) dupeChannel.sendMessage(".\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" +
-				"Logging " + dupedItems.size() + " duped item" + (dupedItems.size() == 1 ? "" : "s") + " from " + dateFormat.format(new Date())).queue();
+				(ConfigManager.isDev() ? "" : "@everyone ") + "Logging " + dupedItems.size() + " duped item" + (dupedItems.size() == 1 ? "" : "s") + " from " +
+				dateFormat.format(Misc.convertToEST(new Date()))).queue();
 
 		List<MessageEmbed> dupeEmbeds = new ArrayList<>();
-		EmbedBuilder embed = null;
+		EmbedBuilder embedBuilder = null;
 		List<UUID> players = new ArrayList<>();
 		int timesFound = 0;
 		for(int i = 0; i < dupedItems.size(); i++) {
 			TrackedItem dupedItem = dupedItems.get(i);
-			timesFound++;
-			if(!players.contains(dupedItem.playerUUID)) players.add(dupedItem.playerUUID);
-			if(embed != null) {
+			if(i == 0) {
+				embedBuilder = getNextEmbed(dupedItem);
+			} else {
 				UUID previousUUID = dupedItems.get(i - 1).itemUUID;
 				if(!previousUUID.equals(dupedItem.itemUUID)) {
-					embed.setDescription("Item found " + timesFound + " time" + (timesFound == 1 ? "" : "s") + " " +
+					embedBuilder.setDescription("Item found " + timesFound + " time" + (timesFound == 1 ? "" : "s") + " " +
 							(players.size() == 1 ? "on 1 account" : "across " + players.size() + " accounts"));
-					dupeEmbeds.add(embed.build());
+					dupeEmbeds.add(embedBuilder.build());
 
-					embed = null;
+					embedBuilder = getNextEmbed(dupedItem);
 					players.clear();
 					timesFound = 0;
 				}
 			}
-			if(embed == null){
-				embed = new EmbedBuilder()
-						.setTitle(dupedItem.itemUUID.toString() + " - " + getMaterialDisplayName(dupedItem.itemStack.material))
-						.setColor(getMaterialColor(dupedItem.itemStack.material));
-			}
+			timesFound++;
+			if(!players.contains(dupedItem.playerUUID)) players.add(dupedItem.playerUUID);
 
-			embed.addField(ChatColor.stripColor(dupedItem.itemStack.displayName), getPlayerName(dupedItem.playerUUID) + "'s " +
+			embedBuilder.addField(ChatColor.stripColor(dupedItem.itemStack.displayName), getPlayerName(dupedItem.playerUUID) + "'s " +
 					dupedItem.itemLocation.getUnformattedLocation(), true);
 		}
 		new Thread(() -> {
@@ -215,6 +228,12 @@ public class DupeManager implements Listener {
 		System.out.println("Results posted/queued");
 	}
 
+	public static EmbedBuilder getNextEmbed(TrackedItem dupedItem) {
+		return new EmbedBuilder()
+				.setTitle(dupedItem.itemUUID.toString() + " - " + getMaterialDisplayName(dupedItem.itemStack.material))
+				.setColor(getMaterialColor(dupedItem.itemStack.material));
+	}
+
 	public static String getMaterialDisplayName(Material material) {
 		switch(material) {
 			case GOLD_SWORD:
@@ -223,8 +242,14 @@ public class DupeManager implements Listener {
 				return "Bow";
 			case LEATHER_LEGGINGS:
 				return "Leather Leggings";
+			case GOLD_HOE:
+				return "Gold Hoe";
+			case STONE_HOE:
+				return "Stone Hoe";
 			case LEATHER_CHESTPLATE:
 				return "Leather Chestplate";
+			case CHAINMAIL_CHESTPLATE:
+				return "Chainmail Chestplate";
 		}
 		return material.toString();
 	}
@@ -236,8 +261,12 @@ public class DupeManager implements Listener {
 			case BOW:
 				return new Color(0x55FFFF);
 			case LEATHER_LEGGINGS:
-				return new Color(0x00AAAA);
+				return new Color(0x00AA00);
+			case GOLD_HOE:
+			case STONE_HOE:
+				return new Color(0xFF55FF);
 			case LEATHER_CHESTPLATE:
+			case CHAINMAIL_CHESTPLATE:
 				return new Color(0xAA00AA);
 		}
 		return Color.BLACK;
