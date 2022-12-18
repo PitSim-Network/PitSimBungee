@@ -10,6 +10,18 @@ import dev.wiji.instancemanager.guilds.enums.GuildRank;
 import dev.wiji.instancemanager.guilds.events.GuildCreateEvent;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.misc.ColorConverter;
+import dev.wiji.instancemanager.Guilds.ArcticGuilds;
+import dev.wiji.instancemanager.Guilds.controllers.BuffManager;
+import dev.wiji.instancemanager.Guilds.controllers.GuildManager;
+import dev.wiji.instancemanager.Guilds.controllers.UpgradeManager;
+import dev.wiji.instancemanager.Guilds.enums.DyeColor;
+import dev.wiji.instancemanager.Guilds.enums.GuildRank;
+import dev.wiji.instancemanager.Guilds.events.GuildChatEvent;
+import dev.wiji.instancemanager.Guilds.events.GuildCreateEvent;
+import dev.wiji.instancemanager.Misc.AOutput;
+import dev.wiji.instancemanager.Misc.APlayer;
+import dev.wiji.instancemanager.Misc.APlayerData;
+import dev.wiji.instancemanager.Misc.ColorConverter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
@@ -139,9 +151,12 @@ public class Guild {
 	public void chat(ProxiedPlayer player, String message) {
 		Map.Entry<GuildMember, GuildMemberInfo> info = getMember(player);
 		message = ChatColor.stripColor(message);
+		String rawMessage = message;
 		System.out.println("[" + name + "] " + info.getValue().rank.prefix + player.getName() + " >> " + message);
 		message = "&8[&aGuild&8] &a" + info.getValue().rank.prefix + player.getName() + " &8>> &a" + message;
 		broadcast(message);
+		GuildChatEvent event = new GuildChatEvent(this, player, rawMessage);
+		BungeeMain.INSTANCE.getProxy().getPluginManager().callEvent(event);
 	}
 
 	public void addMember(ProxiedPlayer player) {

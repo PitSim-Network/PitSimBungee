@@ -66,5 +66,4 @@ public class ConfigManager {
 	public static boolean isDev() {
 		return getProxyServer().equals("0b42b386");
 	}
-
 }
