@@ -50,7 +50,6 @@ public class StorageManager implements Listener {
 	}
 
 	public static StorageProfile getStorage(UUID uuid) {
-		System.out.println("Profiles: " + profiles);
 
 		for(StorageProfile profile : profiles) {
 			if(profile.getUUID().equals(uuid)) return profile;

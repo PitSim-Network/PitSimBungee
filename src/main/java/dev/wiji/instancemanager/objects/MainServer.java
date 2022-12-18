@@ -103,13 +103,11 @@ public abstract class MainServer {
 	}
 
 	public void removeProfile(StorageProfile profile) {
-		StorageProfile removeProfile = null;
+		if(profile != null) loadedProfiles.remove(profile);
+	}
 
-		for(StorageProfile loadedProfile : loadedProfiles) {
-			if(loadedProfile.getUUID().equals(profile.getUUID())) removeProfile = loadedProfile;
-		}
-
-		if(removeProfile != null) loadedProfiles.remove(removeProfile);
+	public List<StorageProfile> getLoadedProfiles() {
+		return loadedProfiles;
 	}
 
 	public void addProfile(StorageProfile profile) {

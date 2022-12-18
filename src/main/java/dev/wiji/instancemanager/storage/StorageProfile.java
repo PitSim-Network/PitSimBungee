@@ -89,11 +89,12 @@ public class StorageProfile {
 	public void sendToServer(ServerInfo server, boolean wait) {
 
 		MainServer loadedServer = MainServer.getLoadedServer(this);
-		if(loadedServer != null && !wait) {
-			//TODO: Critical error
-			System.out.println("CRITICAL ERROR");
-			return;
-		}
+
+//		if(loadedServer != null && !wait) {
+//			//TODO: Critical error
+//			System.out.println("CRITICAL ERROR");
+//			return;
+//		}
 
 		if(wait && loadedServer != null) {
 			((ProxyRunnable) () -> {
@@ -142,7 +143,9 @@ public class StorageProfile {
 				return;
 			}
 
+			System.out.println("Loaded profiles 1: " + mainServer.getLoadedProfiles());
 			mainServer.removeProfile(this);
+			System.out.println("Loaded profiles 2: " + mainServer.getLoadedProfiles());
 
 		}
 
