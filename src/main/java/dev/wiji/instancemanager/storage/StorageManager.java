@@ -100,11 +100,12 @@ public class StorageManager implements Listener {
 		ProxiedPlayer player = event.getPlayer();
 
 		StorageProfile profile = getStorage(player.getUniqueId());
+		profile.save();
+		profiles.remove(profile);
 
-		((ProxyRunnable) () -> {
-			profile.save();
-			profiles.remove(profile);
-		}).runAfter(250, TimeUnit.MILLISECONDS);
+//		((ProxyRunnable) () -> {
+//
+//		}).runAfter(200, TimeUnit.MILLISECONDS);
 	}
 
 	@EventHandler
@@ -153,6 +154,10 @@ public class StorageManager implements Listener {
 		assert uuid != null;
 		PluginMessage message = new PluginMessage().writeString("LOAD REQUEST").writeString(uuid.toString());
 		message.addServer("pitsim-1").send();
+	}
+
+	public static boolean isLoaded(StorageProfile profile) {
+		return profiles.contains(profile);
 	}
 
 

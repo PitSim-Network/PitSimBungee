@@ -3,6 +3,7 @@ package dev.wiji.instancemanager.storage;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.misc.AOutput;
+import dev.wiji.instancemanager.objects.MainServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -22,7 +23,9 @@ public class EditSession {
 	private final StorageProfile editProfile;
 
 	public boolean isActive;
-	ScheduledTask timeoutTask;
+	public ScheduledTask timeoutTask;
+
+	public ScheduledTask sendTask;
 
 	public EditSession(UUID staffUUID, UUID playerUUID) {
 		this.staffUUID = staffUUID;
@@ -73,7 +76,21 @@ public class EditSession {
 				}
 			}
 
-			editProfile.sendToServer(getStaffServer(), true);
+
+			sendTask = new ProxyRunnable() {
+				@Override
+				public void run() {
+					MainServer server = MainServer.getLoadedServer(editProfile);
+					System.out.println("Repeat task");
+					System.out.println("Global: " + StorageManager.isLoaded(editProfile));
+					System.out.println("Local:" + (server == null));
+					if(!StorageManager.isLoaded(editProfile) && server == null) {
+						StorageManager.getStorage(playerUUID).sendToServer(getStaffServer(), true);
+						System.out.println("Execute");
+						sendTask.cancel();
+					}
+				}
+			}.runAfterEvery(50, 50, TimeUnit.MILLISECONDS);
 		}
 	}
 

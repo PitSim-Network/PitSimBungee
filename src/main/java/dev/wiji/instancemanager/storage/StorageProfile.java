@@ -96,14 +96,6 @@ public class StorageProfile {
 //			return;
 //		}
 
-		if(wait && loadedServer != null) {
-			((ProxyRunnable) () -> {
-				sendToServer(server, true);
-				System.out.println("waiting");
-			}).runAfter(250, TimeUnit.MILLISECONDS);
-			return;
-		}
-
 		PluginMessage message = new PluginMessage().addServer(server);
 
 		message.writeString("PLAYER DATA").writeString(uuid.toString());
@@ -146,6 +138,7 @@ public class StorageProfile {
 			System.out.println("Loaded profiles 1: " + mainServer.getLoadedProfiles());
 			mainServer.removeProfile(this);
 			System.out.println("Loaded profiles 2: " + mainServer.getLoadedProfiles());
+			System.out.println(server);
 
 		}
 
