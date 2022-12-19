@@ -2,10 +2,7 @@ package dev.wiji.instancemanager.pitsim;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.events.MessageEvent;
-import dev.wiji.instancemanager.objects.DarkzoneServer;
-import dev.wiji.instancemanager.objects.PitSimServer;
-import dev.wiji.instancemanager.objects.PluginMessage;
-import dev.wiji.instancemanager.objects.ServerStatus;
+import dev.wiji.instancemanager.objects.*;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -161,10 +158,11 @@ public class MessageListener implements Listener {
 		if(strings.size() >= 3 && strings.get(0).equals("BOOSTER USE")) {
 			String boosterName = strings.get(1);
 			String announcement = strings.get(2);
+			int time = integers.get(0);
 
 			PluginMessage outgoingMessage = new PluginMessage();
-			outgoingMessage.writeString("BOOSTER USE").writeString(boosterName).writeString(announcement);
-			for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
+			outgoingMessage.writeString("BOOSTER USE").writeString(boosterName).writeString(announcement).writeInt(time);
+			for(MainServer pitSimServer : MainServer.serverList) {
 				if(pitSimServer.status.isOnline()) message.addServer(pitSimServer.getServerInfo());
 			}
 
