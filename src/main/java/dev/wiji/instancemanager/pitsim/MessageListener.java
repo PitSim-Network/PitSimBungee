@@ -43,7 +43,7 @@ public class MessageListener implements Listener {
 							}
 						}
 
-						server.status = ServerStatus.RUNNING;
+						if(server.status != ServerStatus.SUSPENDED) server.status = ServerStatus.RUNNING;
 						server.setStartTime(System.currentTimeMillis());
 						break;
 					}

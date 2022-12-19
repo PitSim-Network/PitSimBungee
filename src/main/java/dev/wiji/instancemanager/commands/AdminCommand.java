@@ -16,6 +16,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Command;
@@ -42,7 +43,7 @@ public class AdminCommand extends Command {
 					"&4 * &c/admin startnetwork &7(starts up the network)",
 					"&4 * &c/admin stopnetwork &7(shuts down the network)",
 					"&4 * &c/admin killnetwork &7(shuts down the network immediately)",
-					"&4 * &c/admin suspend &7(maintenance mode)",
+					"&4 * &c/admin suspend [server-name] [kick-players?] &7(maintenance mode)",
 					"&4 * &c/admin edit &7(editing playerdata)",
 					"&4&m--------------------&4<&c&lADMIN&4>&m--------------------"
 			).send(player);
@@ -179,24 +180,29 @@ public class AdminCommand extends Command {
 
 		if(args[0].equalsIgnoreCase("suspend")) {
 
-			if(args.length < 2) {
-				AOutput.error(player, "&cUsage: /admin suspend <KickPlayers?>");
-				return;
+			ServerInfo serverInfo = player.getServer().getInfo();
+			if(args.length >= 2) {
+				boolean foundServer = false;
+				for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
+					if(!pitSimServer.getServerInfo().getName().equalsIgnoreCase(args[1])) continue;
+					foundServer = true;
+					serverInfo = pitSimServer.getServerInfo();
+					break;
+				}
+				if(!foundServer) {
+					AOutput.error(player, "&7Could not find a server with that name");
+					return;
+				}
 			}
 
-			boolean kickPlayers;
+			boolean kickPlayers = false;
 			try {
-				kickPlayers = Boolean.parseBoolean(args[1]);
-			} catch(Exception e) {
-				AOutput.error(player, "&cUsage: /admin suspend <KickPlayers?>");
-				return;
-			}
+				kickPlayers = Boolean.parseBoolean(args[2]);
+			} catch(Exception ignored) {}
 
 			boolean suspend = false;
-
-			Server server = player.getServer();
 			for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
-				if(server.getInfo() == pitSimServer.getServerInfo()) {
+				if(serverInfo == pitSimServer.getServerInfo()) {
 					if(pitSimServer.status != ServerStatus.SUSPENDED) {
 						suspend = true;
 						pitSimServer.status = ServerStatus.SUSPENDED;
@@ -205,14 +211,13 @@ public class AdminCommand extends Command {
 						pitSimServer.status = ServerStatus.RUNNING;
 						AOutput.color(player, "&aServer has been un-suspended!");
 					}
-
 				}
 			}
 
 			boolean darkzone = false;
 
 			for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
-				if(server.getInfo() == darkzoneServer.getServerInfo()) {
+				if(serverInfo == darkzoneServer.getServerInfo()) {
 					darkzone = true;
 					if(darkzoneServer.status != ServerStatus.SUSPENDED) {
 						suspend = true;
@@ -226,7 +231,7 @@ public class AdminCommand extends Command {
 			}
 
 			if(kickPlayers && suspend) {
-				for(ProxiedPlayer proxiedPlayer : server.getInfo().getPlayers()) {
+				for(ProxiedPlayer proxiedPlayer : serverInfo.getPlayers()) {
 					if(proxiedPlayer == player) continue;
 					PitSimServerManager.queue(proxiedPlayer, 0, darkzone);
 					//TODO: Change to move to other darkzone servers if more are added
