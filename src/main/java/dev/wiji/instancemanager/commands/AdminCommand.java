@@ -2,6 +2,7 @@ package dev.wiji.instancemanager.commands;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
+import dev.wiji.instancemanager.builders.MessageBuilder;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.DarkzoneServer;
 import dev.wiji.instancemanager.objects.PitSimServer;
@@ -33,9 +34,18 @@ public class AdminCommand extends Command {
 
 		if(!player.hasPermission("pitsim.admin")) return;
 
-
 		if(args.length < 1) {
-			player.sendMessage(new ComponentBuilder("Usage: /admin <status|shutdown|stopnetwork|startnetwork|killnetwork|suspend>").color(ChatColor.RED).create());
+			new MessageBuilder(
+					"&4&m--------------------&4<&c&lADMIN&4>&m--------------------",
+					"&4 * &c/admin status &7(displays the status of the servers)",
+					"&4 * &c/admin shutdown &7(shuts down the player's current server)",
+					"&4 * &c/admin startnetwork &7(starts up the network)",
+					"&4 * &c/admin stopnetwork &7(shuts down the network)",
+					"&4 * &c/admin killnetwork &7(shuts down the network immediately)",
+					"&4 * &c/admin suspend &7(maintenance mode)",
+					"&4 * &c/admin edit &7(editing playerdata)",
+					"&4&m--------------------&4<&c&lADMIN&4>&m--------------------"
+			).send(player);
 			return;
 		}
 
@@ -85,7 +95,6 @@ public class AdminCommand extends Command {
 			PitSimServerManager.networkIsShuttingDown = true;
 			DarkzoneServerManager.networkIsShuttingDown = true;
 
-			Server server = player.getServer();
 			for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
 				if(pitSimServer.status == ServerStatus.RUNNING) {
 					pitSimServer.shutDown(false);
@@ -146,7 +155,7 @@ public class AdminCommand extends Command {
 
 		if(args[0].equalsIgnoreCase("status")) {
 
-			player.sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&8&m-------------------------------")));
+			player.sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&8&m-----------------------------------------")));
 
 			for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
 				BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
@@ -164,7 +173,7 @@ public class AdminCommand extends Command {
 				player.sendMessage(components);
 			}
 
-			player.sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&8&m-------------------------------")));
+			player.sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&8&m-----------------------------------------")));
 
 		}
 
