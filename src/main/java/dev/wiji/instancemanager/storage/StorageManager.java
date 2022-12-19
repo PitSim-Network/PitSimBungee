@@ -108,21 +108,20 @@ public class StorageManager implements Listener {
 ////		}).runAfter(200, TimeUnit.MILLISECONDS);
 //	}
 
-	@EventHandler
-	public void onJoin(PostLoginEvent event) {
-		File file = new File(BungeeMain.INSTANCE.getDataFolder() + "/itemstorage/" + event.getPlayer().getUniqueId() + ".json");
-		if(file.exists()) return;
-
-		if(!PitSimServerManager.serverList.get(0).status.isOnline()) {
-			event.getPlayer().disconnect(TextComponent.fromLegacyText(ChatColor.RED + "We were unable to migrate your playerdata. Please report this issue."));
-			return;
-		}
-
-		PluginMessage message = new PluginMessage().writeString("MIGRATE").writeString(event.getPlayer().getUniqueId().toString());
-		message.addServer(PitSimServerManager.serverList.get(0).getServerInfo());
-		message.send();
-		StorageManager.loadPlayerData(event.getPlayer().getUniqueId());
-	}
+//	@EventHandler
+//	public void onJoin(PostLoginEvent event) {
+//		File file = new File(BungeeMain.INSTANCE.getDataFolder() + "/itemstorage/" + event.getPlayer().getUniqueId() + ".json");
+//		if(file.exists()) return;
+//
+//		if(!PitSimServerManager.serverList.get(0).status.isOnline()) {
+//			event.getPlayer().disconnect(TextComponent.fromLegacyText(ChatColor.RED + "We were unable to migrate your playerdata. Please report this issue."));
+//			return;
+//		}
+//
+//		PluginMessage message = new PluginMessage().writeString("MIGRATE").writeString(event.getPlayer().getUniqueId().toString());
+//		message.addServer(PitSimServerManager.serverList.get(0).getServerInfo());
+//		message.send();
+//	}
 
 //	@EventHandler
 //	public void onServerLeave(ServerDisconnectEvent event) {
@@ -140,21 +139,6 @@ public class StorageManager implements Listener {
 //
 //		profiles.remove(profile);
 //	}
-
-	public static void loadPlayerData(String playerName) {
-		UUID uuid = BungeeMain.getUUID(playerName, false);
-
-		assert uuid != null;
-		PluginMessage message = new PluginMessage().writeString("LOAD REQUEST").writeString(uuid.toString());
-		message.addServer("pitsim-1").send();
-	}
-
-	public static void loadPlayerData(UUID uuid) {
-
-		assert uuid != null;
-		PluginMessage message = new PluginMessage().writeString("LOAD REQUEST").writeString(uuid.toString());
-		message.addServer("pitsim-1").send();
-	}
 
 	public static boolean isLoaded(StorageProfile profile) {
 		return profiles.contains(profile);

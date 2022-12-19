@@ -53,6 +53,7 @@ public class StorageProfile {
 		return enderchest[pageIndex][slotIndex];
 	}
 
+
 	public String getArmorItem(int index) {
 		return armor[index];
 	}

@@ -52,8 +52,9 @@ public class AdminCommand extends Command {
 
 		if(args[0].equalsIgnoreCase("shutdown")) {
 
-			if(args.length != 2) {
+			if(args.length < 2) {
 				player.sendMessage((new ComponentBuilder("Invalid arguments! /admin shutdown <minutes>").color(ChatColor.RED).create()));
+				return;
 			}
 
 			int minutes;

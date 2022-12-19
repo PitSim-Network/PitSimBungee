@@ -20,6 +20,7 @@ public class DiscordPlugin {
 		new DiscordManager();
 
 		DiscordManager.registerCommand(new PingCommand());
+		new InGameNitro();
 //		DiscordManager.registerCommand(new VerifyCommand());
 	}
 
