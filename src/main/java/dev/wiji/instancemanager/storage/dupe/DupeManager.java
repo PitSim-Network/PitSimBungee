@@ -77,6 +77,7 @@ public class DupeManager implements Listener {
 				if(i % 100 == 0) System.out.println("Stage 1: " + i + "/" + fileCount);
 				if(!fileArray[i].isFile()) continue;
 				StorageProfile storageProfile = loadPlayer(fileArray[i].getName());
+				if(storageProfile == null) continue;
 				UUID playerUUID = UUID.fromString(fileArray[i].getName().split("\\.")[0]);
 
 				Map<LimitedItemStack, ItemLocation> playerItemMap = new HashMap<>();
