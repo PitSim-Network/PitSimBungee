@@ -44,8 +44,7 @@ public class DupeManager implements Listener {
 		miscItems.add(new TrackedMiscItem("Gems", "gems",
 				"***REMOVED***"));
 
-//		TODO: Uncomment to stop from running on dev server after testing is finished
-//		if(!ConfigManager.isDev()) run();
+		if(!ConfigManager.isDev()) run();
 		run();
 	}
 

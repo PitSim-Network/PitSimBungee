@@ -4,11 +4,7 @@ import com.google.gson.Gson;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.objects.PluginMessage;
-import dev.wiji.instancemanager.pitsim.PitSimServerManager;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -95,50 +91,6 @@ public class StorageManager implements Listener {
 			}
 		}
 	}
-
-//	@EventHandler
-//	public void onLeave(PlayerDisconnectEvent event) {
-//		ProxiedPlayer player = event.getPlayer();
-//
-//		StorageProfile profile = getStorage(player.getUniqueId());
-//
-//
-////		((ProxyRunnable) () -> {
-////
-////		}).runAfter(200, TimeUnit.MILLISECONDS);
-//	}
-
-//	@EventHandler
-//	public void onJoin(PostLoginEvent event) {
-//		File file = new File(BungeeMain.INSTANCE.getDataFolder() + "/itemstorage/" + event.getPlayer().getUniqueId() + ".json");
-//		if(file.exists()) return;
-//
-//		if(!PitSimServerManager.serverList.get(0).status.isOnline()) {
-//			event.getPlayer().disconnect(TextComponent.fromLegacyText(ChatColor.RED + "We were unable to migrate your playerdata. Please report this issue."));
-//			return;
-//		}
-//
-//		PluginMessage message = new PluginMessage().writeString("MIGRATE").writeString(event.getPlayer().getUniqueId().toString());
-//		message.addServer(PitSimServerManager.serverList.get(0).getServerInfo());
-//		message.send();
-//	}
-
-//	@EventHandler
-//	public void onServerLeave(ServerDisconnectEvent event) {
-//		ProxiedPlayer player = event.getPlayer();
-//		ServerInfo server = event.getTarget();
-//
-//		if(MainServer.getServer(server) == null) return;
-//		StorageProfile profile = getStorage(player.getUniqueId());
-//		List<StorageProfile> profiles = Objects.requireNonNull(MainServer.getServer(server)).loadedProfiles;
-//
-//		if(!profiles.contains(profile)) {
-//			//TODO: Critical Error
-//			return;
-//		}
-//
-//		profiles.remove(profile);
-//	}
 
 	public static boolean isLoaded(StorageProfile profile) {
 		return profiles.contains(profile);

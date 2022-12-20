@@ -1,6 +1,6 @@
 package dev.wiji.instancemanager.commands;
 
-import dev.wiji.instancemanager.objects.MainServer;
+import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.storage.StorageManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
@@ -18,8 +18,8 @@ public class PTestCommand extends Command {
 //		if(!player.hasPermission("pitsim.admin")) return;
 
 		System.out.println("------------------------");
-		for(MainServer mainServer : MainServer.serverList) {
-			System.out.println("all servers: " + mainServer.getServerInfo().getName() + " " + mainServer.getLoadedProfiles());
+		for(MainGamemodeServer mainGamemodeServer : MainGamemodeServer.serverList) {
+			System.out.println("all servers: " + mainGamemodeServer.getServerInfo().getName() + " " + mainGamemodeServer.getLoadedProfiles());
 		}
 		System.out.println(">>>>>>>>>><<<<<<<<<<");
 		System.out.println(StorageManager.profiles.toString());

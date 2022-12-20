@@ -3,7 +3,7 @@ package dev.wiji.instancemanager.storage;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.objects.MainServer;
+import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -46,12 +46,6 @@ public class EditSession {
 
 		prompt();
 		editProfile = StorageManager.getStorage(playerUUID);
-
-		//TODO: Ensure that the playerdata persists on the server if the player leaves
-		//TODO: Make sure the editor's playerdata cannot save during the session
-		//TODO: Make sure you cannot edit the playerdata of a player who is editing someone else
-		//TODO: If the player leaves the server, end the session, don't save the data of the editor, and dont save the updates to the players inventory
-
 	}
 
 	public void receivePromptResponse(PluginMessage message) {
@@ -81,7 +75,7 @@ public class EditSession {
 			sendTask = new ProxyRunnable() {
 				@Override
 				public void run() {
-					MainServer server = MainServer.getLoadedServer(editProfile);
+					MainGamemodeServer server = MainGamemodeServer.getLoadedServer(editProfile);
 //					System.out.println("Repeat task: " + editProfile);
 //					System.out.println("Local: " + (server == null));
 					if(server == null) {

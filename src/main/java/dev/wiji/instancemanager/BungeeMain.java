@@ -57,9 +57,10 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new ServerDataManager());
 		getProxy().getPluginManager().registerListener(this, new ServerChangeListener());
 		getProxy().getPluginManager().registerListener(this, new ServerLogManager());
-		getProxy().getPluginManager().registerListener(this, new PitSimServerManager());
+		getProxy().getPluginManager().registerListener(this, new OverworldServerManager());
 		getProxy().getPluginManager().registerListener(this, new StorageManager());
 		getProxy().getPluginManager().registerListener(this, new EditSessionManager());
+		getProxy().getPluginManager().registerListener(this, new CommandListener());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new DupeManager());
 		ConfigManager.onEnable();
 		ConfigManager.getMiniServerList();
@@ -83,10 +84,9 @@ public class BungeeMain extends Plugin {
 
 		ConfigManager.getPitSimServerList();
 		ConfigManager.getDarkzoneServerList();
-		PitSimServerManager.init();
+		OverworldServerManager.init();
 		DarkzoneServerManager.init();
-//		TODO: add check for server starting thing
-//		RestartManager.init();
+		RestartManager.init();
 
 		ArcticGuilds.onEnable(this);
 	}

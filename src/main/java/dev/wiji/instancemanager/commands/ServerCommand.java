@@ -3,21 +3,18 @@ package dev.wiji.instancemanager.commands;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.DarkzoneServer;
-import dev.wiji.instancemanager.objects.PitSimServer;
+import dev.wiji.instancemanager.objects.OverworldServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.pitsim.DarkzoneServerManager;
-import dev.wiji.instancemanager.pitsim.PitSimServerManager;
+import dev.wiji.instancemanager.pitsim.OverworldServerManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Command;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 public class ServerCommand extends Command {
@@ -47,15 +44,15 @@ public class ServerCommand extends Command {
 			return;
 		}
 
-		for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
-			if(pitSimServer.getServerInfo() == requestedServer) {
+		for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+			if(overworldServer.getServerInfo() == requestedServer) {
 				if(previousServer.getName().contains("darkzone") || previousServer.getName().contains("pitsim")) {
 					new PluginMessage().writeString("REQUEST SWITCH").writeString(player.getUniqueId().toString())
-							.writeInt(pitSimServer.getServerIndex()).addServer(previousServer).send();
+							.writeInt(overworldServer.getServerIndex()).addServer(previousServer).send();
 					return;
 				}
 
-				PitSimServerManager.queue(player, pitSimServer.getServerIndex(), false);
+				OverworldServerManager.queue(player, overworldServer.getServerIndex(), false);
 				return;
 			}
 		}

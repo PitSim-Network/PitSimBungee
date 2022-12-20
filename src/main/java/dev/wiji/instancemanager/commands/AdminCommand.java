@@ -5,11 +5,11 @@ import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.builders.MessageBuilder;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.DarkzoneServer;
-import dev.wiji.instancemanager.objects.PitSimServer;
+import dev.wiji.instancemanager.objects.OverworldServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.objects.ServerStatus;
 import dev.wiji.instancemanager.pitsim.DarkzoneServerManager;
-import dev.wiji.instancemanager.pitsim.PitSimServerManager;
+import dev.wiji.instancemanager.pitsim.OverworldServerManager;
 import dev.wiji.instancemanager.storage.EditSessionManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
@@ -72,10 +72,10 @@ public class AdminCommand extends Command {
 			}
 
 			Server server = player.getServer();
-			for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
-				if(server.getInfo() == pitSimServer.getServerInfo()) {
-					pitSimServer.status = ServerStatus.SHUTTING_DOWN_INITIAL;
-					new PluginMessage().writeString("SHUTDOWN").writeBoolean(false).writeInt(minutes).addServer(pitSimServer.getServerInfo()).send();
+			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+				if(server.getInfo() == overworldServer.getServerInfo()) {
+					overworldServer.status = ServerStatus.SHUTTING_DOWN_INITIAL;
+					new PluginMessage().writeString("SHUTDOWN").writeBoolean(false).writeInt(minutes).addServer(overworldServer.getServerInfo()).send();
 				}
 			}
 
@@ -89,20 +89,20 @@ public class AdminCommand extends Command {
 
 		if(args[0].equalsIgnoreCase("stopnetwork")) {
 
-			if(PitSimServerManager.networkIsShuttingDown || DarkzoneServerManager.networkIsShuttingDown) {
+			if(OverworldServerManager.networkIsShuttingDown || DarkzoneServerManager.networkIsShuttingDown) {
 				player.sendMessage((new ComponentBuilder("Network is already shutting down!").color(ChatColor.RED).create()));
 				return;
 			}
 
-			PitSimServerManager.networkIsShuttingDown = true;
+			OverworldServerManager.networkIsShuttingDown = true;
 			DarkzoneServerManager.networkIsShuttingDown = true;
 
-			for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
-				if(pitSimServer.status == ServerStatus.RUNNING) {
-					pitSimServer.shutDown(false);
+			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+				if(overworldServer.status == ServerStatus.RUNNING) {
+					overworldServer.shutDown(false);
 				}
-				if(pitSimServer.status == ServerStatus.STARTING) {
-					pitSimServer.hardShutDown();
+				if(overworldServer.status == ServerStatus.STARTING) {
+					overworldServer.hardShutDown();
 				}
 			}
 
@@ -120,15 +120,15 @@ public class AdminCommand extends Command {
 
 		if(args[0].equalsIgnoreCase("killnetwork")) {
 
-			PitSimServerManager.networkIsShuttingDown = true;
+			OverworldServerManager.networkIsShuttingDown = true;
 			DarkzoneServerManager.networkIsShuttingDown = true;
 
-			for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
-				for(ProxiedPlayer pitSimServerPlayer : pitSimServer.getPlayers()) {
+			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+				for(ProxiedPlayer pitSimServerPlayer : overworldServer.getPlayers()) {
 					pitSimServerPlayer.connect(BungeeMain.INSTANCE.getProxy().getServerInfo(ConfigManager.getLobbyServer()));
 				}
 
-				pitSimServer.hardShutDown();
+				overworldServer.hardShutDown();
 			}
 
 			for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
@@ -144,12 +144,12 @@ public class AdminCommand extends Command {
 
 		if(args[0].equalsIgnoreCase("startnetwork")) {
 
-			if(!PitSimServerManager.networkIsShuttingDown || !DarkzoneServerManager.networkIsShuttingDown) {
+			if(!OverworldServerManager.networkIsShuttingDown || !DarkzoneServerManager.networkIsShuttingDown) {
 				player.sendMessage((new ComponentBuilder("The network isn't shut down!").color(ChatColor.RED).create()));
 				return;
 			}
 
-			PitSimServerManager.networkIsShuttingDown = false;
+			OverworldServerManager.networkIsShuttingDown = false;
 			DarkzoneServerManager.networkIsShuttingDown = false;
 
 			player.sendMessage((new ComponentBuilder("Resumed network processes!").color(ChatColor.GREEN).create()));
@@ -159,10 +159,10 @@ public class AdminCommand extends Command {
 
 			player.sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&8&m-----------------------------------------")));
 
-			for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
+			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
 				BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
-						"&7[" + pitSimServer.getServerInfo().getName() + "] &e(" + pitSimServer.getPlayers().size() + ") "  + pitSimServer.status.color +
-								pitSimServer.status.toString()));
+						"&7[" + overworldServer.getServerInfo().getName() + "] &e(" + overworldServer.getPlayers().size() + ") "  + overworldServer.status.color +
+								overworldServer.status.toString()));
 
 				player.sendMessage(components);
 			}
@@ -184,10 +184,10 @@ public class AdminCommand extends Command {
 			ServerInfo serverInfo = player.getServer().getInfo();
 			if(args.length >= 2) {
 				boolean foundServer = false;
-				for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
-					if(!pitSimServer.getServerInfo().getName().equalsIgnoreCase(args[1])) continue;
+				for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+					if(!overworldServer.getServerInfo().getName().equalsIgnoreCase(args[1])) continue;
 					foundServer = true;
-					serverInfo = pitSimServer.getServerInfo();
+					serverInfo = overworldServer.getServerInfo();
 					break;
 				}
 				if(!foundServer) {
@@ -202,14 +202,14 @@ public class AdminCommand extends Command {
 			} catch(Exception ignored) {}
 
 			boolean suspend = false;
-			for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
-				if(serverInfo == pitSimServer.getServerInfo()) {
-					if(pitSimServer.status != ServerStatus.SUSPENDED) {
+			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+				if(serverInfo == overworldServer.getServerInfo()) {
+					if(overworldServer.status != ServerStatus.SUSPENDED) {
 						suspend = true;
-						pitSimServer.status = ServerStatus.SUSPENDED;
+						overworldServer.status = ServerStatus.SUSPENDED;
 						AOutput.color(player, "&aServer has been suspended!");
 					} else {
-						pitSimServer.status = ServerStatus.RUNNING;
+						overworldServer.status = ServerStatus.RUNNING;
 						AOutput.color(player, "&aServer has been un-suspended!");
 					}
 				}
@@ -234,7 +234,7 @@ public class AdminCommand extends Command {
 			if(kickPlayers && suspend) {
 				for(ProxiedPlayer proxiedPlayer : serverInfo.getPlayers()) {
 					if(proxiedPlayer == player) continue;
-					PitSimServerManager.queue(proxiedPlayer, 0, darkzone);
+					OverworldServerManager.queue(proxiedPlayer, 0, darkzone);
 					//TODO: Change to move to other darkzone servers if more are added
 				}
 			}

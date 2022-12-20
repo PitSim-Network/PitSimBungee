@@ -7,6 +7,7 @@ import dev.wiji.instancemanager.guilds.controllers.objects.Guild;
 import dev.wiji.instancemanager.guilds.controllers.objects.GuildMember;
 import dev.wiji.instancemanager.guilds.controllers.objects.GuildMemberInfo;
 import dev.wiji.instancemanager.guilds.enums.GuildRank;
+import dev.wiji.instancemanager.guilds.inventories.ConfirmationGUI;
 import dev.wiji.instancemanager.misc.ACommand;
 import dev.wiji.instancemanager.misc.ALoreBuilder;
 import dev.wiji.instancemanager.misc.AMultiCommand;
@@ -92,7 +93,6 @@ public class TransferCommand extends ACommand {
 		ALoreBuilder yesLore = new ALoreBuilder("&7Clicking here will transfer", "&7your guild to " + args.get(0));
 		ALoreBuilder noLore = new ALoreBuilder("&7Click to cancel");
 
-		//TODO: Open Confirmation GUI on frontend
-//		new ConfirmationGUI(player, transfer, yesLore, noLore).open();
+		new ConfirmationGUI(player, transfer, yesLore, noLore, "Transfer Guild").open();
 	}
 }

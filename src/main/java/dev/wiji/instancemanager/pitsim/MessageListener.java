@@ -26,9 +26,9 @@ public class MessageListener implements Listener {
 
 		if(strings.size() >= 2 && strings.get(0).equals("INITIATE STARTUP")) {
 			String serverName = strings.get(1);
-			for(PitSimServer server : PitSimServerManager.serverList) {
+			for(OverworldServer server : OverworldServerManager.serverList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
-					if(PitSimServerManager.networkIsShuttingDown || server.status.isShuttingDown()) {
+					if(OverworldServerManager.networkIsShuttingDown || server.status.isShuttingDown()) {
 						server.hardShutDown();
 					} else {
 						System.out.println("Server " + serverName + " is now running!");
@@ -64,7 +64,7 @@ public class MessageListener implements Listener {
 
 		if(strings.size() >= 2 && strings.get(0).equals("INITIATE FINAL SHUTDOWN")) {
 			String serverName = strings.get(1);
-				for(PitSimServer server : PitSimServerManager.serverList) {
+				for(OverworldServer server : OverworldServerManager.serverList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
 					server.serverData = null;
 					server.status = ServerStatus.SHUTTING_DOWN_FINAL;
@@ -84,7 +84,7 @@ public class MessageListener implements Listener {
 
 		if(strings.size() >= 2 && strings.get(0).equals("INITIATE FINAL RESTART")) {
 			String serverName = strings.get(1);
-			for(PitSimServer server : PitSimServerManager.serverList) {
+			for(OverworldServer server : OverworldServerManager.serverList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
 					server.serverData = null;
 					server.status = ServerStatus.RESTARTING_FINAL;
@@ -105,7 +105,7 @@ public class MessageListener implements Listener {
 		if(strings.size() >= 3 && strings.get(0).equals("STATUS REPORT")) {
 			String serverName = strings.get(1);
 			String status = strings.get(2);
-			for(PitSimServer server : PitSimServerManager.serverList) {
+			for(OverworldServer server : OverworldServerManager.serverList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
 					server.status = ServerStatus.valueOf(status);
 					break;
@@ -138,7 +138,7 @@ public class MessageListener implements Listener {
 				fromDarkzone = booleans.get(0);
 			}
 
-			PitSimServerManager.queue(player, requested, fromDarkzone);
+			OverworldServerManager.queue(player, requested, fromDarkzone);
 		}
 
 		if(strings.size() >= 2 && strings.get(0).equals("QUEUE DARKZONE")) {
@@ -162,7 +162,7 @@ public class MessageListener implements Listener {
 
 			PluginMessage outgoingMessage = new PluginMessage();
 			outgoingMessage.writeString("BOOSTER USE").writeString(boosterName).writeString(announcement).writeInt(time);
-			for(MainServer pitSimServer : MainServer.serverList) {
+			for(MainGamemodeServer pitSimServer : MainGamemodeServer.serverList) {
 				if(pitSimServer.status.isOnline()) message.addServer(pitSimServer.getServerInfo());
 			}
 
@@ -180,11 +180,11 @@ public class MessageListener implements Listener {
 
 			boolean isOnline = false;
 
-			for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
-				for(ProxiedPlayer pitSimServerPlayer : pitSimServer.getPlayers()) {
+			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+				for(ProxiedPlayer pitSimServerPlayer : overworldServer.getPlayers()) {
 					pitSimServerPlayer.sendMessage(components);
 				}
-				if(pitSimServer.getPlayers().contains(player)) {
+				if(overworldServer.getPlayers().contains(player)) {
 					isOnline = true;
 				}
 			}

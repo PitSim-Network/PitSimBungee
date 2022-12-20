@@ -23,7 +23,7 @@ public class ServerDataManager implements Listener {
 		if(strings.size() >= 2 && strings.get(0).equals("SERVER DATA")) {
 
 			String serverName = strings.get(1);
-			for(PitSimServer server : PitSimServerManager.serverList) {
+			for(OverworldServer server : OverworldServerManager.serverList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
 					strings.remove(0);
 					strings.remove(0);
@@ -42,13 +42,13 @@ public class ServerDataManager implements Listener {
 	}
 
 	public static void sendServerData() {
-		for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
-			if(!pitSimServer.status.isOnline()) continue;
+		for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+			if(!overworldServer.status.isOnline()) continue;
 
 			PluginMessage message = new PluginMessage();
 			message.writeString("SERVER DATA");
 
-			for(PitSimServer activeServer : PitSimServerManager.serverList) {
+			for(OverworldServer activeServer : OverworldServerManager.serverList) {
 				message.writeInt(activeServer.serverData == null ? 0 : activeServer.serverData.getPlayerStrings().size());
 				message.writeBoolean(activeServer.status == ServerStatus.RUNNING);
 
@@ -60,7 +60,7 @@ public class ServerDataManager implements Listener {
 
 			}
 
-			message.addServer(pitSimServer.getServerInfo().getName()).send();
+			message.addServer(overworldServer.getServerInfo().getName()).send();
 		}
 
 

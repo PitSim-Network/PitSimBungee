@@ -1,12 +1,14 @@
 package dev.wiji.instancemanager.pitsim;
 
+import de.myzelyam.api.vanish.BungeeVanishAPI;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
 import dev.wiji.instancemanager.commands.LobbiesCommand;
 import dev.wiji.instancemanager.guilds.GuildMessaging;
-import dev.wiji.instancemanager.objects.PitSimServer;
+import dev.wiji.instancemanager.objects.MainGamemodeServer;
+import dev.wiji.instancemanager.objects.OverworldServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.objects.ServerStatus;
 import dev.wiji.instancemanager.storage.EditSessionManager;
@@ -23,8 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class PitSimServerManager implements Listener {
-	public static List<PitSimServer> serverList = new ArrayList<>();
+public class OverworldServerManager implements Listener {
+	public static List<OverworldServer> serverList = new ArrayList<>();
 
 	//	The next server turns on when the player count reaches a multiple of this number
 	public static final int NEW_SERVER_THRESHOLD = 10;
@@ -36,16 +38,23 @@ public class PitSimServerManager implements Listener {
 
 	static {
 		((ProxyRunnable) () -> {
+			PluginMessage playerMessage = new PluginMessage().writeString("PLAYER COUNT").writeInt(getTotalPlayersUnvanished());
+			for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+				if(!server.status.isOnline()) continue;
+				playerMessage.addServer(server.getServerInfo());
+			}
+			playerMessage.send();
+
 			int players = getTotalPlayers();
 
 			if(networkIsShuttingDown) return;
 
-			for(PitSimServer pitSimServer : serverList) {
-				if(pitSimServer.status == ServerStatus.STARTING) return;
+			for(OverworldServer overworldServer : serverList) {
+				if(overworldServer.status == ServerStatus.STARTING) return;
 			}
 
 			for(int i = 0; i < Math.min(players / NEW_SERVER_THRESHOLD + 1, serverList.size()); i++) {
-				PitSimServer server = serverList.get(i);
+				OverworldServer server = serverList.get(i);
 				if(server.status.isOnline()) {
 					if(server.status == ServerStatus.SHUTTING_DOWN_INITIAL) {
 						server.status = ServerStatus.RUNNING;
@@ -62,7 +71,7 @@ public class PitSimServerManager implements Listener {
 			}
 
 			for(int i = 1 + (players + REQUIRED_DROP_FOR_SHUTDOWN - 1) / 10; i < serverList.size(); i++) {
-				PitSimServer server = serverList.get(i);
+				OverworldServer server = serverList.get(i);
 				if(server.status.isShuttingDown() || server.status == ServerStatus.OFFLINE || server.status == ServerStatus.SUSPENDED) continue;
 				if(server.status == ServerStatus.RESTARTING_INITIAL) {
 					server.status = ServerStatus.SHUTTING_DOWN_INITIAL;
@@ -84,10 +93,11 @@ public class PitSimServerManager implements Listener {
 		((ProxyRunnable) () -> queue(player, 0, false)).runAfter(1, TimeUnit.SECONDS);
 	}
 
-	public static void init() {
-		for(String value : ServerManager.pitSimServers.values()) serverList.add(new PitSimServer(value));
 
-		for(PitSimServer server : serverList) {
+	public static void init() {
+		for(String value : ServerManager.pitSimServers.values()) serverList.add(new OverworldServer(value));
+
+		for(OverworldServer server : serverList) {
 			if(serverList.get(0) == server) {
 
 				if(ConfigManager.isDev()) {
@@ -106,6 +116,19 @@ public class PitSimServerManager implements Listener {
 
 	public static boolean queue(ProxiedPlayer player, int requestedServer, boolean fromDarkzone) {
 
+		if(ServerChangeListener.recentlyLeft.contains(player)) {
+			player.sendMessage(new ComponentBuilder("You recently left a server. Please wait a few seconds before rejoining.").color(ChatColor.RED).create());
+			return false;
+		}
+
+		if(MainGamemodeServer.cooldownPlayers.contains(player)) {
+			player.sendMessage((new ComponentBuilder("Please wait a moment before Queuing again").color(ChatColor.RED).create()));
+			return false;
+		}
+
+		MainGamemodeServer.cooldownPlayers.add(player);
+		((ProxyRunnable) () ->  MainGamemodeServer.cooldownPlayers.remove(player)).runAfter(5, TimeUnit.SECONDS);
+
 		if(EditSessionManager.isBeingEdited(player.getUniqueId())) {
 			player.sendMessage(new ComponentBuilder("Your player-data is being modified. Please try again in a moment.").color(ChatColor.RED).create());
 			return false;
@@ -120,8 +143,8 @@ public class PitSimServerManager implements Listener {
 
 		GuildMessaging.sendGuildData(player);
 
-		PitSimServer previousServer = null;
-		for(PitSimServer server : serverList) {
+		OverworldServer previousServer = null;
+		for(OverworldServer server : serverList) {
 			if(server.getServerInfo() == player.getServer().getInfo()) {
 				previousServer = server;
 				break;
@@ -136,14 +159,9 @@ public class PitSimServerManager implements Listener {
 			}
 		}
 
-		if(ServerChangeListener.recentlyLeft.contains(player)) {
-			player.sendMessage(new ComponentBuilder("You recently left a server. Please wait a few seconds before rejoining.").color(ChatColor.RED).create());
-			return false;
-		}
-
 		ServerDataManager.sendServerData();
 
-		PitSimServer targetServer = null;
+		OverworldServer targetServer = null;
 
 		if(requestedServer != 0) {
 			targetServer = serverList.get(requestedServer - 1);
@@ -167,7 +185,7 @@ public class PitSimServerManager implements Listener {
 		int players = getTotalPlayers();
 
 		if(targetServer == null) {
-			for(PitSimServer activeServer : serverList) {
+			for(OverworldServer activeServer : serverList) {
 				if(activeServer.status != ServerStatus.RUNNING) continue;
 
 				System.out.println("Server: " + activeServer.getServerInfo().getName());
@@ -180,9 +198,9 @@ public class PitSimServerManager implements Listener {
 		}
 
 		if(targetServer == null) {
-			for(PitSimServer pitSimServer : serverList) {
-				if(pitSimServer.status == ServerStatus.RUNNING) {
-					targetServer = pitSimServer;
+			for(OverworldServer overworldServer : serverList) {
+				if(overworldServer.status == ServerStatus.RUNNING) {
+					targetServer = overworldServer;
 					break;
 				}
 			}
@@ -208,7 +226,7 @@ public class PitSimServerManager implements Listener {
 
 		if(fromDarkzone) new PluginMessage().writeString("DARKZONE JOIN").writeString(player.getUniqueId().toString()).writeBoolean(true).addServer(targetServer.getServerInfo().getName()).send();
 
-		PitSimServer finalTargetServer = targetServer;
+		OverworldServer finalTargetServer = targetServer;
 		((ProxyRunnable) () -> player.connect(finalTargetServer.getServerInfo())).runAfter(1, TimeUnit.SECONDS);
 
 		return true;
@@ -217,15 +235,25 @@ public class PitSimServerManager implements Listener {
 	public static int getTotalPlayers() {
 		if(LobbiesCommand.overridePlayers) return 10;
 		int total = 0;
-		for(PitSimServer server : serverList) {
+		for(OverworldServer server : serverList) {
 			total += server.getPlayers().size();
+		}
+		return total;
+	}
+
+	public static int getTotalPlayersUnvanished() {
+		int total = 0;
+		for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+			for(ProxiedPlayer player : server.getPlayers()) {
+				if(!BungeeVanishAPI.isInvisible(player)) total++;
+			}
 		}
 		return total;
 	}
 
 	public static int getTotalServersOnline() {
 		int total = 0;
-		for(PitSimServer server : serverList) {
+		for(OverworldServer server : serverList) {
 			if(server.status == ServerStatus.RUNNING || server.status == ServerStatus.RESTARTING_INITIAL) total++;
 		}
 

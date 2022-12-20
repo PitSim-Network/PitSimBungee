@@ -40,7 +40,6 @@ public class MenuCommand extends ACommand {
 			}
 		}
 
-		//TODO: Open Meny GUI in frontend
 		new MenuGUI(player, guild).open();
 	}
 }

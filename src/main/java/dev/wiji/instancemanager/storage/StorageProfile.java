@@ -3,7 +3,7 @@ package dev.wiji.instancemanager.storage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.objects.MainServer;
+import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -86,19 +86,8 @@ public class StorageProfile {
 	}
 
 	public void sendToServer(ServerInfo server, boolean wait) {
-//		System.out.println("a");
-//		System.out.println("a");
-//		System.out.println("a");
-//		System.out.println("a");
-//		System.out.println("a");
 
-		MainServer loadedServer = MainServer.getLoadedServer(this);
-
-//		if(loadedServer != null && !wait) {
-//			//TODO: Critical error
-//			System.out.println("CRITICAL ERROR");
-//			return;
-//		}
+		MainGamemodeServer loadedServer = MainGamemodeServer.getLoadedServer(this);
 
 		PluginMessage message = new PluginMessage().addServer(server);
 
@@ -126,22 +115,18 @@ public class StorageProfile {
 
 //		System.out.println("Sending: " + uuid + " " + hashCode());
 		message.send();
-		Objects.requireNonNull(MainServer.getServer(server)).addProfile(this);
+		Objects.requireNonNull(MainGamemodeServer.getServer(server)).addProfile(this);
 	}
 
 	public void updateData(PluginMessage message, String server, boolean logout) {
 		if(logout) {
-			MainServer mainServer = MainServer.getServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
-			if(mainServer == null) {
-				System.out.println("Critical Error 1");
+			MainGamemodeServer mainGamemodeServer = MainGamemodeServer.getServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
+			if(mainGamemodeServer == null) {
 				//TODO: Critical Error
 				return;
 			}
 
-//			System.out.println("Loaded profiles 1: " + mainServer.getLoadedProfiles());
-			mainServer.removeProfile(this);
-//			System.out.println("Loaded profiles 2: " + mainServer.getLoadedProfiles());
-			System.out.println(server);
+			mainGamemodeServer.removeProfile(this);
 		}
 
 //		System.out.println("Updating: " + uuid + " " + logout + " " + this);

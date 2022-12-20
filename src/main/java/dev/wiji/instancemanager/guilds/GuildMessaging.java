@@ -8,10 +8,10 @@ import dev.wiji.instancemanager.guilds.controllers.objects.Guild;
 import dev.wiji.instancemanager.guilds.events.InventoryClickEvent;
 import dev.wiji.instancemanager.guilds.events.InventoryCloseEvent;
 import dev.wiji.instancemanager.objects.DarkzoneServer;
-import dev.wiji.instancemanager.objects.PitSimServer;
+import dev.wiji.instancemanager.objects.OverworldServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.pitsim.DarkzoneServerManager;
-import dev.wiji.instancemanager.pitsim.PitSimServerManager;
+import dev.wiji.instancemanager.pitsim.OverworldServerManager;
 import dev.wiji.instancemanager.ProxyRunnable;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
@@ -30,8 +30,8 @@ public class GuildMessaging implements Listener {
 
 	static {
 		((ProxyRunnable) () -> {
-			for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
-				if(!pitSimServer.status.isOnline()) continue;
+			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+				if(!overworldServer.status.isOnline()) continue;
 				sendGuildLeaderboardData();
 			}
 		}).runAfterEvery(15, 15, TimeUnit.SECONDS);
@@ -109,9 +109,9 @@ public class GuildMessaging implements Listener {
 			message.writeString(guild.getColor().name());
 		}
 
-		for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
-			if(!pitSimServer.status.isOnline()) continue;
-			message.addServer(pitSimServer.getServerInfo());
+		for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+			if(!overworldServer.status.isOnline()) continue;
+			message.addServer(overworldServer.getServerInfo());
 		}
 
 		message.send();
@@ -158,8 +158,8 @@ public class GuildMessaging implements Listener {
 			message.writeInt(value);
 		}
 
-		for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
-			if(pitSimServer.status.isOnline()) message.addServer(pitSimServer.getServerInfo());
+		for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+			if(overworldServer.status.isOnline()) message.addServer(overworldServer.getServerInfo());
 		}
 
 		for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {

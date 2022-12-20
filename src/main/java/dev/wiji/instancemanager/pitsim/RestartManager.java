@@ -3,14 +3,13 @@ package dev.wiji.instancemanager.pitsim;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.objects.DarkzoneServer;
-import dev.wiji.instancemanager.objects.PitSimServer;
+import dev.wiji.instancemanager.objects.OverworldServer;
 import dev.wiji.instancemanager.objects.ServerStatus;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.connection.Connection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.concurrent.TimeUnit;
@@ -31,12 +30,12 @@ public class RestartManager {
 			}
 
 
-			for(PitSimServer activeServer : PitSimServerManager.serverList) {
+			for(OverworldServer activeServer : OverworldServerManager.serverList) {
 				if(activeServer.status != ServerStatus.RUNNING) continue;
 
 				if(activeServer.getStartTime() + RESTART_TIME < System.currentTimeMillis()) {
 
-					for(PitSimServer server : PitSimServerManager.serverList) {
+					for(OverworldServer server : OverworldServerManager.serverList) {
 						if(activeServer == server || server.status != ServerStatus.RUNNING) continue;
 						if((server.getStartTime() + RESTART_TIME) < RESTART_BUFFER + System.currentTimeMillis()) {
 							server.setStartTime(server.getStartTime() + RESTART_BUFFER);

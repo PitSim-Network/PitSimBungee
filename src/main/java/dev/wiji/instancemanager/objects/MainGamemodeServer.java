@@ -12,9 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public abstract class MainServer {
+public abstract class MainGamemodeServer {
 
-	public static List<MainServer> serverList = new ArrayList<>();
+	public static List<MainGamemodeServer> serverList = new ArrayList<>();
+	public static List<ProxiedPlayer> cooldownPlayers = new ArrayList<>();
 
 	public final String pteroID;
 	public final int serverIndex;
@@ -27,7 +28,7 @@ public abstract class MainServer {
 
 	private List<StorageProfile> loadedProfiles = new ArrayList<>();
 
-	public MainServer(String pteroID, ServerType serverType, int serverIndex) {
+	public MainGamemodeServer(String pteroID, ServerType serverType, int serverIndex) {
 		this.pteroID = pteroID;
 		this.serverIndex = serverIndex;
 
@@ -88,16 +89,16 @@ public abstract class MainServer {
 		}).runAfter(20, TimeUnit.SECONDS);
 	}
 
-	public static MainServer getServer(ServerInfo info) {
-		for(MainServer mainServer : serverList) {
-			if(mainServer.getServerInfo() == info) return mainServer;
+	public static MainGamemodeServer getServer(ServerInfo info) {
+		for(MainGamemodeServer mainGamemodeServer : serverList) {
+			if(mainGamemodeServer.getServerInfo() == info) return mainGamemodeServer;
 		}
 		return null;
 	}
 
-	public static MainServer getLoadedServer(StorageProfile profile) {
-		for(MainServer mainServer : serverList) {
-			if(mainServer.loadedProfiles.contains(profile)) return mainServer;
+	public static MainGamemodeServer getLoadedServer(StorageProfile profile) {
+		for(MainGamemodeServer mainGamemodeServer : serverList) {
+			if(mainGamemodeServer.loadedProfiles.contains(profile)) return mainGamemodeServer;
 		}
 		return null;
 	}

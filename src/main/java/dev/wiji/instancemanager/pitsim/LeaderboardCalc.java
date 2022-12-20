@@ -2,7 +2,7 @@ package dev.wiji.instancemanager.pitsim;
 
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.objects.Leaderboard;
-import dev.wiji.instancemanager.objects.PitSimServer;
+import dev.wiji.instancemanager.objects.OverworldServer;
 import dev.wiji.instancemanager.objects.PlayerData;
 import dev.wiji.instancemanager.objects.PluginMessage;
 
@@ -14,11 +14,11 @@ public class LeaderboardCalc {
 
 	static {
 		((ProxyRunnable) () -> {
-			for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
-				if(!pitSimServer.status.isOnline()) continue;
-				sendLeaderboardData(pitSimServer);
+			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+				if(!overworldServer.status.isOnline()) continue;
+				sendLeaderboardData(overworldServer);
 			}
-		}).runAfterEvery(15, 15, TimeUnit.SECONDS);
+		}).runAfterEvery(60, 15, TimeUnit.SECONDS);
 	}
 
 	public static Map<Leaderboard, List<PlayerData>> leaderboardPositions = new HashMap<>();
@@ -43,7 +43,7 @@ public class LeaderboardCalc {
 		}
 	}
 
-	public static void sendLeaderboardData(PitSimServer server) {
+	public static void sendLeaderboardData(OverworldServer server) {
 		PluginMessage message = new PluginMessage();
 		message.writeString("LEADERBOARD DATA");
 		for(Leaderboard value : Leaderboard.values()) {
@@ -69,9 +69,9 @@ public class LeaderboardCalc {
 		for(Leaderboard value : Leaderboard.values()) {
 			message.writeInt(getPosition(uuid, value));
 		}
-		for(PitSimServer pitSimServer : PitSimServerManager.serverList) {
-			if(!pitSimServer.status.isOnline()) continue;
-			message.addServer(pitSimServer.getServerInfo());
+		for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+			if(!overworldServer.status.isOnline()) continue;
+			message.addServer(overworldServer.getServerInfo());
 		}
 		message.send();
 	}

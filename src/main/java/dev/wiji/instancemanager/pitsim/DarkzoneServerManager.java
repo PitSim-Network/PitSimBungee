@@ -5,6 +5,7 @@ import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
 import dev.wiji.instancemanager.objects.DarkzoneServer;
+import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.objects.ServerStatus;
 import dev.wiji.instancemanager.storage.EditSessionManager;
@@ -87,6 +88,19 @@ public class DarkzoneServerManager {
 
 	public static boolean queue(ProxiedPlayer player, int requestedServer) {
 
+		if(ServerChangeListener.recentlyLeft.contains(player)) {
+			player.sendMessage(new ComponentBuilder("You recently left a server. Please wait a few seconds before rejoining.").color(ChatColor.RED).create());
+			return false;
+		}
+
+		if(MainGamemodeServer.cooldownPlayers.contains(player)) {
+			player.sendMessage((new ComponentBuilder("Please wait a moment before Queuing again").color(ChatColor.RED).create()));
+			return false;
+		}
+
+		MainGamemodeServer.cooldownPlayers.add(player);
+		((ProxyRunnable) () ->  MainGamemodeServer.cooldownPlayers.remove(player)).runAfter(5, TimeUnit.SECONDS);
+
 		if(EditSessionManager.isBeingEdited(player.getUniqueId())) {
 			player.sendMessage(new ComponentBuilder("Your player-data is being modified. Please try again in a moment.").color(ChatColor.RED).create());
 			return false;
@@ -106,11 +120,6 @@ public class DarkzoneServerManager {
 					player.connect(BungeeMain.INSTANCE.getProxy().getServerInfo(ConfigManager.getLobbyServer()));
 				}
 			}
-		}
-
-		if(ServerChangeListener.recentlyLeft.contains(player)) {
-			player.sendMessage(new ComponentBuilder("You recently left a server. Please wait a few seconds before rejoining.").color(ChatColor.RED).create());
-			return false;
 		}
 
 		ServerDataManager.sendServerData();
