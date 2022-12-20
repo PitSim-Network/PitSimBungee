@@ -79,7 +79,7 @@ public class FirestoreManager {
 
 
 		//run the leaderboard calc init after 5 secondsc
-		((ProxyRunnable) LeaderboardCalc::init).runAfter(5, TimeUnit.SECONDS);
+		((ProxyRunnable) LeaderboardCalc::init).runAfter(60, TimeUnit.SECONDS);
 	}
 
 }

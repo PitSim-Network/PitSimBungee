@@ -30,6 +30,8 @@ public class ServerCommand extends Command {
 		if(!(sender instanceof ProxiedPlayer)) return;
 		ProxiedPlayer player = (ProxiedPlayer) sender;
 
+		if(!player.hasPermission("pitsim.join")) return;
+
 		if(args.length < 1) {
 			sendServerList(player);
 			return;
@@ -41,7 +43,7 @@ public class ServerCommand extends Command {
 		ServerInfo requestedServer = BungeeMain.INSTANCE.getProxy().getServerInfo(requestedServerString);
 
 		if(requestedServer == null) {
-			AOutput.error(player, "That server does not exist! Run /server for a list of servers");
+			AOutput.error(player, "That server does not exist! Run /join for a list of servers");
 			return;
 		}
 

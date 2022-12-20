@@ -35,6 +35,17 @@ public class PlayerData {
 			dataMap.put(value, document.getDouble("stats." + value.fireStore));
 		}
 
+		PlayerData remove = null;
+
+		for(PlayerData playerData : playerDataList) {
+			if(playerData.playerUUID.equals(playerUUID)) {
+				remove = playerData;
+				break;
+			}
+		}
+
+		if(remove != null) playerDataList.remove(remove);
+
 		playerDataList.add(this);
 	}
 

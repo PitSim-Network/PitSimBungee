@@ -115,6 +115,7 @@ public class PitSimServerManager implements Listener {
 			LeaderboardCalc.sendLeaderboardPlayerData(player.getUniqueId());
 		} catch(Exception e) {
 			System.out.println("Player leaderboard data send failed. (Proxy has just started)");
+			return false;
 		}
 
 		GuildMessaging.sendGuildData(player);
@@ -169,11 +170,12 @@ public class PitSimServerManager implements Listener {
 			for(PitSimServer activeServer : serverList) {
 				if(activeServer.status != ServerStatus.RUNNING) continue;
 
+				System.out.println("Server: " + activeServer.getServerInfo().getName());
+				System.out.println(activeServer.getPlayers().size() + " " + players + " " + getTotalServersOnline());
+
 				if(activeServer.getPlayers().size() > players / getTotalServersOnline()) continue;
-				else {
-					targetServer = activeServer;
-					break;
-				}
+				targetServer = activeServer;
+				break;
 			}
 		}
 
