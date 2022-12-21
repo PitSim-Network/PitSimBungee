@@ -1,6 +1,12 @@
 package dev.wiji.instancemanager.guilds.controllers;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.guilds.controllers.objects.Guild;
+import dev.wiji.instancemanager.guilds.controllers.objects.GuildMember;
+import dev.wiji.instancemanager.guilds.events.GuildReputationEvent;
+import dev.wiji.instancemanager.misc.AData;
+import dev.wiji.instancemanager.misc.APlayer;
+import dev.wiji.instancemanager.misc.APlayerData;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.guilds.controllers.objects.Guild;
 import dev.wiji.instancemanager.guilds.controllers.objects.GuildMember;

@@ -3,4 +3,8 @@ description: Manages the proxy of the PitSim network
 main: dev.wiji.instancemanager.BungeeMain
 version: 1.0
 author: wiji
+commands:
+  play:
+  toggle:
+  dev:
 depends: [PitSimBungeeDependencies, PlayerStatus, LuckPerms, PluginQuery]

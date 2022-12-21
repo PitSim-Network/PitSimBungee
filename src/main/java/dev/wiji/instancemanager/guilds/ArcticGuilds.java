@@ -14,6 +14,18 @@ import dev.wiji.instancemanager.misc.AMultiCommand;
 import dev.wiji.instancemanager.misc.APlayerData;
 import dev.wiji.instancemanager.misc.InventoryManager;
 import dev.wiji.instancemanager.storage.dupe.DupeManager;
+import dev.wiji.instancemanager.guilds.commands.admin.GuildAdminCommand;
+import dev.wiji.instancemanager.guilds.commands.admin.ReputationCommand;
+import dev.wiji.instancemanager.guilds.commands.guildcommands.*;
+import dev.wiji.instancemanager.guilds.controllers.*;
+import dev.wiji.instancemanager.guilds.guildbuffs.*;
+import dev.wiji.instancemanager.guilds.guildupgrades.BankLimit;
+import dev.wiji.instancemanager.guilds.guildupgrades.GuildBuffs;
+import dev.wiji.instancemanager.guilds.guildupgrades.GuildSize;
+import dev.wiji.instancemanager.guilds.guildupgrades.ReputationIncrease;
+import dev.wiji.instancemanager.misc.AMultiCommand;
+import dev.wiji.instancemanager.misc.APlayerData;
+import dev.wiji.instancemanager.misc.InventoryManager;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

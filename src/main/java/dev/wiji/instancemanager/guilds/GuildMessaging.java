@@ -1,6 +1,7 @@
 package dev.wiji.instancemanager.guilds;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.guilds.controllers.GuildManager;
 import dev.wiji.instancemanager.guilds.controllers.objects.DummyItemStack;
@@ -12,7 +13,6 @@ import dev.wiji.instancemanager.objects.OverworldServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.pitsim.DarkzoneServerManager;
 import dev.wiji.instancemanager.pitsim.OverworldServerManager;
-import dev.wiji.instancemanager.ProxyRunnable;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
