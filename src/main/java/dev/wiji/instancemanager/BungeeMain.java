@@ -26,6 +26,7 @@ import septogeddon.pluginquery.api.QueryMessenger;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class BungeeMain extends Plugin {
@@ -64,6 +65,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new StorageManager());
 		getProxy().getPluginManager().registerListener(this, new EditSessionManager());
 		getProxy().getPluginManager().registerListener(this, new CommandListener());
+		getProxy().getPluginManager().registerListener(this, new IdentificationManager());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new DupeManager());
 		ConfigManager.getMiniServerList();
 
@@ -109,9 +111,9 @@ public class BungeeMain extends Plugin {
 
 	public static String getName(UUID uuid, boolean printError) {
 		try {
-			return psApi.getNameOfUuid(uuid);
-		} catch(SQLException | PlayerNeverConnectedException e) {
-			if(printError) throw new RuntimeException(e);
+			return IdentificationManager.getUsername(Objects.requireNonNull(IdentificationManager.getConnection()), uuid);
+		} catch(SQLException throwables) {
+			if(printError) throwables.printStackTrace();
 		}
 		return null;
 	}
@@ -127,9 +129,9 @@ public class BungeeMain extends Plugin {
 
 	public static UUID getUUID(String name, boolean printError) {
 		try {
-			return psApi.getUuidOfName(name);
-		} catch(SQLException | PlayerNeverConnectedException e) {
-			if(printError) throw new RuntimeException(e);
+			return IdentificationManager.getUuid(Objects.requireNonNull(IdentificationManager.getConnection()), name);
+		} catch(SQLException throwables) {
+			if(printError) throwables.printStackTrace();
 		}
 		return null;
 	}

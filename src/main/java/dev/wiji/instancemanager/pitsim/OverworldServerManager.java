@@ -233,7 +233,7 @@ public class OverworldServerManager implements Listener {
 	}
 
 	public static int getTotalPlayers() {
-		if(LobbiesCommand.overridePlayers) return 10;
+		if(LobbiesCommand.overridePlayers) return 50;
 		int total = 0;
 		for(OverworldServer server : serverList) {
 			total += server.getPlayers().size();
