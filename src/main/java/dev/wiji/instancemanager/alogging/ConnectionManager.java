@@ -13,11 +13,18 @@ import java.nio.file.Files;
 import java.util.*;
 
 public class ConnectionManager implements Listener {
-	public static final File dataFile = new File(BungeeMain.INSTANCE.getDataFolder() + "/connection-data.json");
+	public static final File dataFile;
 	public static final List<String> trackedSubdomains = new ArrayList<>();
 	public static ConnectionData connectionData;
 
 	static {
+		try {
+			dataFile = new File(BungeeMain.INSTANCE.getDataFolder() + "/connection-data.json");
+			if(!dataFile.exists()) dataFile.createNewFile();
+		} catch(IOException exception) {
+			throw new RuntimeException(exception);
+		}
+
 		trackedSubdomains.add("mc.pitsim.net");
 		trackedSubdomains.add("play.pitsim.net");
 		trackedSubdomains.add("vote.pitsim.net");

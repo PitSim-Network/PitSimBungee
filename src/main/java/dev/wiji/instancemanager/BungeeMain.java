@@ -7,6 +7,8 @@ import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
 import de.sumafu.PlayerStatus.PlayerNeverConnectedException;
 import de.sumafu.PlayerStatus.PlayerStatus;
 import de.sumafu.PlayerStatus.PlayerStatusAPI;
+import dev.wiji.instancemanager.alogging.ConnectionManager;
+import dev.wiji.instancemanager.alogging.ServerLogManager;
 import dev.wiji.instancemanager.commands.*;
 import dev.wiji.instancemanager.discord.DiscordPlugin;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
@@ -16,11 +18,6 @@ import dev.wiji.instancemanager.storage.StorageManager;
 import dev.wiji.instancemanager.storage.dupe.DupeManager;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
-import dev.wiji.instancemanager.commands.*;
-import dev.wiji.instancemanager.guilds.ArcticGuilds;
-import dev.wiji.instancemanager.pitsim.*;
-import dev.wiji.instancemanager.alogging.ConnectionManager;
-import dev.wiji.instancemanager.alogging.ServerLogManager;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import septogeddon.pluginquery.PluginQuery;
@@ -46,6 +43,7 @@ public class BungeeMain extends Plugin {
 	@Override
 	public void onEnable() {
 		INSTANCE = this;
+		ConfigManager.onEnable();
 		LUCKPERMS = LuckPermsProvider.get();
 		this.getProxy().registerChannel("BungeeCord");
 		STARTUP_TIME = System.currentTimeMillis();
@@ -67,7 +65,6 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new EditSessionManager());
 		getProxy().getPluginManager().registerListener(this, new CommandListener());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new DupeManager());
-		ConfigManager.onEnable();
 		ConfigManager.getMiniServerList();
 
 

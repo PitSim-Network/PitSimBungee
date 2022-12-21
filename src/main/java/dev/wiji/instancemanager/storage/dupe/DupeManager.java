@@ -45,7 +45,6 @@ public class DupeManager implements Listener {
 				"***REMOVED***"));
 
 		if(!ConfigManager.isDev()) run();
-		run();
 	}
 
 	public static void run() {
