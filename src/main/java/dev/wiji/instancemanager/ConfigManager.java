@@ -13,7 +13,7 @@ public class ConfigManager {
 	public static Configuration configuration;
 
 	public static void onEnable() {
-		file = new File(ProxyServer.getInstance().getPluginsFolder() + "/config.yml");
+		file = new File(BungeeMain.INSTANCE.getDataFolder() + "/config.yml");
 
 		try {
 			if(!file.exists()) {
