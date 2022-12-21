@@ -4,15 +4,12 @@ import com.mattmalec.pterodactyl4j.UtilizationState;
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 import com.mattmalec.pterodactyl4j.client.entities.Utilization;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ServerManager {
 	public static List<String> inactiveServers = new ArrayList<>();
-	public static Map<String, String> pitSimServers = new HashMap<>();
-	public static Map<String, String> darkzoneServers = new HashMap<>();
+	public static Map<String, String> pitSimServers = new LinkedHashMap<>();
+	public static Map<String, String> darkzoneServers = new LinkedHashMap<>();
 
 	public static void onEnable() {
 		for(String inactiveServer : inactiveServers) {

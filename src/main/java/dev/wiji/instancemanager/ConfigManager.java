@@ -42,6 +42,7 @@ public class ConfigManager {
 
 	public static void getPitSimServerList() {
 		for(Object s : configuration.getList("pitsim-servers")) {
+			System.out.println("line: " + s);
 			String[] split = ((String) s).split(":");
 			ServerManager.pitSimServers.put(split[0], split[1]);
 		}
