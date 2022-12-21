@@ -2,6 +2,7 @@ package dev.wiji.instancemanager.commands;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
+import dev.wiji.instancemanager.alogging.ConnectionManager;
 import dev.wiji.instancemanager.builders.MessageBuilder;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.DarkzoneServer;
@@ -21,6 +22,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
+
+import java.util.Map;
 
 public class AdminCommand extends Command {
 	public AdminCommand(Plugin bungeeMain) {
@@ -45,6 +48,7 @@ public class AdminCommand extends Command {
 					"&4 * &c/admin killnetwork &7(shuts down the network immediately)",
 					"&4 * &c/admin suspend [server-name] [kick-players?] &7(maintenance mode)",
 					"&4 * &c/admin edit &7(editing playerdata)",
+					"&4 * &c/admin connections &7(first connection stats by host)",
 					"&4&m--------------------&4<&c&lADMIN&4>&m--------------------"
 			).send(player);
 			return;
@@ -247,6 +251,13 @@ public class AdminCommand extends Command {
 			}
 
 			EditSessionManager.createSession(player.getUniqueId(), args[1]);
+		}
+
+		if(args[0].equalsIgnoreCase("connections")) {
+			AOutput.color(player, "&2&m---------------&2<&a&lPLAYER CONNECTIONS&2>&m---------------");
+			for(Map.Entry<String, Integer> entry : ConnectionManager.getTotalJoins().entrySet())
+				AOutput.color(player, "&2 * &7" + entry.getKey() + ": &a" + entry.getValue());
+			AOutput.color(player, "&2&m---------------&2<&a&lPLAYER CONNECTIONS&2>&m---------------");
 		}
 	}
 }
