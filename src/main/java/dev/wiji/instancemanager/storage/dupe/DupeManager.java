@@ -304,7 +304,7 @@ public class DupeManager implements Listener {
 
 	public static String getPlayerName(UUID uuid) {
 		String name = BungeeMain.getName(uuid, false);
-		return name == null ? "ERROR" : name;
+		return name == null ? uuid.toString() : name;
 	}
 
 	public static class TrackedItem {
