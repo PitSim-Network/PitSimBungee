@@ -24,16 +24,9 @@ public class PlayCommand extends Command {
 	public void execute(CommandSender commandSender, String[] strings) {
 		if(!(commandSender instanceof ProxiedPlayer)) return;
 
-		if(strings.length != 1) {
-			commandSender.sendMessage((new ComponentBuilder("Invalid args!").color(ChatColor.RED).create()));
-			return;
-		}
-
 		ProxiedPlayer player = ((ProxiedPlayer) commandSender);
 
-		if(strings[0].equalsIgnoreCase("pitsim")) {
-
-
+		if(strings.length < 1 || strings[0].toLowerCase().startsWith("pit")) {
 			Server currentServer = player.getServer();
 
 			if(currentServer.getInfo().getName().contains("pitsim") || currentServer.getInfo().getName().contains("darkzone")) {
