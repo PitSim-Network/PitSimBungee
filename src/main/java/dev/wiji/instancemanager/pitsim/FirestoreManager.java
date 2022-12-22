@@ -7,6 +7,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.misc.FileResourcesUtils;
 import dev.wiji.instancemanager.objects.PlayerData;
 import dev.wiji.instancemanager.ProxyRunnable;
@@ -23,7 +24,7 @@ public class FirestoreManager {
 
 	public static ListenerRegistration registration;
 
-	public static final String PLAYERDATA_COLLECTION = "pitsim-playerdata";
+	public static final String PLAYERDATA_COLLECTION = ConfigManager.isDev() ? "dev-playerdata" : "pitsim-playerdata";
 
 	public static void init() {
 

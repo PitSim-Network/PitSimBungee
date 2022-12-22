@@ -219,7 +219,9 @@ public class AdminCommand extends Command {
 						AOutput.color(player, "&aServer has been suspended!");
 					} else {
 						if(overworldServer.suspendedStatus != null) {
-							overworldServer.status = overworldServer.suspendedStatus;
+							if(overworldServer.suspendedStatus == ServerStatus.RESTARTING_FINAL) overworldServer.status = ServerStatus.OFFLINE;
+							else if(overworldServer.suspendedStatus == ServerStatus.SHUTTING_DOWN_FINAL) overworldServer.status = ServerStatus.OFFLINE;
+							else overworldServer.status = overworldServer.suspendedStatus;
 							overworldServer.suspendedStatus = null;
 						} else {
 							overworldServer.status = ServerStatus.RUNNING;
@@ -241,7 +243,9 @@ public class AdminCommand extends Command {
 						AOutput.color(player, "&aServer has been suspended!");
 					} else {
 						if(darkzoneServer.suspendedStatus != null) {
-							darkzoneServer.status = darkzoneServer.suspendedStatus;
+							if(darkzoneServer.suspendedStatus == ServerStatus.RESTARTING_FINAL) darkzoneServer.status = ServerStatus.OFFLINE;
+							else if(darkzoneServer.suspendedStatus == ServerStatus.SHUTTING_DOWN_FINAL) darkzoneServer.status = ServerStatus.OFFLINE;
+							else darkzoneServer.status = darkzoneServer.suspendedStatus;
 							darkzoneServer.suspendedStatus = null;
 						} else {
 							darkzoneServer.status = ServerStatus.RUNNING;

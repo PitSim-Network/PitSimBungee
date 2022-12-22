@@ -2,6 +2,7 @@ package dev.wiji.instancemanager.objects;
 
 import com.mattmalec.pterodactyl4j.UtilizationState;
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
 import dev.wiji.instancemanager.storage.StorageProfile;
@@ -73,13 +74,18 @@ public abstract class MainGamemodeServer {
 	}
 
 	public ServerInfo getServerInfo() {
-		if(serverType == ServerType.DARKZONE) return BungeeMain.INSTANCE.getProxy().getServerInfo("darkzone-" + serverIndex);
-		else return BungeeMain.INSTANCE.getProxy().getServerInfo("pitsim-" + serverIndex);
+		if(serverType == ServerType.DARKZONE) {
+			if(ConfigManager.isDev()) return BungeeMain.INSTANCE.getProxy().getServerInfo("darkzonedev-" + serverIndex);
+			return BungeeMain.INSTANCE.getProxy().getServerInfo("darkzone-" + serverIndex);
+		} else {
+			if(ConfigManager.isDev()) return BungeeMain.INSTANCE.getProxy().getServerInfo("pitsimdev-" + serverIndex);
+			return BungeeMain.INSTANCE.getProxy().getServerInfo("pitsim-" + serverIndex);
+		}
 	}
 
 	public List<ProxiedPlayer> getPlayers() {
-		if(serverType == ServerType.DARKZONE) return new ArrayList<>(BungeeMain.INSTANCE.getProxy().getServerInfo("darkzone-" + serverIndex).getPlayers());
-		else return new ArrayList<>(BungeeMain.INSTANCE.getProxy().getServerInfo("pitsim-" + serverIndex).getPlayers());
+		if(serverType == ServerType.DARKZONE) return new ArrayList<>(getServerInfo().getPlayers());
+		else return new ArrayList<>(getServerInfo().getPlayers());
 
 	}
 
