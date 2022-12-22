@@ -43,6 +43,7 @@ public class OverworldServerManager implements Listener {
 				if(!server.status.isOnline()) continue;
 				playerMessage.addServer(server.getServerInfo());
 			}
+			if(!ConfigManager.isDev()) playerMessage.addServer("lobby");
 			playerMessage.send();
 
 			int players = getTotalPlayers();

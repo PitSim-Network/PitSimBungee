@@ -53,7 +53,7 @@ public class GuildManager implements Listener {
 //					}
 				}
 			}
-		}.runAfterEvery(5, 5, TimeUnit.SECONDS);
+		}.runAfterEvery(15, 60, TimeUnit.SECONDS);
 
 		((ProxyRunnable) () -> {
 			for(Guild guild : GuildManager.guildList) {
