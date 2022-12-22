@@ -102,6 +102,7 @@ public class AdminCommand extends Command {
 			DarkzoneServerManager.networkIsShuttingDown = true;
 
 			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+				if(overworldServer.isSuspended()) continue;
 				if(overworldServer.status == ServerStatus.RUNNING) {
 					overworldServer.shutDown(false);
 				}
@@ -111,6 +112,7 @@ public class AdminCommand extends Command {
 			}
 
 			for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
+				if(darkzoneServer.isSuspended()) continue;
 				if(darkzoneServer.status == ServerStatus.RUNNING) {
 					darkzoneServer.shutDown(false);
 				}
@@ -128,6 +130,7 @@ public class AdminCommand extends Command {
 			DarkzoneServerManager.networkIsShuttingDown = true;
 
 			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+				if(overworldServer.isSuspended()) continue;
 				for(ProxiedPlayer pitSimServerPlayer : overworldServer.getPlayers()) {
 					pitSimServerPlayer.connect(BungeeMain.INSTANCE.getProxy().getServerInfo(ConfigManager.getLobbyServer()));
 				}
@@ -136,6 +139,7 @@ public class AdminCommand extends Command {
 			}
 
 			for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
+				if(darkzoneServer.isSuspended()) continue;
 				for(ProxiedPlayer darkzoneServerPlayer : darkzoneServer.getPlayers()) {
 					darkzoneServerPlayer.connect(BungeeMain.INSTANCE.getProxy().getServerInfo(ConfigManager.getLobbyServer()));
 				}
@@ -165,16 +169,16 @@ public class AdminCommand extends Command {
 
 			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
 				BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
-						"&7[" + overworldServer.getServerInfo().getName() + "] &e(" + overworldServer.getPlayers().size() + ") "  + overworldServer.status.color +
-								overworldServer.status.toString()));
+						"&7[" + overworldServer.getServerInfo().getName() + "] &e(" + overworldServer.getPlayers().size() + ") "  +
+								overworldServer.status.color + overworldServer.status));
 
 				player.sendMessage(components);
 			}
 
 			for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
 				BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
-						"&7[" + darkzoneServer.getServerInfo().getName() + "] &e(" + darkzoneServer.getPlayers().size() + ") " + darkzoneServer.status.color +
-								darkzoneServer.status.toString()));
+						"&7[" + darkzoneServer.getServerInfo().getName() + "] &e(" + darkzoneServer.getPlayers().size() + ") " +
+								darkzoneServer.status.color + darkzoneServer.status));
 
 				player.sendMessage(components);
 			}
@@ -210,11 +214,17 @@ public class AdminCommand extends Command {
 				if(serverInfo == overworldServer.getServerInfo()) {
 					if(overworldServer.status != ServerStatus.SUSPENDED) {
 						suspend = true;
+						overworldServer.suspendedStatus = overworldServer.status;
 						overworldServer.status = ServerStatus.SUSPENDED;
 						AOutput.color(player, "&aServer has been suspended!");
 					} else {
-						overworldServer.status = ServerStatus.RUNNING;
-						AOutput.color(player, "&aServer has been un-suspended!");
+						if(overworldServer.suspendedStatus != null) {
+							overworldServer.status = overworldServer.suspendedStatus;
+							overworldServer.suspendedStatus = null;
+						} else {
+							overworldServer.status = ServerStatus.RUNNING;
+						}
+						AOutput.color(player, "&aServer has been un-suspended: " + overworldServer.status.color + overworldServer.status);
 					}
 				}
 			}
@@ -226,11 +236,17 @@ public class AdminCommand extends Command {
 					darkzone = true;
 					if(darkzoneServer.status != ServerStatus.SUSPENDED) {
 						suspend = true;
+						darkzoneServer.suspendedStatus = darkzoneServer.status;
 						darkzoneServer.status = ServerStatus.SUSPENDED;
 						AOutput.color(player, "&aServer has been suspended!");
 					} else {
-						darkzoneServer.status = ServerStatus.RUNNING;
-						AOutput.color(player, "&aServer has been un-suspended!");
+						if(darkzoneServer.suspendedStatus != null) {
+							darkzoneServer.status = darkzoneServer.suspendedStatus;
+							darkzoneServer.suspendedStatus = null;
+						} else {
+							darkzoneServer.status = ServerStatus.RUNNING;
+						}
+						AOutput.color(player, "&aServer has been un-suspended: " + darkzoneServer.status.color + darkzoneServer.status);
 					}
 				}
 			}

@@ -1,7 +1,6 @@
 package dev.wiji.instancemanager.guilds.commands.guildcommands;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
-import de.sumafu.PlayerStatus.PlayerNeverConnectedException;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
@@ -16,7 +15,6 @@ import dev.wiji.instancemanager.misc.AOutput;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -40,9 +38,9 @@ public class InfoCommand extends ACommand {
 			}
 			if(guild == null) {
 				UUID uuid = null;
-				try {
-					uuid = BungeeMain.psApi.getUuidOfName(guildName);
-				} catch(PlayerNeverConnectedException | SQLException ignored) { }
+//				try {
+//					uuid = BungeeMain.psApi.getUuidOfName(guildName);
+//				} catch(PlayerNeverConnectedException | SQLException ignored) { }
 
 				if(uuid == null) {
 					AOutput.color(player, "Could not find that guild/player");
@@ -105,11 +103,11 @@ public class InfoCommand extends ACommand {
 					.addLine(guild.getColor() + " * &7Reputation Points: " + guild.getColor() + guild.getTotalBuffCost() +
 							"&7/" + guild.getColor() + guild.getRepPoints())
 					.addLine(guild.getColor() + " * &7Bank Balanace: &6" + guild.getFormattedBalance() + "g&7/&6" + ArcticGuilds.decimalFormat.format(guild.getMaxBank()))
-					.addLine(guild.getColor() + " * &7Owner: " + guild.getColor() + BungeeMain.psApi.getNameOfUuid(guild.ownerUUID))
+//					.addLine(guild.getColor() + " * &7Owner: " + guild.getColor() + BungeeMain.psApi.getNameOfUuid(guild.ownerUUID))
 					.addLine(guild.getColor() + " * &7Members: &7(" + guild.getColor() + guild.members.size() + "&7/" + guild.getColor() + guild.getMaxMembers() + "&7)")
 					.addLine(guild.getColor() + " * &7Online Members: &7(" + guild.getColor() + onlinePlayers.size() + "&7/" + guild.getColor() + guild.members.size() + "&7)");
-		} catch(SQLException | PlayerNeverConnectedException e) {
-			throw new RuntimeException(e);
+		} catch(Exception exception) {
+			throw new RuntimeException(exception);
 		}
 		for(Map.Entry<GuildMember, GuildMemberInfo> entry : sortedPlayers) {
 			if(!onlinePlayers.contains(entry.getKey().playerUUID)) continue;

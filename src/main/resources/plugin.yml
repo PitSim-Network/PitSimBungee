@@ -7,4 +7,4 @@ commands:
   play:
   toggle:
   dev:
-depends: [PitSimBungeeDependencies, PlayerStatus, LuckPerms, PluginQuery]
+depends: [PitSimBungeeDependencies, LuckPerms, PluginQuery]

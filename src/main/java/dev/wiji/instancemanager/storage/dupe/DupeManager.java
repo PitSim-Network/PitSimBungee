@@ -1,7 +1,6 @@
 package dev.wiji.instancemanager.storage.dupe;
 
 import com.google.gson.Gson;
-import de.sumafu.PlayerStatus.PlayerNeverConnectedException;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.discord.Constants;
@@ -24,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.*;
@@ -305,11 +303,12 @@ public class DupeManager implements Listener {
 	}
 
 	public static String getPlayerName(UUID uuid) {
-		try {
-			return BungeeMain.psApi.getNameOfUuid(uuid);
-		} catch(SQLException | PlayerNeverConnectedException exception) {
-			return "ERROR";
-		}
+//		try {
+//			return BungeeMain.psApi.getNameOfUuid(uuid);
+//		} catch(SQLException | PlayerNeverConnectedException exception) {
+//			return "ERROR";
+//		}
+		return "ERROR";
 	}
 
 	public static class TrackedItem {

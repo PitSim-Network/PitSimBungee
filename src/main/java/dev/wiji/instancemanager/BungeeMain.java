@@ -4,9 +4,6 @@ package dev.wiji.instancemanager;
 import com.mattmalec.pterodactyl4j.PteroBuilder;
 import com.mattmalec.pterodactyl4j.application.entities.PteroApplication;
 import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
-import de.sumafu.PlayerStatus.PlayerNeverConnectedException;
-import de.sumafu.PlayerStatus.PlayerStatus;
-import de.sumafu.PlayerStatus.PlayerStatusAPI;
 import dev.wiji.instancemanager.alogging.ConnectionManager;
 import dev.wiji.instancemanager.alogging.ServerLogManager;
 import dev.wiji.instancemanager.commands.*;
@@ -38,7 +35,6 @@ public class BungeeMain extends Plugin {
 
 	public static long STARTUP_TIME;
 
-	public static PlayerStatusAPI psApi;
 	public static LuckPerms LUCKPERMS;
 
 	@Override
@@ -49,8 +45,6 @@ public class BungeeMain extends Plugin {
 		this.getProxy().registerChannel("BungeeCord");
 		STARTUP_TIME = System.currentTimeMillis();
 		FirestoreManager.init();
-
-		psApi = PlayerStatus.getAPI();
 
 		DiscordPlugin.onEnable(this);
 

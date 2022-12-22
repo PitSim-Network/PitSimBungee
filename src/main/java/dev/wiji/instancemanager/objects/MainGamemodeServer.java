@@ -22,6 +22,7 @@ public abstract class MainGamemodeServer {
 	public boolean isOnStartCooldown = false;
 	public long startTime;
 	public ServerStatus status = ServerStatus.OFFLINE;
+	public ServerStatus suspendedStatus = null;
 
 	public final ServerType serverType;
 	public ServerData serverData;
@@ -80,6 +81,10 @@ public abstract class MainGamemodeServer {
 		if(serverType == ServerType.DARKZONE) return new ArrayList<>(BungeeMain.INSTANCE.getProxy().getServerInfo("darkzone-" + serverIndex).getPlayers());
 		else return new ArrayList<>(BungeeMain.INSTANCE.getProxy().getServerInfo("pitsim-" + serverIndex).getPlayers());
 
+	}
+
+	public boolean isSuspended() {
+		return status == ServerStatus.SUSPENDED;
 	}
 
 	public void beginStartCooldown() {
