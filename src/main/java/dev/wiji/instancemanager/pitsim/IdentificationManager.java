@@ -6,6 +6,7 @@ import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
+import java.net.ConnectException;
 import java.sql.*;
 import java.util.Objects;
 import java.util.UUID;
@@ -21,7 +22,9 @@ public class IdentificationManager implements Listener {
 		String name = player.getName();
 
 		try {
-			insertIntoTable(Objects.requireNonNull(getConnection()), uuid, name);
+			Connection connection = getConnection();
+			insertIntoTable(Objects.requireNonNull(connection), uuid, name);
+			connection.close();
 		} catch(SQLException throwables) {
 			throwables.printStackTrace();
 		}
@@ -32,7 +35,7 @@ public class IdentificationManager implements Listener {
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, uuid.toString());
 		stmt.setString(2, username);
-		stmt.executeQuery();
+		stmt.execute();
 	}
 
 	public static Connection getConnection() {
@@ -58,7 +61,7 @@ public class IdentificationManager implements Listener {
 	}
 
 	public static UUID getUuid(Connection conn, String username) throws SQLException {
-		String sql = "SELECT uuid FROM " + NEW_TABLE + " WHERE username = ?";
+		String sql = "SELECT uuid FROM " + NEW_TABLE + " WHERE UPPER(username) = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, username);
 		ResultSet rs = stmt.executeQuery();

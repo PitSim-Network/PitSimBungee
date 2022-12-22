@@ -37,10 +37,7 @@ public class InfoCommand extends ACommand {
 				break;
 			}
 			if(guild == null) {
-				UUID uuid = null;
-//				try {
-//					uuid = BungeeMain.psApi.getUuidOfName(guildName);
-//				} catch(PlayerNeverConnectedException | SQLException ignored) { }
+				UUID uuid = BungeeMain.getUUID(guildName, false);
 
 				if(uuid == null) {
 					AOutput.color(player, "Could not find that guild/player");
@@ -103,7 +100,7 @@ public class InfoCommand extends ACommand {
 					.addLine(guild.getColor() + " * &7Reputation Points: " + guild.getColor() + guild.getTotalBuffCost() +
 							"&7/" + guild.getColor() + guild.getRepPoints())
 					.addLine(guild.getColor() + " * &7Bank Balanace: &6" + guild.getFormattedBalance() + "g&7/&6" + ArcticGuilds.decimalFormat.format(guild.getMaxBank()))
-//					.addLine(guild.getColor() + " * &7Owner: " + guild.getColor() + BungeeMain.psApi.getNameOfUuid(guild.ownerUUID))
+					.addLine(guild.getColor() + " * &7Owner: " + guild.getColor() + BungeeMain.getName(guild.ownerUUID, false))
 					.addLine(guild.getColor() + " * &7Members: &7(" + guild.getColor() + guild.members.size() + "&7/" + guild.getColor() + guild.getMaxMembers() + "&7)")
 					.addLine(guild.getColor() + " * &7Online Members: &7(" + guild.getColor() + onlinePlayers.size() + "&7/" + guild.getColor() + guild.members.size() + "&7)");
 		} catch(Exception exception) {

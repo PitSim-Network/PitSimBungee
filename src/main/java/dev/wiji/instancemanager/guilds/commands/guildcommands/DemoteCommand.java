@@ -1,5 +1,7 @@
 package dev.wiji.instancemanager.guilds.commands.guildcommands;
 
+import de.sumafu.PlayerStatus.PlayerNeverConnectedException;
+import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.guilds.controllers.GuildManager;
 import dev.wiji.instancemanager.guilds.controllers.PermissionManager;
 import dev.wiji.instancemanager.guilds.controllers.objects.Guild;
@@ -13,6 +15,7 @@ import dev.wiji.instancemanager.misc.Constants;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -48,12 +51,7 @@ public class DemoteCommand extends ACommand {
 
 		Map.Entry<GuildMember, GuildMemberInfo> guildTarget = null;
 
-		UUID uuid = null;
-//		try {
-//			uuid = BungeeMain.psApi.getUuidOfName(args.get(0));
-//		} catch(PlayerNeverConnectedException | SQLException e) {
-//			throw new RuntimeException(e);
-//		}
+		UUID uuid = BungeeMain.getUUID(args.get(0), false);
 
 		if(uuid == null) {
 			AOutput.color(player, "That player does not exist");

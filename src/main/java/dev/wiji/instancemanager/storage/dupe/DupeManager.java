@@ -303,12 +303,8 @@ public class DupeManager implements Listener {
 	}
 
 	public static String getPlayerName(UUID uuid) {
-//		try {
-//			return BungeeMain.psApi.getNameOfUuid(uuid);
-//		} catch(SQLException | PlayerNeverConnectedException exception) {
-//			return "ERROR";
-//		}
-		return "ERROR";
+		String name = BungeeMain.getName(uuid, false);
+		return name == null ? "ERROR" : name;
 	}
 
 	public static class TrackedItem {

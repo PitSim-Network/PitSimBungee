@@ -20,6 +20,8 @@ import net.md_5.bungee.api.plugin.Plugin;
 import septogeddon.pluginquery.PluginQuery;
 import septogeddon.pluginquery.api.QueryMessenger;
 
+import javax.persistence.Id;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,7 +107,11 @@ public class BungeeMain extends Plugin {
 
 	public static String getName(UUID uuid, boolean printError) {
 		try {
-			return IdentificationManager.getUsername(Objects.requireNonNull(IdentificationManager.getConnection()), uuid);
+			Connection connection = IdentificationManager.getConnection();
+			String name = IdentificationManager.getUsername(Objects.requireNonNull(connection), uuid);
+			connection.close();
+			return name;
+
 		} catch(SQLException throwables) {
 			if(printError) throwables.printStackTrace();
 		}
@@ -123,7 +129,11 @@ public class BungeeMain extends Plugin {
 
 	public static UUID getUUID(String name, boolean printError) {
 		try {
-			return IdentificationManager.getUuid(Objects.requireNonNull(IdentificationManager.getConnection()), name);
+			Connection connection = IdentificationManager.getConnection();
+			UUID uuid = IdentificationManager.getUuid(Objects.requireNonNull(connection), name);
+			connection.close();
+			return uuid;
+
 		} catch(SQLException throwables) {
 			if(printError) throwables.printStackTrace();
 		}
