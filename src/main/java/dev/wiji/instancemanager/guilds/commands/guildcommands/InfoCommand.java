@@ -40,12 +40,12 @@ public class InfoCommand extends ACommand {
 				UUID uuid = BungeeMain.getUUID(guildName, false);
 
 				if(uuid == null) {
-					AOutput.color(player, "Could not find that guild/player");
+					AOutput.error(player, "Could not find that guild/player");
 					return;
 				}
-				Guild testGuild = GuildManager.getGuildFromGuildUUID(uuid);
+				Guild testGuild = GuildManager.getGuildFromPlayer(uuid);
 				if(testGuild == null) {
-					AOutput.color(player, "That player is not in a guild");
+					AOutput.error(player, "That player is not in a guild");
 					return;
 				}
 				guild = testGuild;
