@@ -29,7 +29,7 @@ public class OverworldServerManager implements Listener {
 	public static List<OverworldServer> serverList = new ArrayList<>();
 
 	//	The next server turns on when the player count reaches a multiple of this number
-	public static final int NEW_SERVER_THRESHOLD = 10;
+	public static final int NEW_SERVER_THRESHOLD = 8;
 	//	When the player count drops this many below a multiple of the number above, that server enabled by hitting
 //	that threshold is no longer needed and gets shut down
 	public static final int REQUIRED_DROP_FOR_SHUTDOWN = 4;
@@ -71,7 +71,7 @@ public class OverworldServerManager implements Listener {
 				System.out.println("Turning on server: " + (i + 1));
 			}
 
-			for(int i = 1 + (players + REQUIRED_DROP_FOR_SHUTDOWN - 1) / 10; i < serverList.size(); i++) {
+			for(int i = 1 + (players + REQUIRED_DROP_FOR_SHUTDOWN - 1) / NEW_SERVER_THRESHOLD; i < serverList.size(); i++) {
 				OverworldServer server = serverList.get(i);
 				if(server.status.isShuttingDown() || server.status == ServerStatus.OFFLINE || server.status == ServerStatus.SUSPENDED) continue;
 				if(server.status == ServerStatus.RESTARTING_INITIAL) {
