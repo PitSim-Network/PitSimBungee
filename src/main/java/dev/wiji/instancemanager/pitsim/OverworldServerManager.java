@@ -73,7 +73,8 @@ public class OverworldServerManager implements Listener {
 
 			for(int i = 1 + (players + REQUIRED_DROP_FOR_SHUTDOWN - 1) / NEW_SERVER_THRESHOLD; i < serverList.size(); i++) {
 				OverworldServer server = serverList.get(i);
-				if(server.status.isShuttingDown() || server.status == ServerStatus.OFFLINE || server.status == ServerStatus.SUSPENDED) continue;
+				if(server.status.isShuttingDown() || server.status == ServerStatus.OFFLINE || server.status == ServerStatus.SUSPENDED)
+					continue;
 				if(server.status == ServerStatus.RESTARTING_INITIAL) {
 					server.status = ServerStatus.SHUTTING_DOWN_INITIAL;
 					System.out.println("Switching restart to shut down: " + (i + 1));
@@ -128,7 +129,7 @@ public class OverworldServerManager implements Listener {
 		}
 
 		MainGamemodeServer.cooldownPlayers.add(player);
-		((ProxyRunnable) () ->  MainGamemodeServer.cooldownPlayers.remove(player)).runAfter(5, TimeUnit.SECONDS);
+		((ProxyRunnable) () -> MainGamemodeServer.cooldownPlayers.remove(player)).runAfter(5, TimeUnit.SECONDS);
 
 		if(EditSessionManager.isBeingEdited(player.getUniqueId())) {
 			player.sendMessage(new ComponentBuilder("Your player-data is being modified. Please try again in a moment.").color(ChatColor.RED).create());
@@ -225,7 +226,8 @@ public class OverworldServerManager implements Listener {
 
 		player.sendMessage((new ComponentBuilder("Sending you to " + targetServer.getServerInfo().getName()).color(ChatColor.GREEN).create()));
 
-		if(fromDarkzone) new PluginMessage().writeString("DARKZONE JOIN").writeString(player.getUniqueId().toString()).writeBoolean(true).addServer(targetServer.getServerInfo().getName()).send();
+		if(fromDarkzone)
+			new PluginMessage().writeString("DARKZONE JOIN").writeString(player.getUniqueId().toString()).writeBoolean(true).addServer(targetServer.getServerInfo().getName()).send();
 
 		OverworldServer finalTargetServer = targetServer;
 		((ProxyRunnable) () -> player.connect(finalTargetServer.getServerInfo())).runAfter(1, TimeUnit.SECONDS);

@@ -56,7 +56,7 @@ public class FirestoreManager {
 		} catch(InterruptedException | ExecutionException e) {
 			throw new RuntimeException(e);
 		}
-		for (QueryDocumentSnapshot document : documents) {
+		for(QueryDocumentSnapshot document : documents) {
 			new PlayerData(UUID.fromString(document.getId()), document);
 		}
 
@@ -76,7 +76,6 @@ public class FirestoreManager {
 								new PlayerData(UUID.fromString(playerData.getId()), playerData);
 							}
 						});
-
 
 
 		//run the leaderboard calc init after 5 secondsc

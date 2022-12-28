@@ -38,7 +38,7 @@ public abstract class GuildBuff {
 
 	public static class SubBuff {
 		public String refName;
-//		Use %amount% to designate where the amount should go
+		//		Use %amount% to designate where the amount should go
 		private final String displayString;
 
 		public SubBuff(String refName, String displayString) {

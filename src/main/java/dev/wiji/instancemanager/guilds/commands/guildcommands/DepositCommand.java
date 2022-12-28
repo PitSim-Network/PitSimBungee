@@ -41,7 +41,7 @@ public class DepositCommand extends ACommand {
 			amount = Integer.parseInt(args.get(0));
 			if(amount <= 0) throw new IllegalArgumentException();
 		} catch(Exception ignored) {
-			AOutput. error(player, "Invalid amount");
+			AOutput.error(player, "Invalid amount");
 			return;
 		}
 
@@ -62,7 +62,7 @@ public class DepositCommand extends ACommand {
 		};
 
 		ProxyRunnable fail = () -> {
-			AOutput.error(player,"You do not have enough funds");
+			AOutput.error(player, "You do not have enough funds");
 		};
 
 		GuildMessaging.deposit(player, amount, success, fail);

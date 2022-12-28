@@ -24,7 +24,7 @@ public class GuildAdminCommand extends AMultiCommand {
 	public void execute(CommandSender sender, List<String> args) {
 		if(!(sender instanceof ProxiedPlayer)) return;
 		ProxiedPlayer player = (ProxiedPlayer) sender;
-		if(!player.hasPermission("pitsim.admin"))  {
+		if(!player.hasPermission("pitsim.admin")) {
 			AOutput.color(player, "&cYou do not have permission to use this command");
 			return;
 		}

@@ -45,7 +45,7 @@ public class IdentificationManager implements Listener {
 			String username = "u1_tNdewbWGuJ";
 			String password = "xH@ngjlP8imF@PY8pP@psvRV";
 			return DriverManager.getConnection(dbUrl, username, password);
-		} catch(Exception ignored) { };
+		} catch(Exception ignored) {} ;
 		return null;
 	}
 
@@ -54,7 +54,7 @@ public class IdentificationManager implements Listener {
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, uuid.toString());
 		ResultSet rs = stmt.executeQuery();
-		if (rs.next()) {
+		if(rs.next()) {
 			return rs.getString("username");
 		}
 		return null;
@@ -65,7 +65,7 @@ public class IdentificationManager implements Listener {
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, username);
 		ResultSet rs = stmt.executeQuery();
-		if (rs.next()) {
+		if(rs.next()) {
 			return UUID.fromString(rs.getString("uuid"));
 		}
 		return null;

@@ -25,7 +25,7 @@ public class EditSessionManager implements Listener {
 
 		try {
 			playerUUID = UUID.fromString(playerName);
-		} catch (IllegalArgumentException e) {
+		} catch(IllegalArgumentException e) {
 			playerUUID = BungeeMain.getUUID(playerName, false);
 		}
 
@@ -60,7 +60,7 @@ public class EditSessionManager implements Listener {
 	@EventHandler
 	public void onLogout(PlayerDisconnectEvent event) {
 		EditSession finalSession = null;
-		
+
 		for(EditSession session : editSessions) {
 			if(session.getStaffUUID().equals(event.getPlayer().getUniqueId())) {
 				finalSession = session;

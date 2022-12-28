@@ -22,11 +22,11 @@ public class StorageProfile {
 	private transient UUID uuid;
 	private transient File saveFile;
 	private int enderChestPages = ENDERCHEST_PAGES;
-	private final String[]  inventoryStrings = new String[36];
+	private final String[] inventoryStrings = new String[36];
 	private final String[][] enderchest = new String[enderChestPages][27];
 	private final String[] armor = new String[4];
 
-	public StorageProfile() { }
+	public StorageProfile() {}
 
 	public void init(UUID player) {
 		this.uuid = player;

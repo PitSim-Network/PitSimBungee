@@ -25,11 +25,10 @@ public class ToggleCommand extends Command {
 		}
 
 		if(strings[0].equalsIgnoreCase("skywars")) {
-			if(SkywarsGameManager.isEnabled){
+			if(SkywarsGameManager.isEnabled) {
 				SkywarsGameManager.isEnabled = false;
 				commandSender.sendMessage((new ComponentBuilder("Turned off queuing for Skywars").color(ChatColor.RED).create()));
-			}
-			else {
+			} else {
 				SkywarsGameManager.isEnabled = true;
 				commandSender.sendMessage((new ComponentBuilder("Turned on queuing for Skywars").color(ChatColor.GREEN).create()));
 			}

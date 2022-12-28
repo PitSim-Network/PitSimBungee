@@ -6,6 +6,7 @@ import java.util.List;
 public class MiscManager {
 
 	public static List<String> wijiAccounts = new ArrayList<>();
+
 	static {
 		wijiAccounts.add("5c06626c-66bf-48a9-84cb-f2683e6aca87");
 		wijiAccounts.add("e6654529-0d8c-4f86-954b-66e53e65ab33");

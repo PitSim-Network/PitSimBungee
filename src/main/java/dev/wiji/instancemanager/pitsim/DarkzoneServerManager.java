@@ -60,7 +60,8 @@ public class DarkzoneServerManager {
 
 			for(int i = 1 + (players + (START_THRESHOLD - STOP_THRESHOLD - 1)) / 10; i < serverList.size(); i++) {
 				DarkzoneServer server = serverList.get(i);
-				if(server.status.isShuttingDown() || server.status == ServerStatus.OFFLINE || server.status == ServerStatus.SUSPENDED) continue;
+				if(server.status.isShuttingDown() || server.status == ServerStatus.OFFLINE || server.status == ServerStatus.SUSPENDED)
+					continue;
 				if(server.status == ServerStatus.RESTARTING_INITIAL) {
 					server.status = ServerStatus.SHUTTING_DOWN_INITIAL;
 					System.out.println("Switching restart to shut down: " + (i + 1));
@@ -102,7 +103,7 @@ public class DarkzoneServerManager {
 		}
 
 		MainGamemodeServer.cooldownPlayers.add(player);
-		((ProxyRunnable) () ->  MainGamemodeServer.cooldownPlayers.remove(player)).runAfter(5, TimeUnit.SECONDS);
+		((ProxyRunnable) () -> MainGamemodeServer.cooldownPlayers.remove(player)).runAfter(5, TimeUnit.SECONDS);
 
 		if(EditSessionManager.isBeingEdited(player.getUniqueId())) {
 			player.sendMessage(new ComponentBuilder("Your player-data is being modified. Please try again in a moment.").color(ChatColor.RED).create());

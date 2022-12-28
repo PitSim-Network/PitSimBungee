@@ -26,10 +26,10 @@ public class SettingsPanel extends PreparedInventoryPanel {
 	}
 
 	@Override
-	public void onClick(InventoryClickEvent event) { }
+	public void onClick(InventoryClickEvent event) {}
 
 	@Override
-	public void onOpen(InventoryOpenEvent event) { }
+	public void onOpen(InventoryOpenEvent event) {}
 
 	@Override
 	public void onClose(InventoryCloseEvent event) {

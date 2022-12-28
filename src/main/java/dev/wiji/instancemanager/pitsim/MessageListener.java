@@ -64,7 +64,7 @@ public class MessageListener implements Listener {
 
 		if(strings.size() >= 2 && strings.get(0).equals("INITIATE FINAL SHUTDOWN")) {
 			String serverName = strings.get(1);
-				for(OverworldServer server : OverworldServerManager.serverList) {
+			for(OverworldServer server : OverworldServerManager.serverList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
 					server.serverData = null;
 					server.status = ServerStatus.SHUTTING_DOWN_FINAL;
@@ -175,7 +175,7 @@ public class MessageListener implements Listener {
 			ServerInfo serverInfo = BungeeMain.INSTANCE.getProxy().getServerInfo(strings.get(2));
 
 			BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&'
-					,"&5&lDARK AUCTION! &e" + playerName + " &7won " + strings.get(3) + " &7for &f" +
+					, "&5&lDARK AUCTION! &e" + playerName + " &7won " + strings.get(3) + " &7for &f" +
 							integers.get(2) + " Souls&7."));
 
 			boolean isOnline = false;
@@ -223,7 +223,7 @@ public class MessageListener implements Listener {
 			strings.remove(0);
 
 			BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&'
-					,"&5&lDARK AUCTION! &e" + bidPlayer + " &7bid &f" + bid + " Souls &7on " + itemName));
+					, "&5&lDARK AUCTION! &e" + bidPlayer + " &7bid &f" + bid + " Souls &7on " + itemName));
 
 			for(String string : strings) {
 				UUID uuid = UUID.fromString(string);

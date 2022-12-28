@@ -10,8 +10,8 @@ public class AUtil {
 	}
 
 	public static String toRoman(int number) {
-		int l = (Integer)map.floorKey(number);
-		return number == l ? (String)map.get(number) : (String)map.get(l) + toRoman(number - l);
+		int l = (Integer) map.floorKey(number);
+		return number == l ? (String) map.get(number) : (String) map.get(l) + toRoman(number - l);
 	}
 
 	static {

@@ -30,7 +30,7 @@ public class PluginMessageSender {
 
 		if(players.size() == 0) return null;
 		else return players.iterator().next();
- 	}
+	}
 
 	public static ProxiedPlayer getHubPlayer() {
 		Collection<ProxiedPlayer> players = BungeeMain.INSTANCE.getProxy().getServerInfo("lobby").getPlayers();
@@ -45,20 +45,20 @@ public class PluginMessageSender {
 		players = players + SkywarsGameManager.mainQueuePlayers;
 		players = players + SkywarsGameManager.backupQueuePlayers;
 
-	    for(String s : SkywarsGameManager.activeServers.keySet()) {
-		    players = players + BungeeMain.INSTANCE.getProxy().getServerInfo(s).getPlayers().size();
-	    }
-	    return players;
-    }
+		for(String s : SkywarsGameManager.activeServers.keySet()) {
+			players = players + BungeeMain.INSTANCE.getProxy().getServerInfo(s).getPlayers().size();
+		}
+		return players;
+	}
 
-    public static int getServers() {
+	public static int getServers() {
 		int servers = 0;
 
 		servers = servers + SkywarsGameManager.activeServers.size();
 		if(SkywarsGameManager.mainQueuePlayers != 0) servers++;
 		if(SkywarsGameManager.backupQueuePlayers != 0) servers++;
 		return servers;
-    }
+	}
 
 	public static void sendInfo() {
 
@@ -72,7 +72,7 @@ public class PluginMessageSender {
 		try {
 			msgout.writeUTF(String.valueOf(getPlayers()));
 			msgout.writeUTF(String.valueOf(getServers()));
-		} catch (IOException exception){
+		} catch(IOException exception) {
 			exception.printStackTrace();
 		}
 
@@ -95,7 +95,7 @@ public class PluginMessageSender {
 		try {
 			msgout.writeUTF(String.valueOf(getPlayers()));
 			msgout.writeUTF(String.valueOf(getServers()));
-		} catch (IOException exception){
+		} catch(IOException exception) {
 			exception.printStackTrace();
 		}
 

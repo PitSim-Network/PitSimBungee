@@ -12,7 +12,7 @@ import java.util.UUID;
 public class GuildMember {
 	public UUID playerUUID;
 
-//	Savable data
+	//	Savable data
 	private UUID guildUUID;
 	public Date lastModify = new Date(0);
 
@@ -54,10 +54,12 @@ public class GuildMember {
 	}
 
 	public static long MODIFY_TIME = 1000 * 60 * 60 * 1 * 1;
+
 	public boolean wasModifiedRecently() {
 		return false;
 //		return new Date().getTime() - lastModify.getTime() < MODIFY_TIME;
 	}
+
 	public String getModifiedTimeRemaining() {
 		DecimalFormat decimalFormat = new DecimalFormat("0.0");
 		double timeLeft = (MODIFY_TIME - (new Date().getTime() - lastModify.getTime())) / 1000.0 / 60;

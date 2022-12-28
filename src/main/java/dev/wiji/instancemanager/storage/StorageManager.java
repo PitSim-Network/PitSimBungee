@@ -57,7 +57,7 @@ public class StorageManager implements Listener {
 				profile = new StorageProfile();
 				exception.printStackTrace();
 			}
-	    }
+		}
 		profile.init(uuid);
 
 		profiles.add(profile);

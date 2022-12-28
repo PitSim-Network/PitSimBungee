@@ -64,6 +64,7 @@ public class AItemStackBuilder {
 
 	/**
 	 * Adds an enchant glint to the item.
+	 *
 	 * @param hideFlag whether to add the item flag that hides enchants
 	 * @deprecated method literally doesn't work :/
 	 */
@@ -82,6 +83,7 @@ public class AItemStackBuilder {
 
 	/**
 	 * Adds the unbreakable item flag to the item.
+	 *
 	 * @param hideFlag whether to add the item flag that hides the unbreakable
 	 */
 	public AItemStackBuilder addUnbreakable(boolean hideFlag) {
@@ -96,8 +98,8 @@ public class AItemStackBuilder {
 		return this;
 	}
 
-    public DummyItemStack getItemStack() {
-        return itemStack;
-    }
+	public DummyItemStack getItemStack() {
+		return itemStack;
+	}
 
 }
