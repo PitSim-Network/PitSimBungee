@@ -50,6 +50,7 @@ public abstract class PreparedInventoryPanel {
 	}
 
 	public abstract String getName();
+
 	public abstract int getRows();
 
 	public abstract void onClick(InventoryClickEvent event);

@@ -65,7 +65,7 @@ public class InGameNitro {
 
 			try {
 				sendNitroMessages(memberIGNs);
-			} catch(Exception ignored) { }
+			} catch(Exception ignored) {}
 		}).runAfterEvery(0L, 3 * 10, TimeUnit.SECONDS);
 	}
 

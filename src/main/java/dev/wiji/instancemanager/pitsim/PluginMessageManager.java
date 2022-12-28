@@ -65,7 +65,7 @@ public class PluginMessageManager implements QueryMessageListener, Listener {
 		assert player != null;
 
 		QueryConnection connection = BungeePluginQuery.getConnection(server);
-		if (connection != null) {
+		if(connection != null) {
 			connection.sendQuery("BungeeCord", out.toByteArray());
 		} else {
 			throw new IllegalArgumentException("server is not yet connected");

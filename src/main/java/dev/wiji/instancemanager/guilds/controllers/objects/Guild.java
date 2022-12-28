@@ -33,7 +33,7 @@ public class Guild {
 	public List<UUID> activeInvites = new ArrayList<>();
 	public int queuedReputation = 0;
 
-//	Savable
+	//	Savable
 	public UUID uuid;
 	public Date dateCreated;
 	public String name;
@@ -79,7 +79,8 @@ public class Guild {
 		this.tag = guildData.getString("tag");
 		this.bannerColor = guildData.getInt("banner");
 		for(GuildBuff buff : BuffManager.buffList) this.buffLevels.put(buff, guildData.getInt("buffs." + buff.refName));
-		for(GuildUpgrade upgrade : UpgradeManager.upgradeList) this.upgradeLevels.put(upgrade, guildData.getInt("upgrades." + upgrade.refName));
+		for(GuildUpgrade upgrade : UpgradeManager.upgradeList)
+			this.upgradeLevels.put(upgrade, guildData.getInt("upgrades." + upgrade.refName));
 
 		Configuration allMemberData = guildData.getSection("members");
 		for(String uuidString : allMemberData.getKeys()) {
@@ -110,7 +111,8 @@ public class Guild {
 		guildData.set("tag", tag);
 		guildData.set("banner", bannerColor);
 		for(GuildBuff buff : BuffManager.buffList) guildData.set("buffs." + buff.refName, buffLevels.get(buff));
-		for(GuildUpgrade upgrade : UpgradeManager.upgradeList) guildData.set("upgrades." + upgrade.refName, upgradeLevels.get(upgrade));
+		for(GuildUpgrade upgrade : UpgradeManager.upgradeList)
+			guildData.set("upgrades." + upgrade.refName, upgradeLevels.get(upgrade));
 
 		guildData.set("members", null);
 		for(Map.Entry<GuildMember, GuildMemberInfo> entry : members.entrySet()) {
@@ -196,7 +198,8 @@ public class Guild {
 
 		while(getTotalBuffCost() > getRepPoints()) {
 			List<GuildBuff> applicableBuffs = new ArrayList<>();
-			for(Map.Entry<GuildBuff, Integer> entry : buffLevels.entrySet()) if(entry.getValue() != 0) applicableBuffs.add(entry.getKey());
+			for(Map.Entry<GuildBuff, Integer> entry : buffLevels.entrySet())
+				if(entry.getValue() != 0) applicableBuffs.add(entry.getKey());
 			Collections.shuffle(applicableBuffs);
 
 			GuildBuff buff = applicableBuffs.remove(0);
@@ -228,7 +231,8 @@ public class Guild {
 
 	public int getTotalBuffCost() {
 		int total = 0;
-		for(Map.Entry<GuildBuff, Integer> entry : buffLevels.entrySet()) total += entry.getKey().getCostForLevel(entry.getValue());
+		for(Map.Entry<GuildBuff, Integer> entry : buffLevels.entrySet())
+			total += entry.getKey().getCostForLevel(entry.getValue());
 		return total;
 	}
 

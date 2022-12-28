@@ -83,6 +83,7 @@ public class KickCommand extends ACommand {
 		String targetName = BungeeMain.getName(target, false);
 		guild.broadcast("&a&lGUILD! &7 " + targetName + " has been kicked from the guild");
 		ProxiedPlayer targetPlayer = BungeeMain.INSTANCE.getProxy().getPlayer(target);
-		if(targetPlayer != null) AOutput.color(targetPlayer, "&a&lGUILD! &7You have been kicked the guild: " + guild.name);
+		if(targetPlayer != null)
+			AOutput.color(targetPlayer, "&a&lGUILD! &7You have been kicked the guild: " + guild.name);
 	}
 }

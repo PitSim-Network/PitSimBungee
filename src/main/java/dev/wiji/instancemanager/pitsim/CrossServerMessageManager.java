@@ -31,9 +31,7 @@ public class CrossServerMessageManager implements Listener {
 				pluginMessage.addServer(server.getServerInfo());
 			}
 			pluginMessage.send();
-		}
-
-		else if(strings.get(0).equals("PRESTIGE")) {
+		} else if(strings.get(0).equals("PRESTIGE")) {
 			String serverName = strings.get(1);
 			String displayName = strings.get(2);
 			int prestige = integers.get(0);

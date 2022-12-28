@@ -96,7 +96,7 @@ public class RenameCommand extends ACommand {
 
 			renameGuild.withdraw(GUILD_RENAME_COST);
 			renameGuild.name = renameGuild.nameChange;
-				renameGuild.save();
+			renameGuild.save();
 			renameGuild.broadcast("&a&lGUILD! &7Guild name changed to: " + renameGuild.nameChange);
 		};
 		ALoreBuilder yesLore = new ALoreBuilder("&7Clicking here will rename", "&7your guild to " + name, "",

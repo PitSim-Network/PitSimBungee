@@ -169,7 +169,7 @@ public class AdminCommand extends Command {
 
 			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
 				BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
-						"&7[" + overworldServer.getServerInfo().getName() + "] &e(" + overworldServer.getPlayers().size() + ") "  +
+						"&7[" + overworldServer.getServerInfo().getName() + "] &e(" + overworldServer.getPlayers().size() + ") " +
 								overworldServer.status.color + overworldServer.status));
 
 				player.sendMessage(components);
@@ -219,8 +219,10 @@ public class AdminCommand extends Command {
 						AOutput.color(player, "&aServer has been suspended!");
 					} else {
 						if(overworldServer.suspendedStatus != null) {
-							if(overworldServer.suspendedStatus == ServerStatus.RESTARTING_FINAL) overworldServer.status = ServerStatus.OFFLINE;
-							else if(overworldServer.suspendedStatus == ServerStatus.SHUTTING_DOWN_FINAL) overworldServer.status = ServerStatus.OFFLINE;
+							if(overworldServer.suspendedStatus == ServerStatus.RESTARTING_FINAL)
+								overworldServer.status = ServerStatus.OFFLINE;
+							else if(overworldServer.suspendedStatus == ServerStatus.SHUTTING_DOWN_FINAL)
+								overworldServer.status = ServerStatus.OFFLINE;
 							else overworldServer.status = overworldServer.suspendedStatus;
 							overworldServer.suspendedStatus = null;
 						} else {
@@ -243,8 +245,10 @@ public class AdminCommand extends Command {
 						AOutput.color(player, "&aServer has been suspended!");
 					} else {
 						if(darkzoneServer.suspendedStatus != null) {
-							if(darkzoneServer.suspendedStatus == ServerStatus.RESTARTING_FINAL) darkzoneServer.status = ServerStatus.OFFLINE;
-							else if(darkzoneServer.suspendedStatus == ServerStatus.SHUTTING_DOWN_FINAL) darkzoneServer.status = ServerStatus.OFFLINE;
+							if(darkzoneServer.suspendedStatus == ServerStatus.RESTARTING_FINAL)
+								darkzoneServer.status = ServerStatus.OFFLINE;
+							else if(darkzoneServer.suspendedStatus == ServerStatus.SHUTTING_DOWN_FINAL)
+								darkzoneServer.status = ServerStatus.OFFLINE;
 							else darkzoneServer.status = darkzoneServer.suspendedStatus;
 							darkzoneServer.suspendedStatus = null;
 						} else {

@@ -7,13 +7,13 @@ import java.util.List;
 
 public abstract class DiscordCommand {
 
-    public String command;
-    public List<String> aliases;
+	public String command;
+	public List<String> aliases;
 
-    public DiscordCommand(String command, String... aliases) {
-        this.command = command;
-        this.aliases = Arrays.asList(aliases);
-    }
+	public DiscordCommand(String command, String... aliases) {
+		this.command = command;
+		this.aliases = Arrays.asList(aliases);
+	}
 
-    public abstract void execute(GuildMessageReceivedEvent event, List<String> args);
+	public abstract void execute(GuildMessageReceivedEvent event, List<String> args);
 }

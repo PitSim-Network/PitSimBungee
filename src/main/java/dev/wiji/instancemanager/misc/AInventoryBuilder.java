@@ -80,6 +80,7 @@ public class AInventoryBuilder {
 
 	/**
 	 * Adds an enchant glint to the items in given inventory slots.
+	 *
 	 * @param hideFlag whether to add the item flag that hides enchants
 	 */
 	public AInventoryBuilder addEnchantGlint(boolean hideFlag, int... slots) {
@@ -89,13 +90,13 @@ public class AInventoryBuilder {
 			DummyItemStack item = inventory.get(slot);
 			AItemStackBuilder itemStackBuilder = new AItemStackBuilder(item).addEnchantGlint(hideFlag);
 			inventory.put(slot, itemStackBuilder.getItemStack());
-	    }
+		}
 
-        return this;
-    }
+		return this;
+	}
 
-    public Map<Integer, DummyItemStack> getInventory() {
+	public Map<Integer, DummyItemStack> getInventory() {
 
-        return inventory;
-    }
+		return inventory;
+	}
 }

@@ -18,19 +18,19 @@ public class APlayerData {
 
 	public static void init() {
 		File folder = new File(BungeeMain.INSTANCE.getDataFolder(), "playerdata/");
-		if (folder.exists()) {
+		if(folder.exists()) {
 			File[] files = folder.listFiles();
 			File[] var2 = files;
 			int var3 = files.length;
 
 			for(int var4 = 0; var4 < var3; ++var4) {
 				File file = var2[var4];
-				if (file.isFile() && file.getName().endsWith(".yml")) {
+				if(file.isFile() && file.getName().endsWith(".yml")) {
 					try {
 						UUID pUUID = UUID.fromString(file.getName().replaceFirst("[.][^.]+$", ""));
 						storedPlayers.put(pUUID, file);
 						new APlayer(pUUID, file);
-					} catch (Exception var8) {
+					} catch(Exception var8) {
 					}
 				}
 			}
@@ -51,8 +51,8 @@ public class APlayerData {
 		Iterator var1 = storedPlayers.entrySet().iterator();
 
 		while(var1.hasNext()) {
-			Map.Entry<UUID, File> entry = (Map.Entry)var1.next();
-			playerMap.put(entry.getKey(), new APlayer((UUID)entry.getKey(), (File)entry.getValue()));
+			Map.Entry<UUID, File> entry = (Map.Entry) var1.next();
+			playerMap.put(entry.getKey(), new APlayer((UUID) entry.getKey(), (File) entry.getValue()));
 		}
 
 		return playerMap;
@@ -60,11 +60,11 @@ public class APlayerData {
 
 	private static APlayer createPlayerData(UUID uuid) {
 		File playerFile = new File(BungeeMain.INSTANCE.getDataFolder() + "/playerdata/", uuid + ".yml");
-		if (!playerFile.exists()) {
+		if(!playerFile.exists()) {
 			try {
 				playerFile.getParentFile().mkdirs();
 				playerFile.createNewFile();
-			} catch (IOException var3) {
+			} catch(IOException var3) {
 				var3.printStackTrace();
 			}
 		}
@@ -73,13 +73,17 @@ public class APlayerData {
 		return new APlayer(uuid, playerFile);
 	}
 
-	/** @deprecated */
+	/**
+	 * @deprecated
+	 */
 	@Deprecated
 	public static void savePlayerData(ProxiedPlayer player) {
 		savePlayerData(player.getUniqueId());
 	}
 
-	/** @deprecated */
+	/**
+	 * @deprecated
+	 */
 	@Deprecated
 	public static void savePlayerData(UUID uuid) {
 		getPlayerData(uuid).save();

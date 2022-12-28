@@ -78,7 +78,7 @@ public class CreateCommand extends ACommand {
 				AOutput.error(player, "You do not have enough funds to do this!");
 			};
 //
-			GuildMessaging.deposit(player, GUILD_CREATION_COST,  success, fail);
+			GuildMessaging.deposit(player, GUILD_CREATION_COST, success, fail);
 		};
 
 		ALoreBuilder yesLore = new ALoreBuilder("&7Clicking here will create", "&7the guild " + name, "",

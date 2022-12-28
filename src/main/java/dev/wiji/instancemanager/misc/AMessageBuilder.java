@@ -10,48 +10,48 @@ import java.util.Iterator;
 import java.util.List;
 
 public class AMessageBuilder {
-    private List<String> message = new ArrayList();
+	private List<String> message = new ArrayList();
 
-    public AMessageBuilder() {
-    }
+	public AMessageBuilder() {
+	}
 
-    public AMessageBuilder addLines(List<String> lines) {
-        this.message.addAll(lines);
-        return this;
-    }
+	public AMessageBuilder addLines(List<String> lines) {
+		this.message.addAll(lines);
+		return this;
+	}
 
-    public AMessageBuilder addLine(String... lines) {
-        this.message.addAll(Arrays.asList(lines));
-        return this;
-    }
+	public AMessageBuilder addLine(String... lines) {
+		this.message.addAll(Arrays.asList(lines));
+		return this;
+	}
 
-    public AMessageBuilder border(String border) {
-        this.message.add(0, border);
-        this.message.add(border);
-        return this;
-    }
+	public AMessageBuilder border(String border) {
+		this.message.add(0, border);
+		this.message.add(border);
+		return this;
+	}
 
-    public AMessageBuilder colorize() {
-        for(int i = 0; i < this.message.size(); ++i) {
-            String line = (String)this.message.get(i);
-            this.message.set(i, ChatColor.translateAlternateColorCodes('&', line));
-        }
+	public AMessageBuilder colorize() {
+		for(int i = 0; i < this.message.size(); ++i) {
+			String line = (String) this.message.get(i);
+			this.message.set(i, ChatColor.translateAlternateColorCodes('&', line));
+		}
 
-        return this;
-    }
+		return this;
+	}
 
-    public List<String> getMessage() {
-        return this.colorize().message;
-    }
+	public List<String> getMessage() {
+		return this.colorize().message;
+	}
 
-    public void send(ProxiedPlayer player) {
-        Iterator var2 = this.message.iterator();
+	public void send(ProxiedPlayer player) {
+		Iterator var2 = this.message.iterator();
 
-        while(var2.hasNext()) {
-            String line = (String)var2.next();
-            BaseComponent[] components = net.md_5.bungee.api.chat.TextComponent.fromLegacyText(line);
-            player.sendMessage(components);
-        }
+		while(var2.hasNext()) {
+			String line = (String) var2.next();
+			BaseComponent[] components = net.md_5.bungee.api.chat.TextComponent.fromLegacyText(line);
+			player.sendMessage(components);
+		}
 
-    }
+	}
 }

@@ -95,8 +95,8 @@ public class DummyItemStack {
 				}
 			}
 		}
-		
-		
+
+
 		return material + "|" + amount + "|" + data + "|" + displayName + "|" + modifiers + "|" + lore;
 	}
 
@@ -136,7 +136,6 @@ public class DummyItemStack {
 		}
 		return null;
 	}
-
 
 
 }

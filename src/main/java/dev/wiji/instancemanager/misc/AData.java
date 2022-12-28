@@ -28,7 +28,7 @@ public class AData {
 		this.fileName = fileName;
 		this.path = path;
 		this.dataFile = new File(BungeeMain.INSTANCE.getDataFolder() + "/" + path, fileName + ".yml");
-		if (!this.dataFile.exists()) {
+		if(!this.dataFile.exists()) {
 			createDataFile(fileName, path);
 		}
 
@@ -37,7 +37,7 @@ public class AData {
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
-		if (saveResource) {
+		if(saveResource) {
 			try {
 				ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, this.dataFile);
 			} catch(IOException e) {
@@ -52,7 +52,7 @@ public class AData {
 	}
 
 	public void reloadDataFile() {
-		if (!this.dataFile.exists()) {
+		if(!this.dataFile.exists()) {
 			createDataFile(this.fileName, this.path);
 		}
 
@@ -64,7 +64,7 @@ public class AData {
 	}
 
 	public void saveDataFile() {
-		if (!this.dataFile.exists()) {
+		if(!this.dataFile.exists()) {
 			createDataFile(this.fileName, this.path);
 		}
 
@@ -78,11 +78,11 @@ public class AData {
 
 	private static Configuration createDataFile(String fileName, String path) {
 		File dataFile = new File(BungeeMain.INSTANCE.getDataFolder() + path, fileName + ".yml");
-		if (!dataFile.exists()) {
+		if(!dataFile.exists()) {
 			try {
 				boolean ignored = dataFile.getParentFile().mkdirs();
 				boolean var4 = dataFile.createNewFile();
-			} catch (IOException var5) {
+			} catch(IOException var5) {
 				var5.printStackTrace();
 			}
 		}
@@ -100,7 +100,7 @@ public class AData {
 
 	public void addToList(String path, Object object) {
 		List<?> list = this.getList(path) != null ? this.getList(path) : new ArrayList();
-		((List)list).add(object);
+		((List) list).add(object);
 		this.set(path, list);
 	}
 
