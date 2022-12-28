@@ -17,9 +17,7 @@ import java.io.*;
 import java.util.Collection;
 
 public class PluginMessageManager implements QueryMessageListener, Listener {
-
 	public static PluginMessage lastMessage;
-
 
 	public static void sendMessage(PluginMessage message, ServerInfo server) {
 
