@@ -9,10 +9,12 @@ import dev.wiji.instancemanager.guilds.controllers.objects.Guild;
 import dev.wiji.instancemanager.guilds.events.InventoryClickEvent;
 import dev.wiji.instancemanager.guilds.events.InventoryCloseEvent;
 import dev.wiji.instancemanager.objects.DarkzoneServer;
+import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.OverworldServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.pitsim.DarkzoneServerManager;
 import dev.wiji.instancemanager.pitsim.OverworldServerManager;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -33,6 +35,12 @@ public class GuildMessaging implements Listener {
 			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
 				if(!overworldServer.status.isOnline()) continue;
 				sendGuildLeaderboardData();
+			}
+
+			for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+				for(ProxiedPlayer player : server.getPlayers()) {
+					GuildMessaging.sendGuildData(player, server);
+				}
 			}
 		}).runAfterEvery(15, 15, TimeUnit.SECONDS);
 	}
@@ -166,6 +174,30 @@ public class GuildMessaging implements Listener {
 			if(darkzoneServer.status.isOnline()) message.addServer(darkzoneServer.getServerInfo());
 		}
 		message.send();
+	}
+
+	public static void sendGuildData(ProxiedPlayer player, MainGamemodeServer server) {
+
+		Guild guild = GuildManager.getGuildFromPlayer(player.getUniqueId());
+		if(guild == null) return;
+
+		PluginMessage message = new PluginMessage().writeString("GUILD DATA");
+		message.writeString(player.getUniqueId().toString());
+
+		message.writeString(guild.uuid.toString());
+
+		message.writeString(guild.tag);
+
+		message.writeString(guild.getColor().name());
+
+		for(Integer value : guild.buffLevels.values()) {
+			message.writeInt(value);
+		}
+
+		if(server.status.isOnline()) {
+			message.addServer(server.getServerInfo());
+			message.send();
+		}
 	}
 
 	public static void deposit(ProxiedPlayer player, int amount, ProxyRunnable success, ProxyRunnable fail) {
