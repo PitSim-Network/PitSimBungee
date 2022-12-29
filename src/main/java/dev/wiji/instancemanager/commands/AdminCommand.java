@@ -76,6 +76,7 @@ public class AdminCommand extends Command {
 			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
 				if(server.getInfo() == overworldServer.getServerInfo()) {
 					overworldServer.status = ServerStatus.SHUTTING_DOWN_INITIAL;
+					overworldServer.staffOverride = true;
 					new PluginMessage().writeString("SHUTDOWN").writeBoolean(false).writeInt(minutes).addServer(overworldServer.getServerInfo()).send();
 				}
 			}
@@ -83,6 +84,7 @@ public class AdminCommand extends Command {
 			for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
 				if(server.getInfo() == darkzoneServer.getServerInfo()) {
 					darkzoneServer.status = ServerStatus.SHUTTING_DOWN_INITIAL;
+					darkzoneServer.staffOverride = true;
 					new PluginMessage().writeString("SHUTDOWN").writeBoolean(false).writeInt(minutes).addServer(darkzoneServer.getServerInfo()).send();
 				}
 			}

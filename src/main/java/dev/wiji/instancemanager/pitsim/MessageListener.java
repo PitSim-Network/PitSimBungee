@@ -68,6 +68,7 @@ public class MessageListener implements Listener {
 				if(server.getServerInfo().getName().equals(serverName)) {
 					server.serverData = null;
 					server.status = ServerStatus.SHUTTING_DOWN_FINAL;
+					server.staffOverride = false;
 					server.beginStartCooldown();
 				}
 			}
@@ -76,6 +77,7 @@ public class MessageListener implements Listener {
 				if(server.getServerInfo().getName().equals(serverName)) {
 					server.serverData = null;
 					server.status = ServerStatus.SHUTTING_DOWN_FINAL;
+					server.staffOverride = false;
 					server.beginStartCooldown();
 				}
 			}
