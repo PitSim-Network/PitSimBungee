@@ -56,6 +56,7 @@ public class OverworldServerManager implements Listener {
 
 			for(int i = 0; i < Math.min(players / NEW_SERVER_THRESHOLD + 1, serverList.size()); i++) {
 				OverworldServer server = serverList.get(i);
+				if(server.staffOverride) continue;
 				if(server.status.isOnline()) {
 					if(server.status == ServerStatus.SHUTTING_DOWN_INITIAL) {
 						server.status = ServerStatus.RUNNING;

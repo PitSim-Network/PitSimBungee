@@ -25,6 +25,8 @@ public abstract class MainGamemodeServer {
 	public ServerStatus status = ServerStatus.OFFLINE;
 	public ServerStatus suspendedStatus = null;
 
+	public boolean staffOverride = false;
+
 	public final ServerType serverType;
 	public ServerData serverData;
 
@@ -97,6 +99,7 @@ public abstract class MainGamemodeServer {
 		isOnStartCooldown = true;
 		((ProxyRunnable) () -> {
 			isOnStartCooldown = false;
+			status = ServerStatus.OFFLINE;
 		}).runAfter(20, TimeUnit.SECONDS);
 	}
 

@@ -20,7 +20,7 @@ public class RestartManager {
 	public static long RESTART_TIME = 21600000;
 	public static long RESTART_BUFFER = 1800000;
 
-	public static long PROXY_RESTART_TIME = 172800000;
+	public static long PROXY_RESTART_TIME = 604800000;
 
 	static {
 		((ProxyRunnable) () -> {
@@ -86,7 +86,7 @@ public class RestartManager {
 					player.disconnect(TextComponent.fromLegacyText(ChatColor.RED + "Proxy Restarting"));
 				}
 
-				((ProxyRunnable) () -> ServerManager.stopServer(ConfigManager.getProxyServer())).runAfter(5, TimeUnit.SECONDS);
+				((ProxyRunnable) () -> ServerManager.restartServer(ConfigManager.getProxyServer())).runAfter(5, TimeUnit.SECONDS);
 
 			}
 

@@ -43,6 +43,7 @@ public class DarkzoneServerManager {
 
 			for(int i = 0; i < Math.min(players / 10 + 1, serverList.size()); i++) {
 				DarkzoneServer server = serverList.get(i);
+				if(server.staffOverride) continue;
 				if(server.status.isOnline()) {
 					if(server.status == ServerStatus.SHUTTING_DOWN_INITIAL) {
 						server.status = ServerStatus.RUNNING;

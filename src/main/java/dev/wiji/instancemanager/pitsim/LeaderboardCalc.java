@@ -24,11 +24,12 @@ public class LeaderboardCalc {
 	public static Map<Leaderboard, List<PlayerData>> leaderboardPositions = new HashMap<>();
 
 	public static void init() {
+		leaderboardPositions.clear();
 		for(Leaderboard value : Leaderboard.values()) {
 			leaderboardPositions.put(value, new ArrayList<>());
 		}
 
-		for(PlayerData playerData : PlayerData.playerDataList) {
+		for(PlayerData playerData : new ArrayList<>(PlayerData.playerDataList)) {
 			leaderboardPositions:
 			for(Leaderboard leaderboard : Leaderboard.values()) {
 				List<PlayerData> list = leaderboardPositions.get(leaderboard);

@@ -5,10 +5,7 @@ import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.alogging.ConnectionManager;
 import dev.wiji.instancemanager.builders.MessageBuilder;
 import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.objects.DarkzoneServer;
-import dev.wiji.instancemanager.objects.OverworldServer;
-import dev.wiji.instancemanager.objects.PluginMessage;
-import dev.wiji.instancemanager.objects.ServerStatus;
+import dev.wiji.instancemanager.objects.*;
 import dev.wiji.instancemanager.pitsim.DarkzoneServerManager;
 import dev.wiji.instancemanager.pitsim.OverworldServerManager;
 import dev.wiji.instancemanager.storage.EditSessionManager;
@@ -79,6 +76,7 @@ public class AdminCommand extends Command {
 			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
 				if(server.getInfo() == overworldServer.getServerInfo()) {
 					overworldServer.status = ServerStatus.SHUTTING_DOWN_INITIAL;
+					overworldServer.staffOverride = true;
 					new PluginMessage().writeString("SHUTDOWN").writeBoolean(false).writeInt(minutes).addServer(overworldServer.getServerInfo()).send();
 				}
 			}
@@ -86,6 +84,7 @@ public class AdminCommand extends Command {
 			for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
 				if(server.getInfo() == darkzoneServer.getServerInfo()) {
 					darkzoneServer.status = ServerStatus.SHUTTING_DOWN_INITIAL;
+					darkzoneServer.staffOverride = true;
 					new PluginMessage().writeString("SHUTDOWN").writeBoolean(false).writeInt(minutes).addServer(darkzoneServer.getServerInfo()).send();
 				}
 			}
@@ -192,10 +191,10 @@ public class AdminCommand extends Command {
 			ServerInfo serverInfo = player.getServer().getInfo();
 			if(args.length >= 2) {
 				boolean foundServer = false;
-				for(OverworldServer overworldServer : OverworldServerManager.serverList) {
-					if(!overworldServer.getServerInfo().getName().equalsIgnoreCase(args[1])) continue;
+				for(MainGamemodeServer mainGamemodeServer : MainGamemodeServer.serverList) {
+					if(!mainGamemodeServer.getServerInfo().getName().equalsIgnoreCase(args[1])) continue;
 					foundServer = true;
-					serverInfo = overworldServer.getServerInfo();
+					serverInfo = mainGamemodeServer.getServerInfo();
 					break;
 				}
 				if(!foundServer) {
