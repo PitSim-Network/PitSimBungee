@@ -100,6 +100,13 @@ public class AdminCommand extends Command {
 			OverworldServerManager.networkIsShuttingDown = true;
 			DarkzoneServerManager.networkIsShuttingDown = true;
 
+			player.sendMessage((new ComponentBuilder("Initiated network shutdown!").color(ChatColor.GREEN).create()));
+			for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+				for(ProxiedPlayer serverPlayer : server.getPlayers()) {
+					AOutput.color(serverPlayer, "&c&lTURNING OFF ALL PITSIM SERVERS");
+				}
+			}
+
 			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
 				if(overworldServer.isSuspended()) continue;
 				if(overworldServer.status == ServerStatus.RUNNING) {
@@ -119,8 +126,6 @@ public class AdminCommand extends Command {
 					darkzoneServer.hardShutDown();
 				}
 			}
-
-			player.sendMessage((new ComponentBuilder("Initiated network shutdown!").color(ChatColor.GREEN).create()));
 		}
 
 		if(args[0].equalsIgnoreCase("killnetwork")) {

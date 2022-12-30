@@ -13,19 +13,6 @@ import dev.wiji.instancemanager.guilds.guildupgrades.ReputationIncrease;
 import dev.wiji.instancemanager.misc.AMultiCommand;
 import dev.wiji.instancemanager.misc.APlayerData;
 import dev.wiji.instancemanager.misc.InventoryManager;
-import dev.wiji.instancemanager.storage.dupe.DupeManager;
-import dev.wiji.instancemanager.guilds.commands.admin.GuildAdminCommand;
-import dev.wiji.instancemanager.guilds.commands.admin.ReputationCommand;
-import dev.wiji.instancemanager.guilds.commands.guildcommands.*;
-import dev.wiji.instancemanager.guilds.controllers.*;
-import dev.wiji.instancemanager.guilds.guildbuffs.*;
-import dev.wiji.instancemanager.guilds.guildupgrades.BankLimit;
-import dev.wiji.instancemanager.guilds.guildupgrades.GuildBuffs;
-import dev.wiji.instancemanager.guilds.guildupgrades.GuildSize;
-import dev.wiji.instancemanager.guilds.guildupgrades.ReputationIncrease;
-import dev.wiji.instancemanager.misc.AMultiCommand;
-import dev.wiji.instancemanager.misc.APlayerData;
-import dev.wiji.instancemanager.misc.InventoryManager;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -90,7 +77,6 @@ public class ArcticGuilds {
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new BuffManager());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new UpgradeManager());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new GuildManager());
-		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new PlayerManager());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new PermissionManager());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new GuildMessaging());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new InventoryManager());

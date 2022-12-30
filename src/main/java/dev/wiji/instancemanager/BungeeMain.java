@@ -11,8 +11,6 @@ import dev.wiji.instancemanager.discord.DiscordPlugin;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
 import dev.wiji.instancemanager.pitsim.*;
 import dev.wiji.instancemanager.skywars.PluginMessageSender;
-import dev.wiji.instancemanager.skywars.SkywarsGameManager;
-import dev.wiji.instancemanager.skywars.SkywarsPluginListener;
 import dev.wiji.instancemanager.storage.EditSessionManager;
 import dev.wiji.instancemanager.storage.StorageManager;
 import dev.wiji.instancemanager.storage.dupe.DupeManager;
@@ -23,7 +21,6 @@ import net.md_5.bungee.api.plugin.Plugin;
 import septogeddon.pluginquery.PluginQuery;
 import septogeddon.pluginquery.api.QueryMessenger;
 
-import javax.persistence.Id;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -53,7 +50,7 @@ public class BungeeMain extends Plugin {
 
 		DiscordPlugin.onEnable(this);
 
-		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
+//		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
 		getProxy().getPluginManager().registerListener(this, new PluginMessageManager());
 		getProxy().getPluginManager().registerListener(this, new MessageListener());
 		getProxy().getPluginManager().registerListener(this, new ServerDataManager());
@@ -66,12 +63,13 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new CommandListener());
 		getProxy().getPluginManager().registerListener(this, new IdentificationManager());
 		getProxy().getPluginManager().registerListener(this, new CrossServerMessageManager());
+		getProxy().getPluginManager().registerListener(this, new PlayerManager());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new DupeManager());
 		ConfigManager.getMiniServerList();
 
 
 		ServerManager.onEnable();
-		SkywarsGameManager.fetchServer();
+//		SkywarsGameManager.fetchServer();
 		PluginMessageSender.sendPlayerStats();
 		QueryMessenger messenger = PluginQuery.getMessenger();
 		messenger.getEventBus().registerListener(new PluginMessageManager());
@@ -84,7 +82,8 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerCommand(this, new AdminCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new PTestCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new LobbiesCommand(this));
-		getProxy().getPluginManager().registerCommand(this, new ServerCommand());
+		getProxy().getPluginManager().registerCommand(this, new BroadcastCommand(this));
+		getProxy().getPluginManager().registerCommand(this, new ServerCommand(this));
 
 		getProxy().getPluginManager().registerCommand(this, new GoldDupeCommand());
 

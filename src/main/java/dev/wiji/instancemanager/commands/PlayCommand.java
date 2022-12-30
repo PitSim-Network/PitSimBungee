@@ -84,7 +84,6 @@ public class PlayCommand extends Command {
 				MainGamemodeServer.guildCooldown.put(player, System.currentTimeMillis());
 				new PluginMessage().writeString("REQUEST SWITCH").writeString(player.getUniqueId().toString()).addServer(currentServer.getInfo()).send();
 				return;
-
 			}
 
 			OverworldServerManager.queueFallback((ProxiedPlayer) commandSender, 0, false);
