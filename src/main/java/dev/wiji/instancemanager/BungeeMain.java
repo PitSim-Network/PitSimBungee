@@ -52,7 +52,7 @@ public class BungeeMain extends Plugin {
 
 		DiscordPlugin.onEnable(this);
 
-//		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
+		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
 		getProxy().getPluginManager().registerListener(this, new PluginMessageManager());
 		getProxy().getPluginManager().registerListener(this, new MessageListener());
 		getProxy().getPluginManager().registerListener(this, new ServerDataManager());
@@ -70,7 +70,7 @@ public class BungeeMain extends Plugin {
 
 
 		ServerManager.onEnable();
-//		SkywarsGameManager.fetchServer();
+		SkywarsGameManager.fetchServer();
 		PluginMessageSender.sendPlayerStats();
 		QueryMessenger messenger = PluginQuery.getMessenger();
 		messenger.getEventBus().registerListener(new PluginMessageManager());
