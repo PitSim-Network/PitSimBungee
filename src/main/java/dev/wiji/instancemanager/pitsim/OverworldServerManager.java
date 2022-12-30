@@ -7,6 +7,7 @@ import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
 import dev.wiji.instancemanager.commands.LobbiesCommand;
 import dev.wiji.instancemanager.guilds.GuildMessaging;
+import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.OverworldServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
@@ -117,6 +118,14 @@ public class OverworldServerManager implements Listener {
 		}
 	}
 
+	public static boolean queueFallback(ProxiedPlayer player, int requestedServer, boolean fromDarkzone) {
+		boolean success = queue(player, requestedServer, fromDarkzone);
+		if(!success) {
+			player.connect(BungeeMain.INSTANCE.getProxy().getServerInfo(ConfigManager.getLobbyServer()));
+		}
+		return success;
+	}
+
 	public static boolean queue(ProxiedPlayer player, int requestedServer, boolean fromDarkzone) {
 
 		if(ServerChangeListener.recentlyLeft.contains(player)) {
@@ -124,13 +133,18 @@ public class OverworldServerManager implements Listener {
 			return false;
 		}
 
-		if(MainGamemodeServer.cooldownPlayers.contains(player)) {
-			player.sendMessage((new ComponentBuilder("Please wait a moment before Queuing again").color(ChatColor.RED).create()));
-			return false;
+		if(MainGamemodeServer.cooldownPlayers.containsKey(player)) {
+			long time = MainGamemodeServer.cooldownPlayers.get(player);
+
+			if(time + CommandListener.COOLDOWN_SECONDS * 1000 < System.currentTimeMillis()) {
+				MainGamemodeServer.cooldownPlayers.remove(player);
+			} else {
+				player.sendMessage((new ComponentBuilder("Please wait a moment before Queuing again").color(ChatColor.RED).create()));
+				return false;
+			}
 		}
 
-		MainGamemodeServer.cooldownPlayers.add(player);
-		((ProxyRunnable) () -> MainGamemodeServer.cooldownPlayers.remove(player)).runAfter(5, TimeUnit.SECONDS);
+		MainGamemodeServer.cooldownPlayers.put(player, System.currentTimeMillis());
 
 		if(EditSessionManager.isBeingEdited(player.getUniqueId())) {
 			player.sendMessage(new ComponentBuilder("Your player-data is being modified. Please try again in a moment.").color(ChatColor.RED).create());

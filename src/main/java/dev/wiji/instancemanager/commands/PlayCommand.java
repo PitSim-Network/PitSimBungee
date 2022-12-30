@@ -1,6 +1,7 @@
 package dev.wiji.instancemanager.commands;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.OverworldServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.objects.ServerStatus;
@@ -44,12 +45,14 @@ public class PlayCommand extends Command {
 
 				System.out.println("SWITCH FROM: " + currentServer);
 				commandSender.sendMessage((new ComponentBuilder("Looking for a server...").color(ChatColor.GREEN).create()));
+
+				MainGamemodeServer.guildCooldown.put(player, System.currentTimeMillis());
 				new PluginMessage().writeString("REQUEST SWITCH").writeString(player.getUniqueId().toString()).addServer(currentServer.getInfo()).send();
 				return;
 
 			}
 
-			OverworldServerManager.queue((ProxiedPlayer) commandSender, 0, false);
+			OverworldServerManager.queueFallback((ProxiedPlayer) commandSender, 0, false);
 
 		} else if(strings[0].equalsIgnoreCase("sync")) {
 			commandSender.sendMessage((new ComponentBuilder("Sending you to Sync!").color(ChatColor.GREEN).create()));

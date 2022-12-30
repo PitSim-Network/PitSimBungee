@@ -53,9 +53,9 @@ public class SkywarsQueueManager {
 				player.sendMessage(new ComponentBuilder("You are already connected to that server!").color(ChatColor.RED).create());
 			} else {
 				ServerInfo target = ProxyServer.getInstance().getServerInfo(targetServer);
+				System.out.println(SkywarsGameManager.mainQueueServer);
+				System.out.println(targetServer);
 				player.connect(target);
-
-
 			}
 		}
 

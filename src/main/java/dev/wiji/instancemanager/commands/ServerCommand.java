@@ -54,7 +54,7 @@ public class ServerCommand extends Command {
 					return;
 				}
 
-				OverworldServerManager.queue(player, overworldServer.getServerIndex(), false);
+				OverworldServerManager.queueFallback(player, overworldServer.getServerIndex(), false);
 				return;
 			}
 		}
@@ -67,7 +67,7 @@ public class ServerCommand extends Command {
 					return;
 				}
 
-				DarkzoneServerManager.queue(player, darkzoneServer.getServerIndex());
+				DarkzoneServerManager.queueFallback(player, darkzoneServer.getServerIndex());
 				return;
 			}
 		}

@@ -5,6 +5,7 @@
 
 package dev.wiji.instancemanager.misc;
 
+import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -40,6 +41,8 @@ public abstract class AMultiCommand extends ACommandBase {
 				return;
 			}
 		}
+
+		MainGamemodeServer.guildCooldown.put((ProxiedPlayer) sender, System.currentTimeMillis());
 
 		if(args.isEmpty()) {
 			if(sender instanceof ProxiedPlayer) {

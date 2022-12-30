@@ -3,6 +3,7 @@ package dev.wiji.instancemanager.skywars;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -61,6 +62,7 @@ public class PluginMessageSender {
 	}
 
 	public static void sendInfo() {
+		if(ConfigManager.isDev()) return;
 
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("Forward"); // So BungeeCord knows to forward it
