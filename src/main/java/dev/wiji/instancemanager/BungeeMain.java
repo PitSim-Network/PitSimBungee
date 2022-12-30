@@ -11,8 +11,6 @@ import dev.wiji.instancemanager.discord.DiscordPlugin;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
 import dev.wiji.instancemanager.pitsim.*;
 import dev.wiji.instancemanager.skywars.PluginMessageSender;
-import dev.wiji.instancemanager.skywars.SkywarsGameManager;
-import dev.wiji.instancemanager.skywars.SkywarsPluginListener;
 import dev.wiji.instancemanager.storage.EditSessionManager;
 import dev.wiji.instancemanager.storage.StorageManager;
 import dev.wiji.instancemanager.storage.dupe.DupeManager;
@@ -52,7 +50,7 @@ public class BungeeMain extends Plugin {
 
 		DiscordPlugin.onEnable(this);
 
-		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
+//		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
 		getProxy().getPluginManager().registerListener(this, new PluginMessageManager());
 		getProxy().getPluginManager().registerListener(this, new MessageListener());
 		getProxy().getPluginManager().registerListener(this, new ServerDataManager());
@@ -71,7 +69,7 @@ public class BungeeMain extends Plugin {
 
 
 		ServerManager.onEnable();
-		SkywarsGameManager.fetchServer();
+//		SkywarsGameManager.fetchServer();
 		PluginMessageSender.sendPlayerStats();
 		QueryMessenger messenger = PluginQuery.getMessenger();
 		messenger.getEventBus().registerListener(new PluginMessageManager());
