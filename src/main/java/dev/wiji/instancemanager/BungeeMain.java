@@ -23,7 +23,6 @@ import net.md_5.bungee.api.plugin.Plugin;
 import septogeddon.pluginquery.PluginQuery;
 import septogeddon.pluginquery.api.QueryMessenger;
 
-import javax.persistence.Id;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -84,7 +83,8 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerCommand(this, new AdminCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new PTestCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new LobbiesCommand(this));
-		getProxy().getPluginManager().registerCommand(this, new ServerCommand());
+		getProxy().getPluginManager().registerCommand(this, new BroadcastCommand(this));
+		getProxy().getPluginManager().registerCommand(this, new ServerCommand(this));
 
 		ConfigManager.getPitSimServerList();
 		ConfigManager.getDarkzoneServerList();

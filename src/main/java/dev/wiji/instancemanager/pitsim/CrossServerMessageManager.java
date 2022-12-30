@@ -1,5 +1,6 @@
 package dev.wiji.instancemanager.pitsim;
 
+import dev.wiji.instancemanager.commands.BroadcastCommand;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
@@ -44,6 +45,8 @@ public class CrossServerMessageManager implements Listener {
 				pluginMessage.addServer(server.getServerInfo());
 			}
 			pluginMessage.send();
+		} else if(strings.get(0).equals("BROADCAST")) {
+			BroadcastCommand.broadcast(strings.get(1));
 		}
 	}
 }
