@@ -78,11 +78,8 @@ public class WithdrawCommand extends ACommand {
 			newGuild.broadcast("&a&lGUILD! &7" + player.getName() + " has withdrawn &6" + ArcticGuilds.decimalFormat.format(amount) + "g");
 		};
 
-		ProxyRunnable failure = () -> {
+		ProxyRunnable failure = () -> {};
 
-		};
-
-		GuildMessaging.withdraw(player, amount, success, failure, true);
-
+		GuildMessaging.withdraw(player, amount, success, failure);
 	}
 }

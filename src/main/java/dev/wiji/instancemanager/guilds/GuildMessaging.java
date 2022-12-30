@@ -124,13 +124,11 @@ public class GuildMessaging implements Listener {
 		message.send();
 	}
 
-	public static void withdraw(ProxiedPlayer player, int amount, ProxyRunnable success, ProxyRunnable fail, boolean lol) {
-
+	public static void withdraw(ProxiedPlayer player, int amount, ProxyRunnable success, ProxyRunnable fail) {
 		if(waitingForWithdraw.containsKey(player)) {
 			fail.run();
 			return;
 		}
-
 
 		waitingForWithdraw.put(player, new Callback(success, fail));
 
@@ -144,7 +142,6 @@ public class GuildMessaging implements Listener {
 		message.writeInt(amount);
 		message.addServer(player.getServer().getInfo());
 		message.send();
-
 	}
 
 	public static void sendGuildData(ProxiedPlayer player) {
