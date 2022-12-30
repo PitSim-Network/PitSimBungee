@@ -1,12 +1,10 @@
 package dev.wiji.instancemanager.pitsim;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.net.ConnectException;
 import java.sql.*;
 import java.util.Objects;
 import java.util.UUID;

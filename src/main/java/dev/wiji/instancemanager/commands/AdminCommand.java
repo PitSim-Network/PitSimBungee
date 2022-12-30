@@ -261,7 +261,7 @@ public class AdminCommand extends Command {
 			if(kickPlayers && suspend) {
 				for(ProxiedPlayer proxiedPlayer : serverInfo.getPlayers()) {
 					if(proxiedPlayer == player) continue;
-					OverworldServerManager.queue(proxiedPlayer, 0, darkzone);
+					OverworldServerManager.queueFallback(proxiedPlayer, 0, darkzone);
 					//TODO: Change to move to other darkzone servers if more are added
 				}
 			}

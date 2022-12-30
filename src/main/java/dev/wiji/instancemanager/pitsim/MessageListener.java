@@ -140,7 +140,7 @@ public class MessageListener implements Listener {
 				fromDarkzone = booleans.get(0);
 			}
 
-			OverworldServerManager.queue(player, requested, fromDarkzone);
+			OverworldServerManager.queueFallback(player, requested, fromDarkzone);
 		}
 
 		if(strings.size() >= 2 && strings.get(0).equals("QUEUE DARKZONE")) {
@@ -154,7 +154,7 @@ public class MessageListener implements Listener {
 				requested = integers.get(0);
 			}
 
-			DarkzoneServerManager.queue(player, requested);
+			DarkzoneServerManager.queueFallback(player, requested);
 		}
 
 		if(strings.size() >= 3 && strings.get(0).equals("BOOSTER USE")) {
