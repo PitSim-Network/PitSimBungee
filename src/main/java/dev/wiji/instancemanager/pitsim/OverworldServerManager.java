@@ -17,6 +17,7 @@ import dev.wiji.instancemanager.storage.StorageManager;
 import dev.wiji.instancemanager.storage.StorageProfile;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -202,11 +203,10 @@ public class OverworldServerManager implements Listener {
 		int players = getTotalPlayers();
 
 		if(targetServer == null) {
+			ServerInfo current = player.getServer().getInfo();
 			for(OverworldServer activeServer : serverList) {
 				if(activeServer.status != ServerStatus.RUNNING) continue;
-
-				System.out.println("Server: " + activeServer.getServerInfo().getName());
-				System.out.println(activeServer.getPlayers().size() + " " + players + " " + getTotalServersOnline());
+				if(activeServer.getServerInfo() == current) continue;
 
 				if(activeServer.getPlayers().size() > players / getTotalServersOnline()) continue;
 				targetServer = activeServer;
@@ -215,8 +215,10 @@ public class OverworldServerManager implements Listener {
 		}
 
 		if(targetServer == null) {
+			ServerInfo current = player.getServer().getInfo();
+
 			for(OverworldServer overworldServer : serverList) {
-				if(overworldServer.status == ServerStatus.RUNNING) {
+				if(overworldServer.status == ServerStatus.RUNNING && current != overworldServer.getServerInfo()) {
 					targetServer = overworldServer;
 					break;
 				}

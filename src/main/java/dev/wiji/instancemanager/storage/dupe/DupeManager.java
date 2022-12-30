@@ -41,6 +41,8 @@ public class DupeManager implements Listener {
 				"***REMOVED***"));
 		miscItems.add(new TrackedMiscItem("Gems", "gems",
 				"***REMOVED***"));
+		miscItems.add(new TrackedMiscItem("Helmets", "helmets",
+				"***REMOVED***"));
 
 		if(!ConfigManager.isDev()) run();
 	}
@@ -283,6 +285,10 @@ public class DupeManager implements Listener {
 		if(itemStack.nbtData.hasKey(NBTTag.IS_GEM.getRef()) || itemStack.nbtData.hasKey(NBTTag.IS_GEMMED.getRef())) {
 			Map<UUID, Integer> trackMap = getTrack("gems").itemMap;
 			trackMap.put(uuid, trackMap.getOrDefault(uuid, 0) + itemStack.amount);
+		}
+		if(itemStack.nbtData.hasKey(NBTTag.GHELMET_UUID.getRef())) {
+			Map<UUID, Integer> trackMap = getTrack("helmets").itemMap;
+			trackMap.put(uuid, trackMap.getOrDefault(uuid, 0) + itemStack.nbtData.getInt(NBTTag.GHELMET_GOLD.getRef()));
 		}
 	}
 
