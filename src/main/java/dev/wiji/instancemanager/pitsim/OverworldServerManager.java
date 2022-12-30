@@ -152,11 +152,13 @@ public class OverworldServerManager implements Listener {
 			return false;
 		}
 
-		try {
-			LeaderboardCalc.sendLeaderboardPlayerData(player.getUniqueId());
-		} catch(Exception e) {
-			System.out.println("Player leaderboard data send failed. (Proxy has just started)");
-			return false;
+		if(!ConfigManager.isDev()) {
+			try {
+				LeaderboardCalc.sendLeaderboardPlayerData(player.getUniqueId());
+			} catch(Exception e) {
+				System.out.println("Player leaderboard data send failed. (Proxy has just started)");
+				return false;
+			}
 		}
 
 		GuildMessaging.sendGuildData(player);
