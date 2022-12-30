@@ -19,6 +19,6 @@ public class ServerChangeListener implements Listener {
 		if(!event.getTarget().getName().contains("pitsim") && !event.getTarget().getName().contains("darkzone")) return;
 
 		recentlyLeft.add(event.getPlayer());
-		((ProxyRunnable) () -> recentlyLeft.remove(event.getPlayer())).runAfter(5, TimeUnit.SECONDS);
+		((ProxyRunnable) () -> recentlyLeft.remove(event.getPlayer())).runAfter(3, TimeUnit.SECONDS);
 	}
 }

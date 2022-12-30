@@ -58,7 +58,7 @@ public class AdminCommand extends Command {
 				return;
 			}
 
-			int minutes;
+			int minutes = 0;
 
 			try {
 				minutes = Integer.parseInt(args[1]);
@@ -67,7 +67,7 @@ public class AdminCommand extends Command {
 				return;
 			}
 
-			if(minutes < 1) {
+			if(minutes < 0) {
 				player.sendMessage((new ComponentBuilder("Invalid arguments! /admin shutdown <minutes>").color(ChatColor.RED).create()));
 				return;
 			}

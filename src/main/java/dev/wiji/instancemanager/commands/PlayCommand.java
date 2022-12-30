@@ -1,11 +1,15 @@
 package dev.wiji.instancemanager.commands;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ProxyRunnable;
+import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.OverworldServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.objects.ServerStatus;
+import dev.wiji.instancemanager.pitsim.CommandListener;
 import dev.wiji.instancemanager.pitsim.OverworldServerManager;
+import dev.wiji.instancemanager.pitsim.ServerChangeListener;
 import dev.wiji.instancemanager.skywars.SkywarsGameManager;
 import dev.wiji.instancemanager.skywars.SkywarsQueueManager;
 import net.md_5.bungee.api.ChatColor;
@@ -15,11 +19,18 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
+import org.apache.log4j.chainsaw.Main;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class PlayCommand extends Command {
 	public PlayCommand(Plugin bungeeMain) {
 		super("play");
 	}
+
+	public static List<ProxiedPlayer> queuingPlayers = new ArrayList<>();
 
 	@Override
 	public void execute(CommandSender commandSender, String[] strings) {
@@ -43,8 +54,32 @@ public class PlayCommand extends Command {
 					return;
 				}
 
-				System.out.println("SWITCH FROM: " + currentServer);
+				if(MainGamemodeServer.cooldownPlayers.containsKey(player)) {
+					long time = MainGamemodeServer.cooldownPlayers.get(player);
+
+					if(time + CommandListener.COOLDOWN_SECONDS * 1000 < System.currentTimeMillis()) {
+						MainGamemodeServer.cooldownPlayers.remove(player);
+					}
+				}
+
+				if(MainGamemodeServer.guildCooldown.containsKey(player)) {
+					long time = MainGamemodeServer.guildCooldown.get(player);
+
+					if(time + CommandListener.COOLDOWN_SECONDS * 1000 < System.currentTimeMillis()) {
+						MainGamemodeServer.guildCooldown.remove(player);
+					}
+				}
+
+				if(MainGamemodeServer.guildCooldown.containsKey(player) || MainGamemodeServer.cooldownPlayers.containsKey(player) || ServerChangeListener.recentlyLeft.contains(player)) {
+					if(queuingPlayers.contains(player)) return;
+					AOutput.color(player, "&eQueuing you to find a server!");
+					queuingPlayers.add(player);
+					((ProxyRunnable) () -> execute(commandSender, strings)).runAfter(3, TimeUnit.SECONDS);
+					return;
+				}
+
 				commandSender.sendMessage((new ComponentBuilder("Looking for a server...").color(ChatColor.GREEN).create()));
+				queuingPlayers.remove(player);
 
 				MainGamemodeServer.guildCooldown.put(player, System.currentTimeMillis());
 				new PluginMessage().writeString("REQUEST SWITCH").writeString(player.getUniqueId().toString()).addServer(currentServer.getInfo()).send();
