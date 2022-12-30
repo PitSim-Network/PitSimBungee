@@ -96,7 +96,6 @@ public class OverworldServerManager implements Listener {
 		((ProxyRunnable) () -> queue(player, 0, false)).runAfter(1, TimeUnit.SECONDS);
 	}
 
-
 	public static void init() {
 		for(String value : ServerManager.pitSimServers.values()) serverList.add(new OverworldServer(value));
 
@@ -190,10 +189,6 @@ public class OverworldServerManager implements Listener {
 		if(targetServer == null) {
 			for(OverworldServer activeServer : serverList) {
 				if(activeServer.status != ServerStatus.RUNNING) continue;
-
-				System.out.println("Server: " + activeServer.getServerInfo().getName());
-				System.out.println(activeServer.getPlayers().size() + " " + players + " " + getTotalServersOnline());
-
 				if(activeServer.getPlayers().size() > players / getTotalServersOnline()) continue;
 				targetServer = activeServer;
 				break;
