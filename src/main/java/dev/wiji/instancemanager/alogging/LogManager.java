@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class ServerLogManager implements Listener {
+public class LogManager implements Listener {
 
 	@EventHandler
 	public void onGuildChat(GuildChatEvent event) {
