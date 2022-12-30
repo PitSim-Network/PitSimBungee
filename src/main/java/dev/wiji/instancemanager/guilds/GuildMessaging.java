@@ -169,12 +169,10 @@ public class GuildMessaging implements Listener {
 	}
 
 	public static void deposit(ProxiedPlayer player, int amount, ProxyRunnable success, ProxyRunnable fail) {
-
 		if(waitingForBalance.containsKey(player)) {
 			fail.run();
 			return;
 		}
-
 
 		waitingForBalance.put(player, new Callback(success, fail));
 
