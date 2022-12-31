@@ -83,7 +83,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerCommand(this, new PTestCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new LobbiesCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new BroadcastCommand(this));
-		getProxy().getPluginManager().registerCommand(this, new ServerCommand(this));
+		getProxy().getPluginManager().registerCommand(this, new ServerJoinCommand(this));
 
 		getProxy().getPluginManager().registerCommand(this, new GoldDupeCommand());
 

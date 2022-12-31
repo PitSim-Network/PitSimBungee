@@ -2,6 +2,7 @@ package dev.wiji.instancemanager.commands;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.misc.AOutput;
+import dev.wiji.instancemanager.misc.Misc;
 import dev.wiji.instancemanager.objects.DarkzoneServer;
 import dev.wiji.instancemanager.objects.OverworldServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
@@ -18,10 +19,11 @@ import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-public class ServerCommand extends Command {
-	public ServerCommand(Plugin bungeeMain) {
+public class ServerJoinCommand extends Command {
+	public ServerJoinCommand(Plugin bungeeMain) {
 		super("join");
 	}
 
@@ -83,23 +85,20 @@ public class ServerCommand extends Command {
 
 	public void sendServerList(ProxiedPlayer player) {
 		List<ServerInfo> servers = new ArrayList<>(BungeeMain.INSTANCE.getProxy().getServers().values());
+		servers.sort(Comparator.comparing(ServerInfo::getName));
 
-		AOutput.color(player, "&2&lSERVERS &6List of servers:");
-		AOutput.color(player, "&7&m-----------------------");
-
+		AOutput.color(player, "&6&m--------------------&6<&e&lJOIN&6>&m--------------------");
 		for(ServerInfo server : servers) {
-			TextComponent textComponent = new TextComponent(server.getName());
+			int players = server.getPlayers().size();
+			TextComponent textComponent = new TextComponent(Misc.colorize("&6 * &e" + server.getName() +
+					" &7- &6" + players + " &7player" + (players == 1 ? "" : "s")));
 			textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + server.getName()));
-			textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(server.getPlayers().size() + " players")));
+			textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Misc.colorize("&7Click to connect!")));
 			textComponent.setColor(ChatColor.GOLD);
-
-			if(server == player.getServer().getInfo()) {
-				textComponent.addExtra(ChatColor.DARK_GRAY + " (current)");
-			}
-
+			if(server == player.getServer().getInfo()) textComponent.addExtra(
+					ChatColor.translateAlternateColorCodes('&', " &7(&6current&7)"));
 			player.sendMessage(textComponent);
 		}
-
-		AOutput.color(player, "&7&m-----------------------");
+		AOutput.color(player, "&6&m--------------------&6<&e&lJOIN&6>&m--------------------");
 	}
 }
