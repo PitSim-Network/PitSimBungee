@@ -6,10 +6,14 @@ import net.md_5.bungee.config.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ConfigManager {
 	public static File file;
 	public static Configuration configuration;
+
+	public static Map<String, String> miniServerMap = new HashMap<>();
 
 	public static void onEnable() {
 		file = new File(BungeeMain.INSTANCE.getDataFolder() + "/config.yml");
@@ -35,6 +39,8 @@ public class ConfigManager {
 
 	public static void getMiniServerList() {
 		for(Object s : configuration.getList("mini-servers")) {
+			String[] split = ((String) s).split(":");
+			miniServerMap.put(split[0], split[1]);
 			ServerManager.inactiveServers.add((String) s);
 		}
 
