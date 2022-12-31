@@ -7,6 +7,7 @@ import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -14,6 +15,16 @@ import net.md_5.bungee.event.EventHandler;
 
 @SuppressWarnings("Duplicates")
 public class PlayerManager implements Listener {
+
+	static {
+//		((ProxyRunnable) () -> {
+//			for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+//				for(ProxiedPlayer player : server.getPlayers()) {
+//					System.out.println(player.getName() + " " + BungeeVanishAPI.isInvisible(player));
+//				}
+//			}
+//		}).runAfterEvery(1, 1, TimeUnit.SECONDS);
+	}
 
 	@EventHandler
 	public void onServerJoin(ServerConnectEvent event) {
@@ -32,6 +43,20 @@ public class PlayerManager implements Listener {
 	}
 
 	@EventHandler
+	public void onLeave(PlayerDisconnectEvent event) {
+		ProxiedPlayer player = event.getPlayer();
+		ServerInfo previousServer = event.getPlayer().getServer().getInfo();
+
+		if(BungeeVanishAPI.isInvisible(player)) return;
+
+		for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+			if(!server.getServerInfo().equals(previousServer)) continue;
+			sendLeaveMessage(player);
+			return;
+		}
+	}
+
+	@EventHandler
 	public void onServerLeave(ServerDisconnectEvent event) {
 		ProxiedPlayer player = event.getPlayer();
 		ServerInfo previousServer = event.getTarget();
@@ -39,9 +64,8 @@ public class PlayerManager implements Listener {
 
 		if(BungeeVanishAPI.isInvisible(player)) return;
 
-		if(previousServer != targetServer) {
-			for(MainGamemodeServer server : MainGamemodeServer.serverList) if(server.getServerInfo().equals(targetServer)) return;
-		}
+		if(previousServer == targetServer) return;
+		for(MainGamemodeServer server : MainGamemodeServer.serverList) if(server.getServerInfo().equals(targetServer)) return;
 		for(MainGamemodeServer server : MainGamemodeServer.serverList) {
 			if(!server.getServerInfo().equals(previousServer)) continue;
 			sendLeaveMessage(player);

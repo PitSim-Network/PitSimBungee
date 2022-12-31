@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class LeaderboardCalc {
+	public static Map<Leaderboard, List<PlayerData>> leaderboardPositions = new HashMap<>();
 
 	static {
 		((ProxyRunnable) () -> {
@@ -20,8 +21,6 @@ public class LeaderboardCalc {
 			}
 		}).runAfterEvery(60, 15, TimeUnit.SECONDS);
 	}
-
-	public static Map<Leaderboard, List<PlayerData>> leaderboardPositions = new HashMap<>();
 
 	public static void init() {
 		leaderboardPositions.clear();

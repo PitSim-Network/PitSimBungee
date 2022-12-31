@@ -2,6 +2,7 @@ package dev.wiji.instancemanager.commands;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
+import dev.wiji.instancemanager.alogging.ConnectionData;
 import dev.wiji.instancemanager.alogging.ConnectionManager;
 import dev.wiji.instancemanager.builders.MessageBuilder;
 import dev.wiji.instancemanager.misc.AOutput;
@@ -281,11 +282,26 @@ public class AdminCommand extends Command {
 			EditSessionManager.createSession(player.getUniqueId(), args[1]);
 		}
 
-		if(args[0].equalsIgnoreCase("connections")) {
-			AOutput.color(player, "&2&m---------------&2<&a&lPLAYER CONNECTIONS&2>&m---------------");
-			for(Map.Entry<String, Integer> entry : ConnectionManager.getTotalJoins().entrySet())
-				AOutput.color(player, "&2 * &7" + entry.getKey() + ": &a" + entry.getValue());
-			AOutput.color(player, "&2&m---------------&2<&a&lPLAYER CONNECTIONS&2>&m---------------");
+		if(args[0].equalsIgnoreCase("connections") || args[0].equalsIgnoreCase("connect")) {
+			if(args.length < 2) {
+				ConnectionManager.calculateTotalJoins();
+				AOutput.color(player, "&2&m---------------&2<&a&lPLAYER CONNECTIONS&2>&m---------------");
+				for(Map.Entry<String, Integer> entry : ConnectionManager.joinMap.entrySet())
+					AOutput.color(player, "&2 * &7" + entry.getKey() + ": &a" + entry.getValue());
+				AOutput.color(player, "&2&m---------------&2<&a&lPLAYER CONNECTIONS&2>&m---------------");
+				return;
+			}
+			ConnectionData.PlayerConnectionData connectionData = null;
+			for(Map.Entry<String, ConnectionData.PlayerConnectionData> entry : ConnectionManager.connectionData.playerConnectionMap.entrySet()) {
+				if(!entry.getValue().name.equalsIgnoreCase(args[1]) && !entry.getKey().equalsIgnoreCase(args[1])) continue;
+				connectionData = entry.getValue();
+				break;
+			}
+			if(connectionData == null) {
+				AOutput.error(player, "&c&lERROR!&7 Could not find a player with that name");
+				return;
+			}
+			AOutput.color(player, "&a&lCONNECT!&7 " + connectionData.name + " &7first connected with: &a" + connectionData.host);
 		}
 	}
 }

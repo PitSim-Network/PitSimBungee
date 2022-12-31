@@ -16,6 +16,7 @@ public class ConnectionManager implements Listener {
 	public static final File dataFile;
 	public static final List<String> trackedSubdomains = new ArrayList<>();
 	public static ConnectionData connectionData;
+	public static Map<String, Integer> joinMap = new LinkedHashMap<>();
 
 	static {
 		try {
@@ -55,11 +56,11 @@ public class ConnectionManager implements Listener {
 		connectionData.save();
 	}
 
-	public static Map<String, Integer> getTotalJoins() {
+	public static void calculateTotalJoins() {
 		Map<String, Integer> joinMap = new LinkedHashMap<>();
 		for(String trackedSubdomain : trackedSubdomains) joinMap.put(trackedSubdomain, 0);
 		for(Map.Entry<String, ConnectionData.PlayerConnectionData> entry : connectionData.playerConnectionMap.entrySet())
 			joinMap.put(entry.getValue().host, joinMap.get(entry.getValue().host) + 1);
-		return joinMap;
+		ConnectionManager.joinMap = joinMap;
 	}
 }

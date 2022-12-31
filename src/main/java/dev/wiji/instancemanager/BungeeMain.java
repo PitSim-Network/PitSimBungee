@@ -5,7 +5,7 @@ import com.mattmalec.pterodactyl4j.PteroBuilder;
 import com.mattmalec.pterodactyl4j.application.entities.PteroApplication;
 import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
 import dev.wiji.instancemanager.alogging.ConnectionManager;
-import dev.wiji.instancemanager.alogging.ServerLogManager;
+import dev.wiji.instancemanager.alogging.LogManager;
 import dev.wiji.instancemanager.commands.*;
 import dev.wiji.instancemanager.discord.DiscordPlugin;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
@@ -57,7 +57,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new MessageListener());
 		getProxy().getPluginManager().registerListener(this, new ServerDataManager());
 		getProxy().getPluginManager().registerListener(this, new ServerChangeListener());
-		getProxy().getPluginManager().registerListener(this, new ServerLogManager());
+		getProxy().getPluginManager().registerListener(this, new LogManager());
 		getProxy().getPluginManager().registerListener(this, new ConnectionManager());
 		getProxy().getPluginManager().registerListener(this, new OverworldServerManager());
 		getProxy().getPluginManager().registerListener(this, new StorageManager());
