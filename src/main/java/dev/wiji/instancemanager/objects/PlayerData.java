@@ -5,7 +5,6 @@ import com.google.cloud.firestore.DocumentSnapshot;
 import java.util.*;
 
 public class PlayerData {
-
 	public static List<PlayerData> playerDataList = new ArrayList<>();
 
 	private final UUID playerUUID;
@@ -36,17 +35,21 @@ public class PlayerData {
 		}
 
 		PlayerData remove = null;
-
+		int removeIndex = 0;
 		for(PlayerData playerData : playerDataList) {
 			if(playerData.playerUUID.equals(playerUUID)) {
 				remove = playerData;
+				removeIndex = playerDataList.indexOf(remove);
 				break;
 			}
 		}
 
-		if(remove != null) playerDataList.remove(remove);
-
-		playerDataList.add(this);
+		if(remove != null) {
+			playerDataList.remove(remove);
+			playerDataList.add(removeIndex, this);
+		} else {
+			playerDataList.add(this);
+		}
 	}
 
 	public UUID getPlayerUUID() {
