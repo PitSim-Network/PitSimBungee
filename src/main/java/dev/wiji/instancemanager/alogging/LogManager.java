@@ -6,6 +6,7 @@ import dev.wiji.instancemanager.guilds.events.GuildChatEvent;
 import dev.wiji.instancemanager.guilds.events.GuildCreateEvent;
 import dev.wiji.instancemanager.misc.Misc;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -29,6 +30,16 @@ public class LogManager implements Listener {
 	public void onGuildCreate(GuildCreateEvent event) {
 		ProxiedPlayer player = event.getPlayer();
 		logProxyMessage(LogType.GUILD_CREATE, player.getName() + " created " + event.getGuild().name);
+	}
+
+	@EventHandler
+	public void onCommandSend(ChatEvent event) {
+		if(!(event.getSender() instanceof ProxiedPlayer) || !event.isCommand()) return;
+		ProxiedPlayer player = (ProxiedPlayer) event.getSender();
+
+		String message = player.getName() + " executed ";
+		if(event.isCancelled()) message += "(cancelled) ";
+		logProxyMessage(LogType.PLAYER_COMMAND, message + event.getMessage().toLowerCase());
 	}
 
 	@EventHandler

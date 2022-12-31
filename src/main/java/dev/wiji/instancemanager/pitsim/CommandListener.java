@@ -7,8 +7,6 @@ import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.util.Locale;
-
 public class CommandListener implements Listener {
 
 	public static final int COOLDOWN_SECONDS = 3;
@@ -31,7 +29,6 @@ public class CommandListener implements Listener {
 				return;
 			}
 		}
-
 
 		if(MainGamemodeServer.guildCooldown.containsKey(player)) {
 			long time = MainGamemodeServer.guildCooldown.get(player);
