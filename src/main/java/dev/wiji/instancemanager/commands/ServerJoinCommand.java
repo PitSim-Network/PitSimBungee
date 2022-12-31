@@ -49,6 +49,11 @@ public class ServerJoinCommand extends Command {
 			return;
 		}
 
+		if(requestedServer == player.getServer().getInfo()) {
+			AOutput.error(player, "&cYou are already connected to this server!");
+			return;
+		}
+
 		for(OverworldServer overworldServer : OverworldServerManager.serverList) {
 			if(overworldServer.getServerInfo() == requestedServer) {
 				if(previousServer.getName().contains("darkzone") || previousServer.getName().contains("pitsim")) {

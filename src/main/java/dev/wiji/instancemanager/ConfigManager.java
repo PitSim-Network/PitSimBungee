@@ -41,7 +41,7 @@ public class ConfigManager {
 		for(Object s : configuration.getList("mini-servers")) {
 			String[] split = ((String) s).split(":");
 			miniServerMap.put(split[0], split[1]);
-			ServerManager.inactiveServers.add((String) s);
+			ServerManager.inactiveServers.add(split[0]);
 		}
 
 	}

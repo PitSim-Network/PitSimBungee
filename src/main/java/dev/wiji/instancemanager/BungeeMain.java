@@ -10,6 +10,7 @@ import dev.wiji.instancemanager.commands.*;
 import dev.wiji.instancemanager.discord.DiscordPlugin;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
 import dev.wiji.instancemanager.pitsim.*;
+import dev.wiji.instancemanager.skywars.PitsimQuestManager;
 import dev.wiji.instancemanager.skywars.PluginMessageSender;
 import dev.wiji.instancemanager.skywars.SkywarsGameManager;
 import dev.wiji.instancemanager.skywars.SkywarsPluginListener;
@@ -66,6 +67,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new IdentificationManager());
 		getProxy().getPluginManager().registerListener(this, new CrossServerMessageManager());
 		getProxy().getPluginManager().registerListener(this, new PlayerManager());
+		getProxy().getPluginManager().registerListener(this, new PitsimQuestManager());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new DupeManager());
 		ConfigManager.getMiniServerList();
 
@@ -86,8 +88,6 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerCommand(this, new LobbiesCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new BroadcastCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new ServerJoinCommand(this));
-
-		getProxy().getPluginManager().registerCommand(this, new GoldDupeCommand());
 
 		ConfigManager.getPitSimServerList();
 		ConfigManager.getDarkzoneServerList();

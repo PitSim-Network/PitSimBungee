@@ -70,6 +70,9 @@ public class SkywarsPluginListener implements Listener {
 				}.runAfter(10, TimeUnit.SECONDS);
 			}
 
+			if(action.equals("PASS_QUEST")) {
+				PitsimQuestManager.parseString(argument);
+			}
 
 			if(action.equals("GAME_END")) {
 				SkywarsGameManager.endGame(serverID);

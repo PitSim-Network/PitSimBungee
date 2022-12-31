@@ -13,7 +13,7 @@ public class ServerManager {
 
 	public static void onEnable() {
 		for(String inactiveServer : inactiveServers) {
-			killServer(inactiveServer);
+			killServer(ConfigManager.miniServerMap.get(inactiveServer));
 		}
 	}
 

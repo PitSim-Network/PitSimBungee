@@ -69,7 +69,7 @@ public class SkywarsGameManager {
 				startingServers.remove(id);
 				System.out.println(mainQueueServer);
 			}
-		}.runAfter(60, TimeUnit.SECONDS);
+		}.runAfter(30, TimeUnit.SECONDS);
 
 
 	}
