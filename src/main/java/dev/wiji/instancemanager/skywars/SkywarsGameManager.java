@@ -1,6 +1,7 @@
 package dev.wiji.instancemanager.skywars;
 
 import com.mattmalec.pterodactyl4j.UtilizationState;
+import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
@@ -25,12 +26,12 @@ public class SkywarsGameManager {
 
 	public static void onStart(String id) {
 		System.out.println("Enabled! " + id);
-		ServerManager.runCommand(id, "skywars load");
+		ServerManager.runCommand(ConfigManager.miniServerMap.get(id), "skywars load");
 		startingServers.remove(id);
 		if(mainQueueServer == null) mainQueueServer = id;
 		else if(backupQueueServer == null) backupQueueServer = id;
 		else {
-			ServerManager.killServer(mainQueueServer);
+			ServerManager.killServer(ConfigManager.miniServerMap.get(mainQueueServer));
 			ServerManager.inactiveServers.add(mainQueueServer);
 			mainQueueServer = backupQueueServer;
 			backupQueueServer = id;
@@ -51,17 +52,17 @@ public class SkywarsGameManager {
 	}
 
 	public static void startServer(String id) {
-		ServerManager.startServer(id);
+		ServerManager.startServer(ConfigManager.miniServerMap.get(id));
 
 		new ProxyRunnable() {
 			@Override
 			public void run() {
 
-				UtilizationState state = ServerManager.getState(id);
+				UtilizationState state = ServerManager.getState(ConfigManager.miniServerMap.get(id));
 				if(state == UtilizationState.RUNNING) {
 					onStart(id);
 				} else {
-					ServerManager.killServer(id);
+					ServerManager.killServer(ConfigManager.miniServerMap.get(id));
 					ServerManager.inactiveServers.add(id);
 					fetchServer();
 				}
@@ -79,7 +80,7 @@ public class SkywarsGameManager {
 			@Override
 			public void run() {
 				SkywarsGameManager.activeServers.remove(serverID);
-				ServerManager.killServer(serverID);
+				ServerManager.killServer(ConfigManager.miniServerMap.get(serverID));
 				ServerManager.inactiveServers.add(serverID);
 			}
 		}.runAfter(20, TimeUnit.MINUTES);
@@ -98,7 +99,7 @@ public class SkywarsGameManager {
 			backupQueueServer = null;
 		} else {
 			System.out.println("Killing" + serverID);
-			ServerManager.killServer(serverID);
+			ServerManager.killServer(ConfigManager.miniServerMap.get(serverID));
 			ServerManager.inactiveServers.add(serverID);
 			return;
 		}
@@ -110,7 +111,7 @@ public class SkywarsGameManager {
 		ScheduledTask task = activeServers.get(serverID);
 		task.cancel();
 		activeServers.remove(serverID);
-		ServerManager.killServer(serverID);
+		ServerManager.killServer(ConfigManager.miniServerMap.get(serverID));
 		ServerManager.inactiveServers.add(serverID);
 	}
 

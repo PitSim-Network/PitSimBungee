@@ -71,7 +71,7 @@ public class SkywarsQueueManager {
 			SkywarsGameManager.backupQueuePlayers = 0;
 		}
 
-		if(SkywarsGameManager.mainQueuePlayers >= (minGameSize - 1) && SkywarsGameManager.backupQueueServer == null && SkywarsGameManager.startingServers.size() == 0) {
+		if(SkywarsGameManager.mainQueuePlayers >= 0 && SkywarsGameManager.backupQueueServer == null && SkywarsGameManager.startingServers.size() == 0) {
 			SkywarsGameManager.fetchServer();
 		}
 
