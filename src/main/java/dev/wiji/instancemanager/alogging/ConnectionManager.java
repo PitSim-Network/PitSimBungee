@@ -33,6 +33,8 @@ public class ConnectionManager implements Listener {
 		trackedSubdomains.add("tomcat.pitsim.net");
 		trackedSubdomains.add("bomp.pitsim.net");
 		trackedSubdomains.add("pitfall.pitsim.net");
+		trackedSubdomains.add("panda.pitsim.net");
+		trackedSubdomains.add("planet.pitsim.net");
 
 		connectionData = new ConnectionData();
 	}
