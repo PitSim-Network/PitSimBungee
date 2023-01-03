@@ -2,6 +2,7 @@ package dev.wiji.instancemanager.alogging;
 
 import com.google.gson.Gson;
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.pitsim.IdentificationManager;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -33,12 +34,7 @@ public class ConnectionManager implements Listener {
 		trackedSubdomains.add("bomp.pitsim.net");
 		trackedSubdomains.add("pitfall.pitsim.net");
 
-		try {
-			Reader reader = Files.newBufferedReader(dataFile.toPath());
-			connectionData = new Gson().fromJson(reader, ConnectionData.class);
-		} catch(IOException e) {
-			throw new RuntimeException(e);
-		}
+		connectionData = new ConnectionData();
 	}
 
 	@EventHandler
@@ -48,19 +44,19 @@ public class ConnectionManager implements Listener {
 		String hostName = event.getConnection().getVirtualHost().getHostName();
 		if(!trackedSubdomains.contains(hostName.toLowerCase())) {
 			System.out.println("Player " + playerName + " joined from an untracked host: " + hostName);
-			return;
+			hostName = "mc.pitsim.net";
 		}
 
-		if(connectionData.playerConnectionMap.containsKey(playerUUID.toString())) return;
-		connectionData.playerConnectionMap.put(playerUUID.toString(), new ConnectionData.PlayerConnectionData(playerName, hostName.toLowerCase()));
-		connectionData.save();
+		IdentificationManager.onLogin(playerUUID, playerName, hostName.toLowerCase());
 	}
 
 	public static void calculateTotalJoins() {
 		Map<String, Integer> joinMap = new LinkedHashMap<>();
 		for(String trackedSubdomain : trackedSubdomains) joinMap.put(trackedSubdomain, 0);
-		for(Map.Entry<String, ConnectionData.PlayerConnectionData> entry : connectionData.playerConnectionMap.entrySet())
+		for(Map.Entry<String, ConnectionData.PlayerConnectionData> entry : connectionData.playerConnectionMap.entrySet()) {
+			if(!trackedSubdomains.contains(entry.getValue().host)) continue;
 			joinMap.put(entry.getValue().host, joinMap.get(entry.getValue().host) + 1);
+		}
 		ConnectionManager.joinMap = joinMap;
 	}
 }

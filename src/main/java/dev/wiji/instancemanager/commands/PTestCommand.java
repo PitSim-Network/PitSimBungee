@@ -14,5 +14,6 @@ public class PTestCommand extends Command {
 
 	@Override
 	public void execute(CommandSender commandSender, String[] strings) {
+		IdentificationManager.migrate();
 	}
 }

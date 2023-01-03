@@ -2,13 +2,43 @@ package dev.wiji.instancemanager.alogging;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dev.wiji.instancemanager.pitsim.IdentificationManager;
 
 import java.io.FileWriter;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class ConnectionData {
 	public Map<String, PlayerConnectionData> playerConnectionMap = new HashMap<>();
+
+
+	public ConnectionData() {
+
+		try {
+			Connection connection = IdentificationManager.getConnection();
+			assert connection != null;
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT uuid, username, initial_join_domain FROM " + IdentificationManager.NEW_TABLE);
+
+			while (rs.next()) {
+				UUID uuid = UUID.fromString(rs.getString("uuid"));
+				String username = rs.getString("username");
+				String domain = rs.getString("initial_join_domain");
+
+				playerConnectionMap.put(uuid.toString(), new PlayerConnectionData(username, domain));
+			}
+
+			rs.close();
+			stmt.close();
+
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	public static class PlayerConnectionData {
 		public String name;
@@ -17,18 +47,6 @@ public class ConnectionData {
 		public PlayerConnectionData(String name, String host) {
 			this.name = name;
 			this.host = host;
-		}
-	}
-
-	public void save() {
-		try {
-			Gson gson = new GsonBuilder().setPrettyPrinting().create();
-			String json = gson.toJson(this);
-			FileWriter writer = new FileWriter(ConnectionManager.dataFile.toPath().toString());
-			writer.write(json);
-			writer.close();
-		} catch(Exception exception) {
-			throw new RuntimeException(exception);
 		}
 	}
 }
