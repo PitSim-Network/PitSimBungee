@@ -91,6 +91,8 @@ public class InfoCommand extends ACommand {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 		dateFormat.setTimeZone(TimeZone.getTimeZone(ConfigManager.configuration.getString("timezone")));
 		AMessageBuilder messageBuilder = null;
+		String ownerName = BungeeMain.getName(guild.ownerUUID, false);
+		if(ownerName == null) ownerName = guild.ownerUUID.toString();
 		try {
 			messageBuilder = new AMessageBuilder()
 					.addLine("&a&lGUILD " + guild.getColor() + guild.name)
@@ -100,7 +102,7 @@ public class InfoCommand extends ACommand {
 					.addLine(guild.getColor() + " * &7Reputation Points: " + guild.getColor() + guild.getTotalBuffCost() +
 							"&7/" + guild.getColor() + guild.getRepPoints())
 					.addLine(guild.getColor() + " * &7Bank Balanace: &6" + guild.getFormattedBalance() + "g&7/&6" + ArcticGuilds.decimalFormat.format(guild.getMaxBank()))
-					.addLine(guild.getColor() + " * &7Owner: " + guild.getColor() + BungeeMain.getName(guild.ownerUUID, false))
+					.addLine(guild.getColor() + " * &7Owner: " + guild.getColor() + ownerName)
 					.addLine(guild.getColor() + " * &7Members: &7(" + guild.getColor() + guild.members.size() + "&7/" + guild.getColor() + guild.getMaxMembers() + "&7)")
 					.addLine(guild.getColor() + " * &7Online Members: &7(" + guild.getColor() + onlinePlayers.size() + "&7/" + guild.getColor() + guild.members.size() + "&7)");
 		} catch(Exception exception) {
@@ -116,7 +118,9 @@ public class InfoCommand extends ACommand {
 		for(Map.Entry<GuildMember, GuildMemberInfo> entry : sortedPlayers) {
 			if(onlinePlayers.contains(entry.getKey().playerUUID)) continue;
 			UUID guildPlayerUUID = entry.getKey().playerUUID;
-			messageBuilder.addLine(guild.getColor() + "    - &c" + entry.getValue().rank.prefix + BungeeMain.getName(guildPlayerUUID, true));
+			String name = BungeeMain.getName(guildPlayerUUID, true);
+			if(name == null) name = guildPlayerUUID.toString();
+			messageBuilder.addLine(guild.getColor() + "    - &c" + entry.getValue().rank.prefix + name);
 		}
 
 		messageBuilder.colorize().send(player);
