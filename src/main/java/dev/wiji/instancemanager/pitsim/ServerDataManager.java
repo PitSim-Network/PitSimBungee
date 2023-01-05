@@ -42,7 +42,7 @@ public class ServerDataManager implements Listener {
 	}
 
 	public static void sendServerData() {
-		for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+		for(MainGamemodeServer overworldServer : MainGamemodeServer.serverList) {
 			if(!overworldServer.status.isOnline()) continue;
 
 			PluginMessage message = new PluginMessage();
@@ -61,28 +61,23 @@ public class ServerDataManager implements Listener {
 			}
 
 			message.addServer(overworldServer.getServerInfo().getName()).send();
-		}
 
-
-		for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
-			if(!darkzoneServer.status.isOnline()) continue;
-
-			PluginMessage message = new PluginMessage();
-			message.writeString("SERVER DATA");
+			PluginMessage dzMessage = new PluginMessage();
+			dzMessage.writeString("DARKZONE SERVER DATA");
 
 			for(DarkzoneServer activeServer : DarkzoneServerManager.serverList) {
-				message.writeInt(activeServer.serverData == null ? 0 : activeServer.serverData.getPlayerStrings().size());
-				message.writeBoolean(activeServer.status == ServerStatus.RUNNING);
+				dzMessage.writeInt(activeServer.serverData == null ? 0 : activeServer.serverData.getPlayerStrings().size());
+				dzMessage.writeBoolean(activeServer.status == ServerStatus.RUNNING);
 
 				if(activeServer.serverData != null) {
 					for(String playerString : activeServer.serverData.getPlayerStrings()) {
-						message.writeString(playerString);
+						dzMessage.writeString(playerString);
 					}
 				}
 
 			}
 
-			message.addServer(darkzoneServer.getServerInfo().getName()).send();
+			dzMessage.addServer(overworldServer.getServerInfo().getName()).send();
 		}
 	}
 }

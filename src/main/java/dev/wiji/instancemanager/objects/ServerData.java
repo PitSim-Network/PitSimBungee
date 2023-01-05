@@ -15,8 +15,8 @@ public class ServerData {
 		this.data = data;
 		this.playerStrings = new ArrayList<>();
 
-		for(String playerString : data) {
-			playerStrings.add(ChatColor.translateAlternateColorCodes('&', playerString));
+		for(int i = 0; i < data.size(); i++) {
+			playerStrings.add(ChatColor.translateAlternateColorCodes('&', data.get(i)));
 		}
 	}
 
@@ -27,6 +27,7 @@ public class ServerData {
 	public List<String> getPlayerStrings() {
 		return playerStrings;
 	}
+
 
 
 }
