@@ -9,18 +9,15 @@ import dev.wiji.instancemanager.storage.StorageProfile;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public abstract class MainGamemodeServer {
 
 	public static List<MainGamemodeServer> serverList = new ArrayList<>();
-	public static Map<ProxiedPlayer, Long> cooldownPlayers = new HashMap<>();
+	public static Map<UUID, Long> cooldownPlayers = new HashMap<>();
 
-	public static Map<ProxiedPlayer, Long> guildCooldown = new HashMap<>();
+	public static Map<UUID, Long> guildCooldown = new HashMap<>();
 
 	public final String pteroID;
 	public final int serverIndex;

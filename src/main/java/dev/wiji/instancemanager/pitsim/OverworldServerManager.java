@@ -144,7 +144,7 @@ public class OverworldServerManager implements Listener {
 			}
 		}
 
-		MainGamemodeServer.cooldownPlayers.put(player, System.currentTimeMillis());
+		MainGamemodeServer.cooldownPlayers.put(player.getUniqueId(), System.currentTimeMillis());
 
 		if(EditSessionManager.isBeingEdited(player.getUniqueId())) {
 			player.sendMessage(new ComponentBuilder("Your player-data is being modified. Please try again in a moment.").color(ChatColor.RED).create());

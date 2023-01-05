@@ -42,7 +42,7 @@ public abstract class AMultiCommand extends ACommandBase {
 			}
 		}
 
-		MainGamemodeServer.guildCooldown.put((ProxiedPlayer) sender, System.currentTimeMillis());
+		MainGamemodeServer.guildCooldown.put(((ProxiedPlayer) sender).getUniqueId(), System.currentTimeMillis());
 
 		if(args.isEmpty()) {
 			if(sender instanceof ProxiedPlayer) {

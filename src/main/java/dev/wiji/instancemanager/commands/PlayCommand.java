@@ -81,7 +81,7 @@ public class PlayCommand extends Command {
 				commandSender.sendMessage((new ComponentBuilder("Looking for a server...").color(ChatColor.GREEN).create()));
 				queuingPlayers.remove(player);
 
-				MainGamemodeServer.guildCooldown.put(player, System.currentTimeMillis());
+				MainGamemodeServer.guildCooldown.put(player.getUniqueId(), System.currentTimeMillis());
 				new PluginMessage().writeString("REQUEST SWITCH").writeString(player.getUniqueId().toString()).addServer(currentServer.getInfo()).send();
 				return;
 			}
