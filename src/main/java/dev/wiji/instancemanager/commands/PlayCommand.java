@@ -69,7 +69,7 @@ public class PlayCommand extends Command {
 					}
 				}
 
-				if(MainGamemodeServer.guildCooldown.containsKey(player.getUniqueId()) || MainGamemodeServer.cooldownPlayers.containsKey(player.getUniqueId()) || ServerChangeListener.recentlyLeft.contains(player)) {
+				if(MainGamemodeServer.guildCooldown.containsKey(player.getUniqueId()) || MainGamemodeServer.cooldownPlayers.containsKey(player.getUniqueId()) || ServerChangeListener.recentlyLeft.contains(player.getUniqueId())) {
 					if(queuingPlayers.contains(player)) return;
 					AOutput.color(player, "&eQueuing you to find a server!");
 					queuingPlayers.add(player);

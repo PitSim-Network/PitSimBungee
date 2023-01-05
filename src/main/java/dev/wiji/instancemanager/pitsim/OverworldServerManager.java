@@ -128,7 +128,7 @@ public class OverworldServerManager implements Listener {
 
 	public static boolean queue(ProxiedPlayer player, int requestedServer, boolean fromDarkzone) {
 
-		if(ServerChangeListener.recentlyLeft.contains(player)) {
+		if(ServerChangeListener.recentlyLeft.contains(player.getUniqueId())) {
 			player.sendMessage(new ComponentBuilder("You recently left a server. Please wait a few seconds before rejoining.").color(ChatColor.RED).create());
 			return false;
 		}

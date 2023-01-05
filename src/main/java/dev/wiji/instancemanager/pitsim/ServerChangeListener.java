@@ -8,17 +8,18 @@ import net.md_5.bungee.event.EventHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class ServerChangeListener implements Listener {
 
-	public static List<ProxiedPlayer> recentlyLeft = new ArrayList<>();
+	public static List<UUID> recentlyLeft = new ArrayList<>();
 
 	@EventHandler
 	public void onServerChange(ServerDisconnectEvent event) {
 		if(!event.getTarget().getName().contains("pitsim") && !event.getTarget().getName().contains("darkzone")) return;
 
-		recentlyLeft.add(event.getPlayer());
-		((ProxyRunnable) () -> recentlyLeft.remove(event.getPlayer())).runAfter(3, TimeUnit.SECONDS);
+		recentlyLeft.add(event.getPlayer().getUniqueId());
+		((ProxyRunnable) () -> recentlyLeft.remove(event.getPlayer().getUniqueId())).runAfter(3, TimeUnit.SECONDS);
 	}
 }

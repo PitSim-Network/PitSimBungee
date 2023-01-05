@@ -101,7 +101,7 @@ public class DarkzoneServerManager {
 
 	public static boolean queue(ProxiedPlayer player, int requestedServer) {
 
-		if(ServerChangeListener.recentlyLeft.contains(player)) {
+		if(ServerChangeListener.recentlyLeft.contains(player.getUniqueId())) {
 			player.sendMessage(new ComponentBuilder("You recently left a server. Please wait a few seconds before rejoining.").color(ChatColor.RED).create());
 			return false;
 		}
