@@ -48,7 +48,14 @@ public class KickCommand extends ACommand {
 		}
 
 		Map.Entry<GuildMember, GuildMemberInfo> guildTarget = null;
-		UUID target = BungeeMain.getUUID(args.get(0), false);
+		UUID target;
+
+		try {
+			target = UUID.fromString(args.get(0));
+		} catch(Exception e) {
+			target = BungeeMain.getUUID(args.get(0), false);
+		}
+
 		if(target == null) {
 			AOutput.error(player, "That player does not exist");
 			return;
