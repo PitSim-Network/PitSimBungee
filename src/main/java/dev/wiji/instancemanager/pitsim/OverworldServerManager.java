@@ -133,11 +133,11 @@ public class OverworldServerManager implements Listener {
 			return false;
 		}
 
-		if(MainGamemodeServer.cooldownPlayers.containsKey(player)) {
-			long time = MainGamemodeServer.cooldownPlayers.get(player);
+		if(MainGamemodeServer.cooldownPlayers.containsKey(player.getUniqueId())) {
+			long time = MainGamemodeServer.cooldownPlayers.get(player.getUniqueId());
 
 			if(time + CommandListener.COOLDOWN_SECONDS * 1000 < System.currentTimeMillis()) {
-				MainGamemodeServer.cooldownPlayers.remove(player);
+				MainGamemodeServer.cooldownPlayers.remove(player.getUniqueId());
 			} else {
 				player.sendMessage((new ComponentBuilder("Please wait a moment before Queuing again").color(ChatColor.RED).create()));
 				return false;

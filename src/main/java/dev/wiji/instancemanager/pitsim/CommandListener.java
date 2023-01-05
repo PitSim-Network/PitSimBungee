@@ -17,11 +17,11 @@ public class CommandListener implements Listener {
 		if(!(event.getSender() instanceof ProxiedPlayer)) return;
 		ProxiedPlayer player = (ProxiedPlayer) event.getSender();
 
-		if(MainGamemodeServer.cooldownPlayers.containsKey(player)) {
-			long time = MainGamemodeServer.cooldownPlayers.get(player);
+		if(MainGamemodeServer.cooldownPlayers.containsKey(player.getUniqueId())) {
+			long time = MainGamemodeServer.cooldownPlayers.get(player.getUniqueId());
 
 			if(time + COOLDOWN_SECONDS * 1000 < System.currentTimeMillis()) {
-				MainGamemodeServer.cooldownPlayers.remove(player);
+				MainGamemodeServer.cooldownPlayers.remove(player.getUniqueId());
 			} else {
 				if(event.getMessage().toLowerCase().startsWith("/play")) return;
 				event.setCancelled(true);
@@ -30,11 +30,11 @@ public class CommandListener implements Listener {
 			}
 		}
 
-		if(MainGamemodeServer.guildCooldown.containsKey(player)) {
-			long time = MainGamemodeServer.guildCooldown.get(player);
+		if(MainGamemodeServer.guildCooldown.containsKey(player.getUniqueId())) {
+			long time = MainGamemodeServer.guildCooldown.get(player.getUniqueId());
 
 			if(time + COOLDOWN_SECONDS * 1000 < System.currentTimeMillis()) {
-				MainGamemodeServer.guildCooldown.remove(player);
+				MainGamemodeServer.guildCooldown.remove(player.getUniqueId());
 			} else {
 				if(event.getMessage().toLowerCase().startsWith("/play")) return;
 				event.setCancelled(true);

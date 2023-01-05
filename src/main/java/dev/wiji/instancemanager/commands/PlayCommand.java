@@ -19,7 +19,6 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
-import org.apache.log4j.chainsaw.Main;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,23 +53,23 @@ public class PlayCommand extends Command {
 					return;
 				}
 
-				if(MainGamemodeServer.cooldownPlayers.containsKey(player)) {
-					long time = MainGamemodeServer.cooldownPlayers.get(player);
+				if(MainGamemodeServer.cooldownPlayers.containsKey(player.getUniqueId())) {
+					long time = MainGamemodeServer.cooldownPlayers.get(player.getUniqueId());
 
 					if(time + CommandListener.COOLDOWN_SECONDS * 1000 < System.currentTimeMillis()) {
-						MainGamemodeServer.cooldownPlayers.remove(player);
+						MainGamemodeServer.cooldownPlayers.remove(player.getUniqueId());
 					}
 				}
 
-				if(MainGamemodeServer.guildCooldown.containsKey(player)) {
-					long time = MainGamemodeServer.guildCooldown.get(player);
+				if(MainGamemodeServer.guildCooldown.containsKey(player.getUniqueId())) {
+					long time = MainGamemodeServer.guildCooldown.get(player.getUniqueId());
 
 					if(time + CommandListener.COOLDOWN_SECONDS * 1000 < System.currentTimeMillis()) {
-						MainGamemodeServer.guildCooldown.remove(player);
+						MainGamemodeServer.guildCooldown.remove(player.getUniqueId());
 					}
 				}
 
-				if(MainGamemodeServer.guildCooldown.containsKey(player) || MainGamemodeServer.cooldownPlayers.containsKey(player) || ServerChangeListener.recentlyLeft.contains(player)) {
+				if(MainGamemodeServer.guildCooldown.containsKey(player.getUniqueId()) || MainGamemodeServer.cooldownPlayers.containsKey(player.getUniqueId()) || ServerChangeListener.recentlyLeft.contains(player)) {
 					if(queuingPlayers.contains(player)) return;
 					AOutput.color(player, "&eQueuing you to find a server!");
 					queuingPlayers.add(player);
