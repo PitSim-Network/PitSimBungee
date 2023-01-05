@@ -20,6 +20,5 @@ public class PTestCommand extends Command {
 		ProxiedPlayer player = (ProxiedPlayer) commandSender;
 		if(!player.hasPermission("pitsim.admin")) return;
 
-		IdentificationManager.migrate();
 	}
 }
