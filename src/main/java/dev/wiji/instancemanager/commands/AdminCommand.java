@@ -39,6 +39,7 @@ public class AdminCommand extends Command {
 		if(args.length < 1) {
 			new MessageBuilder(
 					"&4&m--------------------&4<&c&lADMIN&4>&m--------------------",
+					"&4 * &c/admin gui &7(displays all players and servers in a menu)",
 					"&4 * &c/admin status &7(displays the status of the servers)",
 					"&4 * &c/admin shutdown &7(shuts down the player's current server)",
 					"&4 * &c/admin startnetwork &7(starts up the network)",
@@ -280,6 +281,17 @@ public class AdminCommand extends Command {
 			}
 
 			EditSessionManager.createSession(player.getUniqueId(), args[1]);
+		}
+
+		if(args[0].equalsIgnoreCase("gui") || args[0].equalsIgnoreCase("menu")) {
+			ServerInfo serverInfo = player.getServer().getInfo();
+			if(!serverInfo.getName().contains("pitsim") && !serverInfo.getName().contains("darkzone")) {
+				AOutput.error(player, "&cYou must be in a PitSim server to use this!");
+				return;
+			}
+
+			PluginMessage message = new PluginMessage().writeString("ADMIN GUI OPEN").writeString(player.getUniqueId().toString());
+			message.addServer(serverInfo).send();
 		}
 
 		if(args[0].equalsIgnoreCase("connections") || args[0].equalsIgnoreCase("connect")) {

@@ -187,7 +187,9 @@ public class MessageListener implements Listener {
 
 			PluginMessage response = new PluginMessage().writeString("TELEPORT JOIN");
 			response.writeString(staffUUID.toString()).writeString(playerName);
-			response.addServer(MainGamemodeServer.getServer(serverIndex, darkzone).getServerInfo()).send();
+
+			ServerInfo serverInfo = MainGamemodeServer.getServer(serverIndex + 1, darkzone).getServerInfo();
+			response.addServer(serverInfo).send();
 		}
 
 		if(strings.size() >= 3 && strings.get(0).equals("AUCTION ITEM REQUEST")) {
