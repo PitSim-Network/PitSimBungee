@@ -46,6 +46,11 @@ public class EditSessionManager implements Listener {
 			return;
 		}
 
+		if(staff.getUniqueId().equals(playerUUID)) {
+			staff.sendMessage(new TextComponent(ChatColor.RED + "You cannot edit your own profile!"));
+			return;
+		}
+
 		EditSession session = new EditSession(staffUUID, playerUUID);
 		editSessions.add(session);
 	}

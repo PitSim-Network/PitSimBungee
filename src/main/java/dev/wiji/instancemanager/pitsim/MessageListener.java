@@ -3,6 +3,7 @@ package dev.wiji.instancemanager.pitsim;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.objects.*;
+import dev.wiji.instancemanager.storage.EditSessionManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -169,6 +170,24 @@ public class MessageListener implements Listener {
 			}
 
 			message.send();
+		}
+
+		if(strings.size() >= 3 && strings.get(0).equals("EDIT PLAYER")) {
+			UUID staffUUID = UUID.fromString(strings.get(1));
+			String playerName = strings.get(2);
+			EditSessionManager.createSession(staffUUID, playerName);
+		}
+
+		if(strings.size() >= 3 && strings.get(0).equals("TELEPORT JOIN")) {
+			UUID staffUUID = UUID.fromString(strings.get(1));
+			String playerName = strings.get(2);
+
+			int serverIndex = integers.get(0);
+			boolean darkzone = booleans.get(0);
+
+			PluginMessage response = new PluginMessage().writeString("TELEPORT JOIN");
+			response.writeString(staffUUID.toString()).writeString(playerName);
+			response.addServer(MainGamemodeServer.getServer(serverIndex, darkzone).getServerInfo()).send();
 		}
 
 		if(strings.size() >= 3 && strings.get(0).equals("AUCTION ITEM REQUEST")) {

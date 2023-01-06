@@ -118,6 +118,13 @@ public abstract class MainGamemodeServer {
 		return null;
 	}
 
+	public static MainGamemodeServer getServer(int index, boolean darkzone) {
+		for(MainGamemodeServer mainGamemodeServer : serverList) {
+			if(mainGamemodeServer.serverIndex == index && mainGamemodeServer.serverType == (darkzone ? ServerType.DARKZONE : ServerType.PITSIM)) return mainGamemodeServer;
+		}
+		return null;
+	}
+
 	public void removeProfile(StorageProfile profile) {
 //		System.out.println("Removed Profile: " + profile);
 		if(profile != null) loadedProfiles.remove(profile);
