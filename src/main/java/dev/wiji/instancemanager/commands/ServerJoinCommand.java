@@ -21,11 +21,15 @@ import net.md_5.bungee.api.plugin.Plugin;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 public class ServerJoinCommand extends Command {
 	public ServerJoinCommand(Plugin bungeeMain) {
 		super("join");
 	}
+
+
+	public static List<UUID> permissionBypass = new ArrayList<>();
 
 	@Override
 	public void execute(CommandSender sender, String[] args) {
@@ -39,8 +43,6 @@ public class ServerJoinCommand extends Command {
 			return;
 		}
 
-		ServerInfo previousServer = player.getServer().getInfo();
-
 		String requestedServerString = args[0];
 		ServerInfo requestedServer = BungeeMain.INSTANCE.getProxy().getServerInfo(requestedServerString);
 
@@ -49,20 +51,36 @@ public class ServerJoinCommand extends Command {
 			return;
 		}
 
-		if(requestedServer == player.getServer().getInfo()) {
-			AOutput.error(player, "&cYou are already connected to this server!");
+		ProxiedPlayer affectedPlayer = player;
+
+		if(args.length >= 2) {
+			String playerString = args[1];
+			ProxiedPlayer targetPlayer = BungeeMain.INSTANCE.getProxy().getPlayer(playerString);
+			if(targetPlayer == null) {
+				AOutput.error(player, "That player is not online!");
+				return;
+			}
+			affectedPlayer = targetPlayer;
+			if(!permissionBypass.contains(targetPlayer.getUniqueId())) permissionBypass.add(targetPlayer.getUniqueId());
+		}
+
+		ServerInfo previousServer = affectedPlayer.getServer().getInfo();
+
+		if(requestedServer == affectedPlayer.getServer().getInfo()) {
+			if(player == affectedPlayer) AOutput.error(player, "&cYou are already connected to this server!");
+			else AOutput.error(player, "&c" + affectedPlayer.getName() + " is already connected to that server!");
 			return;
 		}
 
 		for(OverworldServer overworldServer : OverworldServerManager.serverList) {
 			if(overworldServer.getServerInfo() == requestedServer) {
 				if(previousServer.getName().contains("darkzone") || previousServer.getName().contains("pitsim")) {
-					new PluginMessage().writeString("REQUEST SWITCH").writeString(player.getUniqueId().toString())
+					new PluginMessage().writeString("REQUEST SWITCH").writeString(affectedPlayer.getUniqueId().toString())
 							.writeInt(overworldServer.getServerIndex()).addServer(previousServer).send();
 					return;
 				}
 
-				OverworldServerManager.queueFallback(player, overworldServer.getServerIndex(), false);
+				OverworldServerManager.queueFallback(affectedPlayer, overworldServer.getServerIndex(), false);
 				return;
 			}
 		}
@@ -70,22 +88,24 @@ public class ServerJoinCommand extends Command {
 		for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
 			if(darkzoneServer.getServerInfo() == requestedServer) {
 				if(previousServer.getName().contains("darkzone") || previousServer.getName().contains("pitsim")) {
-					new PluginMessage().writeString("REQUEST DARKZONE SWITCH").writeString(player.getUniqueId().toString())
+					new PluginMessage().writeString("REQUEST DARKZONE SWITCH").writeString(affectedPlayer.getUniqueId().toString())
 							.writeInt(darkzoneServer.getServerIndex()).addServer(previousServer).send();
 					return;
 				}
 
-				DarkzoneServerManager.queueFallback(player, darkzoneServer.getServerIndex());
+				DarkzoneServerManager.queueFallback(affectedPlayer, darkzoneServer.getServerIndex());
 				return;
 			}
 		}
 
-		AOutput.color(player, "&2&lSERVERS &aSent you to " + requestedServer.getName());
+		if(player == affectedPlayer) AOutput.color(player, "&2&lSERVERS &aSent you to " + requestedServer.getName());
+		else AOutput.color(player, "&2&lSERVERS &aSent " + affectedPlayer.getName() + " to " + requestedServer.getName());
 		if(requestedServer.getName().contains("pitsim") || requestedServer.getName().contains("darkzone")) {
-			AOutput.error(player, "You are unable to connect to this server at this time.");
+			if(player == affectedPlayer) AOutput.error(player, "&cYou are unable to connect to this server at this time.");
+			else AOutput.error(player, affectedPlayer.getName() + " &cis unable to connect to that server at this time.");
 			return;
 		}
-		player.connect(requestedServer);
+		affectedPlayer.connect(requestedServer);
 	}
 
 	public void sendServerList(ProxiedPlayer player) {

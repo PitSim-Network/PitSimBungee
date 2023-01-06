@@ -2,11 +2,9 @@ package dev.wiji.instancemanager.pitsim;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
-import dev.wiji.instancemanager.objects.DarkzoneServer;
-import dev.wiji.instancemanager.objects.PluginMessage;
-import dev.wiji.instancemanager.objects.ServerStatus;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
+import dev.wiji.instancemanager.commands.ServerJoinCommand;
 import dev.wiji.instancemanager.objects.DarkzoneServer;
 import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
@@ -147,7 +145,7 @@ public class DarkzoneServerManager {
 		if(requestedServer != 0) {
 			targetServer = serverList.get(requestedServer - 1);
 
-			if(player.hasPermission("pitsim.join")) {
+			if(player.hasPermission("pitsim.join") || ServerJoinCommand.permissionBypass.contains(player.getUniqueId())) {
 				if(!targetServer.status.isOnline()) {
 					player.sendMessage(new ComponentBuilder("This server is currently unavailable!").color(ChatColor.RED).create());
 					return false;
@@ -156,6 +154,8 @@ public class DarkzoneServerManager {
 				player.sendMessage(new ComponentBuilder("This server is currently unavailable!").color(ChatColor.RED).create());
 				return false;
 			}
+
+			ServerJoinCommand.permissionBypass.remove(player.getUniqueId());
 		}
 
 		if(getTotalServers() == 0 && targetServer == null) {

@@ -30,8 +30,8 @@ public class PlayerData {
 			}
 
 //			System.out.println(document.get("stats." + value.fireStore));
-
-			dataMap.put(value, document.getDouble("stats." + value.fireStore));
+			String field = value == Leaderboard.GOLD ? value.fireStore : "stats." + value.fireStore;
+			dataMap.put(value, document.getDouble(field));
 		}
 
 		PlayerData remove = null;
