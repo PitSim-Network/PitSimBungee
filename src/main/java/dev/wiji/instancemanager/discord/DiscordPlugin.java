@@ -21,7 +21,7 @@ public class DiscordPlugin {
 
 		DiscordManager.registerCommand(new PingCommand());
 		new InGameNitro();
-//		DiscordManager.registerCommand(new VerifyCommand());
+		DiscordManager.registerCommand(new VerifyCommand());
 	}
 
 	public static void onDisable() {
