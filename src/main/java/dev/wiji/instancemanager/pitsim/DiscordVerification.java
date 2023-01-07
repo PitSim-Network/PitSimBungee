@@ -78,19 +78,20 @@ public class DiscordVerification {
 	public static boolean unverifyDiscord(long discordID) {
 		Connection connection = getConnection();
 		assert connection != null;
+		boolean mod = false;
 
 		try {
-			String sql = "DELETE FROM " + DISCORD_TABLE + " WHERE discord_id = ?";
-			PreparedStatement stmt = connection.prepareStatement(sql);
-			stmt.setLong(1, discordID);
-			stmt.execute();
-
-
 			String confirm = "SELECT uuid FROM " + DISCORD_TABLE + " WHERE discord_id = ?";
 			PreparedStatement confirmStmt = connection.prepareStatement(confirm);
 			confirmStmt.setLong(1, discordID);
 			ResultSet rs = confirmStmt.executeQuery();
-			return rs.next();
+			mod = rs.next();
+			System.out.println("Was verified: " + mod);
+
+			String sql = "DELETE FROM " + DISCORD_TABLE + " WHERE discord_id = ?";
+			PreparedStatement stmt = connection.prepareStatement(sql);
+			stmt.setLong(1, discordID);
+			stmt.execute();
 
 		} catch(SQLException e) {
 			e.printStackTrace();
@@ -102,7 +103,7 @@ public class DiscordVerification {
 			throw new RuntimeException(e);
 		}
 
-		return false;
+		return mod;
 	}
 
 	public static void createTable(Connection connection) throws SQLException, ClassNotFoundException {
