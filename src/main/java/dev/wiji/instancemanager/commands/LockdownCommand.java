@@ -15,6 +15,7 @@ public class LockdownCommand extends Command {
 	public void execute(CommandSender sender, String[] args) {
 		if(!(sender instanceof ProxiedPlayer)) return;
 		ProxiedPlayer player = (ProxiedPlayer) sender;
+		if(!player.hasPermission("pitsim.admin")) return;
 
 		if(args.length < 1) {
 			AOutput.color(player, "&c&lLOCKDOWN! &7Verification currently " + getText(LockdownManager.verificationRequired()));
