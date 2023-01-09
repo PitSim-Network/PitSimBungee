@@ -45,6 +45,17 @@ public class CrossServerMessageManager implements Listener {
 				pluginMessage.addServer(server.getServerInfo());
 			}
 			pluginMessage.send();
+		} else if(strings.get(0).equals("JUDGEMENT")) {
+			String serverName = strings.get(1);
+			String playerUUID = strings.get(2);
+			PluginMessage pluginMessage = new PluginMessage()
+					.writeString(strings.get(0))
+					.writeString(playerUUID);
+			for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+				if(!server.status.isOnline() || server.getServerInfo().getName().equals(serverName)) continue;
+				pluginMessage.addServer(server.getServerInfo());
+			}
+			pluginMessage.send();
 		} else if(strings.get(0).equals("BROADCAST")) {
 			BroadcastCommand.broadcast(strings.get(1));
 		}
