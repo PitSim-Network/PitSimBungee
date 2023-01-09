@@ -104,6 +104,10 @@ public class DarkzoneServerManager {
 			return false;
 		}
 
+		if(!LockdownManager.canJoin(player)) {
+			return false;
+		}
+
 		if(MainGamemodeServer.cooldownPlayers.containsKey(player.getUniqueId())) {
 			long time = MainGamemodeServer.cooldownPlayers.get(player.getUniqueId());
 

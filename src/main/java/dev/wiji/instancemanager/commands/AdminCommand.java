@@ -39,12 +39,12 @@ public class AdminCommand extends Command {
 		if(args.length < 1) {
 			new MessageBuilder(
 					"&4&m--------------------&4<&c&lADMIN&4>&m--------------------",
-					"&4 * &c/admin gui &7(displays all players and servers in a menu)",
 					"&4 * &c/admin status &7(displays the status of the servers)",
 					"&4 * &c/admin shutdown &7(shuts down the player's current server)",
 					"&4 * &c/admin startnetwork &7(starts up the network)",
 					"&4 * &c/admin stopnetwork &7(shuts down the network)",
 					"&4 * &c/admin killnetwork &7(shuts down the network immediately)",
+					"&4 * &c/admin gui &7(displays all players and servers in a menu)",
 					"&4 * &c/admin suspend [server-name] [kick-players?] &7(maintenance mode)",
 					"&4 * &c/admin edit &7(editing playerdata)",
 					"&4 * &c/admin connections &7(first connection stats by host)",
