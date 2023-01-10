@@ -5,6 +5,7 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.discord.Constants;
 import dev.wiji.instancemanager.discord.DiscordManager;
+import dev.wiji.instancemanager.misc.CustomSerializer;
 import dev.wiji.instancemanager.misc.Misc;
 import dev.wiji.instancemanager.storage.StorageProfile;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -14,7 +15,6 @@ import net.luckperms.api.node.matcher.NodeMatcher;
 import net.md_5.bungee.api.plugin.Listener;
 import net.minecraft.server.v1_8_R3.MojangsonParseException;
 import net.minecraft.server.v1_8_R3.MojangsonParser;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
@@ -78,18 +78,18 @@ public class DupeManager implements Listener {
 				if(storageProfile == null) continue;
 				UUID playerUUID = UUID.fromString(fileArray[i].getName().split("\\.")[0]);
 
-				Map<LimitedItemStack, ItemLocation> playerItemMap = new HashMap<>();
+				Map<CustomSerializer.LimitedItemStack, ItemLocation> playerItemMap = new HashMap<>();
 				for(int j = 0; j < storageProfile.getInventoryStrings().length; j++) {
 					String itemString = storageProfile.getInventoryStrings()[j];
 					if(itemString == null || itemString.isEmpty()) continue;
-					LimitedItemStack itemStack = deserialize(itemString);
+					CustomSerializer.LimitedItemStack itemStack = CustomSerializer.deserialize(itemString);
 					if(itemStack.nbtData == null) continue;
 					playerItemMap.put(itemStack, new ItemLocation.InventoryLocation(j + 1));
 				}
 				for(int j = 0; j < storageProfile.getArmor().length; j++) {
 					String itemString = storageProfile.getArmor()[j];
 					if(itemString == null || itemString.isEmpty()) continue;
-					LimitedItemStack itemStack = deserialize(itemString);
+					CustomSerializer.LimitedItemStack itemStack = CustomSerializer.deserialize(itemString);
 					if(itemStack.nbtData == null) continue;
 					playerItemMap.put(itemStack, new ItemLocation.ArmorLocation(j));
 				}
@@ -97,14 +97,14 @@ public class DupeManager implements Listener {
 					for(int k = 0; k < storageProfile.getEnderchest()[j].length; k++) {
 						String itemString = storageProfile.getEnderchest()[j][k];
 						if(itemString == null || itemString.isEmpty()) continue;
-						LimitedItemStack itemStack = deserialize(itemString);
+						CustomSerializer.LimitedItemStack itemStack = CustomSerializer.deserialize(itemString);
 						if(itemStack.nbtData == null) continue;
 						playerItemMap.put(itemStack, new ItemLocation.EnderchestLocation(j + 1, k + 1));
 					}
 				}
 
-				for(Map.Entry<LimitedItemStack, ItemLocation> entry : playerItemMap.entrySet()) {
-					LimitedItemStack itemStack = entry.getKey();
+				for(Map.Entry<CustomSerializer.LimitedItemStack, ItemLocation> entry : playerItemMap.entrySet()) {
+					CustomSerializer.LimitedItemStack itemStack = entry.getKey();
 
 					trackMiscItem(playerUUID, itemStack);
 
@@ -273,7 +273,7 @@ public class DupeManager implements Listener {
 		throw new RuntimeException();
 	}
 
-	public static void trackMiscItem(UUID uuid, LimitedItemStack itemStack) {
+	public static void trackMiscItem(UUID uuid, CustomSerializer.LimitedItemStack itemStack) {
 		if(itemStack.nbtData.hasKey(NBTTag.IS_FEATHER.getRef())) {
 			Map<UUID, Integer> trackMap = getTrack("feathers").itemMap;
 			trackMap.put(uuid, trackMap.getOrDefault(uuid, 0) + itemStack.amount);
@@ -303,11 +303,6 @@ public class DupeManager implements Listener {
 		return null;
 	}
 
-	public static LimitedItemStack deserialize(String p) {
-		String[] a = p.split("\t");
-		return new LimitedItemStack(a[0], a[1], a[2], a[3], a[6]);
-	}
-
 	public static String getPlayerName(UUID uuid) {
 		String name = BungeeMain.getName(uuid, false);
 		return name == null ? uuid.toString() : name;
@@ -316,11 +311,11 @@ public class DupeManager implements Listener {
 	public static class TrackedItem {
 		public UUID playerUUID;
 		public UUID itemUUID;
-		public LimitedItemStack itemStack;
+		public CustomSerializer.LimitedItemStack itemStack;
 		public ItemLocation itemLocation;
 		public List<UUID> sharedWith = new ArrayList<>();
 
-		public TrackedItem(UUID playerUUID, LimitedItemStack itemStack, ItemLocation itemLocation) {
+		public TrackedItem(UUID playerUUID, CustomSerializer.LimitedItemStack itemStack, ItemLocation itemLocation) {
 			this.playerUUID = playerUUID;
 			this.itemStack = itemStack;
 			try {
@@ -351,21 +346,4 @@ public class DupeManager implements Listener {
 		}
 	}
 
-	public static class LimitedItemStack {
-		public Material material;
-		public int amount;
-		public short data;
-		public String displayName;
-		public NBTTagCompound nbtData;
-
-		public LimitedItemStack(String material, String amount, String data, String displayName, String nbtData) {
-			this.material = Material.getMaterial(material);
-			this.amount = Integer.parseInt(amount);
-			this.data = Short.parseShort(data);
-			this.displayName = displayName;
-			try {
-				this.nbtData = MojangsonParser.parse(nbtData);
-			} catch(MojangsonParseException ignored) {}
-		}
-	}
 }
