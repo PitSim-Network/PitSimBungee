@@ -12,26 +12,54 @@ public class MarketListing {
 	private UUID ownerUUID;
 	private long creationTime;
 
-	private ListingType type;
-
 	private Map<UUID, Integer> bidMap;
-	private int startingBid;
+	private String ItemData;
 
-	private int binPrice;
+	//Auction Data; -1 = Auction disabled
+	private int startingBid = -1;
+	//Bin Data; -1 = Bin disabled
+	private int binPrice = -1;
+	//Weather or not multiple items are being sold; Auction mode disabled by default if true
+	private boolean stackBin;
 
-	public MarketListing(UUID ownerUUID, ListingType type, int startingBid, int binPrice) {
+	private transient AuctionStatus status;
+
+	public MarketListing(UUID ownerUUID, String itemData, int startingBid, int binPrice, boolean stackBin) {
 		this.ownerUUID = ownerUUID;
-		this.type = type;
 		this.startingBid = startingBid;
 		this.binPrice = binPrice;
+		this.stackBin = stackBin;
 
 		this.auctionUUID = UUID.randomUUID();
 		this.creationTime = System.currentTimeMillis();
 		this.bidMap = new HashMap<>();
+		status = AuctionStatus.ACTIVE;
 	}
 
 	public MarketListing() {
 
+	}
+
+	public void end(boolean bin) {
+		status = AuctionStatus.ENDED;
+	}
+
+	public void placeBid(UUID playerUUID, int bidAmount) {
+		if(startingBid == -1 || status == AuctionStatus.ENDED) {
+			MarketManager.sendFailure(playerUUID, this);
+			return;
+		}
+
+
+	}
+
+	public void bin(int amount) {
+		if(stackBin) {
+
+		} else {
+
+			end(false);
+		}
 	}
 
 	public void save() {
@@ -57,8 +85,8 @@ public class MarketListing {
 		return creationTime;
 	}
 
-	public ListingType getType() {
-		return type;
+	public boolean isStackBin() {
+		return stackBin;
 	}
 
 	public Map<UUID, Integer> getBidMap() {
@@ -72,11 +100,14 @@ public class MarketListing {
 	public int getBinPrice() {
 		return binPrice;
 	}
+
+	public AuctionStatus getStatus() {
+		return status;
+	}
+
+	public enum AuctionStatus {
+		ACTIVE,
+		ENDED;
+	}
 }
 
-enum ListingType {
-	BIN,
-	AUCTION,
-	BIN_AUCTION,
-	STACK_BIN;
-}

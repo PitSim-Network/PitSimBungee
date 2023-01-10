@@ -9,6 +9,7 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class MarketManager {
 
@@ -26,5 +27,9 @@ public class MarketManager {
 
 	public static File getListingFile(MarketListing listing) {
 		return new File("market/" + listing.getUUID() + ".json");
+	}
+
+	public static void sendFailure(UUID playerUUID, MarketListing listing) {
+
 	}
 }
