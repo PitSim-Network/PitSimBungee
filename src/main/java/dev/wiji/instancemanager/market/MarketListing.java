@@ -1,18 +1,25 @@
 package dev.wiji.instancemanager.market;
 
+import dev.wiji.instancemanager.misc.Base64;
 import dev.wiji.instancemanager.misc.CustomSerializer;
+import dev.wiji.instancemanager.objects.DarkzoneServer;
+import dev.wiji.instancemanager.objects.PluginMessage;
+import dev.wiji.instancemanager.pitsim.DarkzoneServerManager;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class MarketListing {
+public class MarketListing implements Serializable {
 
-	private UUID auctionUUID;
+	private UUID marketUUID;
 	private UUID ownerUUID;
 	private long creationTime;
+
+	private long listingLength;
 
 	private Map<UUID, Integer> bidMap;
 	private String itemData;
@@ -22,41 +29,51 @@ public class MarketListing {
 	//Bin Data; -1 = Bin disabled
 	private int binPrice = -1;
 	//Weather or not multiple items are being sold; Auction mode disabled by default if true
-	private boolean stackBin;
+	private boolean stackBIN;
 
-	private transient AuctionStatus status;
+	private int claimableSouls = 0;
+	private boolean itemClaimed = false;
 
-	public MarketListing(UUID ownerUUID, String itemData, int startingBid, int binPrice, boolean stackBin) {
+	public MarketListing(UUID ownerUUID, String itemData, int startingBid, int binPrice, boolean stackBIN, long listingLength) {
 		this.ownerUUID = ownerUUID;
 		this.startingBid = startingBid;
 		this.binPrice = binPrice;
-		this.stackBin = stackBin;
-
-		this.auctionUUID = UUID.randomUUID();
+		this.stackBIN = stackBIN;
+		this.itemData = itemData;
+		this.listingLength = listingLength;
+		this.marketUUID = UUID.randomUUID();
 		this.creationTime = System.currentTimeMillis();
 		this.bidMap = new HashMap<>();
-		status = AuctionStatus.ACTIVE;
 	}
 
 	public MarketListing() {
 
 	}
 
-	public void end(boolean bin) {
-		status = AuctionStatus.ENDED;
-	}
-
 	public void placeBid(UUID playerUUID, int bidAmount) {
-		if(startingBid == -1 || status == AuctionStatus.ENDED) {
+		if(startingBid == -1 || isEnded() || bidAmount < getMinimumBid() || stackBIN) {
 			MarketManager.sendFailure(playerUUID, this);
 			return;
 		}
 
+		if(binPrice != -1 && bidAmount >= binPrice) {
+			bin(playerUUID, 1);
+			return;
+		}
 
+		bidMap.put(playerUUID, bidAmount);
+		MarketManager.sendSuccess(playerUUID, this);
+
+		update();
 	}
 
 	public void bin(UUID playerUUID, int amount) {
-		if(stackBin) {
+		if(binPrice == -1) {
+			MarketManager.sendFailure(playerUUID, this);
+			return;
+		}
+
+		if(stackBIN) {
 			CustomSerializer.LimitedItemStack stack = CustomSerializer.deserialize(itemData);
 			int stock = stack.amount;
 
@@ -69,13 +86,63 @@ public class MarketListing {
 			MarketManager.sendSuccess(playerUUID, this);
 			stack.amount = stock;
 			itemData = CustomSerializer.serialize(stack);
+			claimableSouls += (binPrice * amount);
 
-			if(stock == 0) {
-				end(false);
-			}
+			if(stock == 0) end();
+			else update();
+
 		} else {
-			end(false);
+			claimableSouls += binPrice;
+			MarketManager.sendSuccess(playerUUID, this);
+			end();
 		}
+	}
+
+	public void claimItem(UUID playerUUID) {
+		if(startingBid == -1 || !playerUUID.equals(getHighestBidder()) || !isEnded()) {
+			MarketManager.sendFailure(playerUUID, this);
+			return;
+		}
+
+		MarketManager.sendSuccess(playerUUID, this);
+	}
+
+	public void claimSouls(UUID playerUUID) {
+		if(!playerUUID.equals(ownerUUID) || claimableSouls == 0) {
+			MarketManager.sendFailure(playerUUID, this);
+			return;
+		}
+
+		MarketManager.sendSuccess(playerUUID, this);
+		claimableSouls = 0;
+
+		if(!stackBIN && itemClaimed) remove();
+	}
+
+	public void end() {
+		update();
+	}
+
+	public void remove() {
+		PluginMessage message = new PluginMessage().writeString("MARKET REMOVAL").writeString(marketUUID.toString());
+		for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
+			if(!darkzoneServer.status.isOnline()) continue;
+			message.addServer(darkzoneServer.getServerInfo());
+		}
+		message.send();
+
+		MarketManager.listings.remove(this);
+	}
+
+	public void update() {
+		PluginMessage message = new PluginMessage().writeString("MARKET UPDATE").writeString(marketUUID.toString());
+		message.writeString(Base64.serialize(this));
+		for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
+			if(!darkzoneServer.status.isOnline()) continue;
+			message.addServer(darkzoneServer.getServerInfo());
+		}
+		message.send();
+		save();
 	}
 
 	public void save() {
@@ -89,8 +156,37 @@ public class MarketListing {
 		}
 	}
 
+	public int getMinimumBid() {
+		if(startingBid == -1) return -1;
+		return Math.max(getHighestBid(), startingBid);
+	}
+
+	public int getHighestBid() {
+		int highest = 0;
+		for(Integer value : bidMap.values()) {
+			if(value > highest) highest = value;
+		}
+		return highest;
+	}
+
+	public UUID getHighestBidder() {
+		UUID bidder = null;
+		int highestValue = 0;
+		for(Map.Entry<UUID, Integer> entry : bidMap.entrySet()) {
+			if(entry.getValue() > highestValue) {
+				bidder = entry.getKey();
+				highestValue = entry.getValue();
+			}
+		}
+		return bidder;
+	}
+
+	public boolean isEnded() {
+		return creationTime + listingLength <= System.currentTimeMillis();
+	}
+
 	public UUID getUUID() {
-		return auctionUUID;
+		return marketUUID;
 	}
 
 	public UUID getOwnerUUID() {
@@ -101,8 +197,8 @@ public class MarketListing {
 		return creationTime;
 	}
 
-	public boolean isStackBin() {
-		return stackBin;
+	public boolean isStackBIN() {
+		return stackBIN;
 	}
 
 	public Map<UUID, Integer> getBidMap() {
@@ -117,13 +213,12 @@ public class MarketListing {
 		return binPrice;
 	}
 
-	public AuctionStatus getStatus() {
-		return status;
+	public int getClaimableSouls() {
+		return claimableSouls;
 	}
 
-	public enum AuctionStatus {
-		ACTIVE,
-		ENDED;
+	public boolean isItemClaimed() {
+		return itemClaimed;
 	}
 }
 
