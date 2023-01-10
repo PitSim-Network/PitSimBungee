@@ -32,4 +32,8 @@ public class MarketManager {
 	public static void sendFailure(UUID playerUUID, MarketListing listing) {
 
 	}
+
+	public static void sendSuccess(UUID playerUUID, MarketListing listing) {
+
+	}
 }

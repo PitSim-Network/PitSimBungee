@@ -1,5 +1,7 @@
 package dev.wiji.instancemanager.market;
 
+import dev.wiji.instancemanager.misc.CustomSerializer;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -13,7 +15,7 @@ public class MarketListing {
 	private long creationTime;
 
 	private Map<UUID, Integer> bidMap;
-	private String ItemData;
+	private String itemData;
 
 	//Auction Data; -1 = Auction disabled
 	private int startingBid = -1;
@@ -53,11 +55,25 @@ public class MarketListing {
 
 	}
 
-	public void bin(int amount) {
+	public void bin(UUID playerUUID, int amount) {
 		if(stackBin) {
+			CustomSerializer.LimitedItemStack stack = CustomSerializer.deserialize(itemData);
+			int stock = stack.amount;
 
+			if(amount > stock) {
+				MarketManager.sendFailure(playerUUID, this);
+				return;
+			}
+
+			stock-= amount;
+			MarketManager.sendSuccess(playerUUID, this);
+			stack.amount = stock;
+			itemData = CustomSerializer.serialize(stack);
+
+			if(stock == 0) {
+				end(false);
+			}
 		} else {
-
 			end(false);
 		}
 	}
