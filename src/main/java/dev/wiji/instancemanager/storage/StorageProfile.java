@@ -148,10 +148,10 @@ public class StorageProfile {
 			armor[i] = message.getStrings().get((i + totalIndex) + 36);
 		}
 
+		save();
+
 		PluginMessage response = new PluginMessage().writeString("SAVE CONFIRMATION").writeString(uuid.toString());
 		response.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
 		response.send();
-
-		save();
 	}
 }
