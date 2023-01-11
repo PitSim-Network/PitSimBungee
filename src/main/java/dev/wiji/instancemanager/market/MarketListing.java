@@ -105,7 +105,7 @@ public class MarketListing implements Serializable {
 	}
 
 	public void claimItem(UUID playerUUID) {
-		if(startingBid == -1 ||  !isExpired()) {
+		if(startingBid == -1 || !isExpired()) {
 			MarketManager.sendFailure(playerUUID, this);
 			return;
 		}

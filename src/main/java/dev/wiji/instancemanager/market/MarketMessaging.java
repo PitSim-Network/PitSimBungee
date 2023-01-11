@@ -60,5 +60,46 @@ public class MarketMessaging implements Listener {
 			listing.placeBid(player, bid);
 		}
 
+		if(strings.size() >= 3 && strings.get(0).equals("LISTING BIN")) {
+			UUID player = UUID.fromString(strings.get(1));
+			UUID listingID = UUID.fromString(strings.get(2));
+			int amount = ints.get(0);
+
+			MarketListing listing = MarketManager.getListing(listingID);
+			if(listing == null) {
+				MarketManager.sendFailure(player, listingID);
+				return;
+			}
+
+			listing.bin(player, amount);
+		}
+
+		if(strings.size() >= 3 && strings.get(0).equals("CLAIM LISTING ITEM")) {
+			UUID player = UUID.fromString(strings.get(1));
+			UUID listingID = UUID.fromString(strings.get(2));
+
+			MarketListing listing = MarketManager.getListing(listingID);
+			if(listing == null) {
+				MarketManager.sendFailure(player, listingID);
+				return;
+			}
+
+			listing.claimItem(player);
+		}
+
+		if(strings.size() >= 3 && strings.get(0).equals("CLAIM LISTING SOULS")) {
+			UUID player = UUID.fromString(strings.get(1));
+			UUID listingID = UUID.fromString(strings.get(2));
+
+			MarketListing listing = MarketManager.getListing(listingID);
+			if(listing == null) {
+				MarketManager.sendFailure(player, listingID);
+				return;
+			}
+
+			listing.claimSouls(player);
+		}
+
+
 	}
 }

@@ -2,6 +2,7 @@ package dev.wiji.instancemanager.market;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ProxyRunnable;
 
 import java.io.File;
@@ -26,7 +27,23 @@ public class MarketManager {
 		}).runAfterEvery(1, 1, TimeUnit.SECONDS);
 	}
 
-	public void loadListing(File file) {
+	public static void init() {
+		File folder = new File(BungeeMain.INSTANCE.getDataFolder() + "/market/");
+		File[] fileArray = folder.listFiles();
+
+		assert fileArray != null;
+		for(File file : fileArray) {
+			loadListing(file);
+		}
+	}
+
+	public static void shutdown() {
+		for(MarketListing listing : listings) {
+			listing.save();
+		}
+	}
+
+	public static void loadListing(File file) {
 		try {
 			Reader reader = Files.newBufferedReader(file.toPath());
 			listings.add(gson.fromJson(reader, MarketListing.class));
