@@ -34,6 +34,8 @@ public class MarketListing implements Serializable {
 	private int claimableSouls = 0;
 	private boolean itemClaimed = false;
 
+	private boolean outOfStock = false;
+
 	public MarketListing(UUID ownerUUID, String itemData, int startingBid, int binPrice, boolean stackBIN, long listingLength) {
 		this.ownerUUID = ownerUUID;
 		this.startingBid = startingBid;
@@ -51,7 +53,7 @@ public class MarketListing implements Serializable {
 	}
 
 	public void placeBid(UUID playerUUID, int bidAmount) {
-		if(startingBid == -1 || isEnded() || bidAmount < getMinimumBid() || stackBIN) {
+		if(startingBid == -1 || isExpired() || bidAmount < getMinimumBid() || stackBIN) {
 			MarketManager.sendFailure(playerUUID, this);
 			return;
 		}
@@ -88,23 +90,37 @@ public class MarketListing implements Serializable {
 			itemData = CustomSerializer.serialize(stack);
 			claimableSouls += (binPrice * amount);
 
-			if(stock == 0) end();
+			if(stock == 0) {
+				outOfStock = true;
+				end();
+			}
 			else update();
 
 		} else {
 			claimableSouls += binPrice;
+			outOfStock = true;
 			MarketManager.sendSuccess(playerUUID, this);
 			end();
 		}
 	}
 
 	public void claimItem(UUID playerUUID) {
-		if(startingBid == -1 || !playerUUID.equals(getHighestBidder()) || !isEnded()) {
+		if(startingBid == -1 ||  !isExpired()) {
 			MarketManager.sendFailure(playerUUID, this);
 			return;
 		}
 
-		MarketManager.sendSuccess(playerUUID, this);
+		if(playerUUID.equals(getHighestBidder()) ) {
+			MarketManager.sendSuccess(playerUUID, this);
+			itemClaimed = true;
+			return;
+		} else if(playerUUID.equals(ownerUUID)) {
+			MarketManager.sendSuccess(playerUUID, this);
+			itemClaimed = true;
+			return;
+		}
+
+		MarketManager.sendFailure(playerUUID, this);
 	}
 
 	public void claimSouls(UUID playerUUID) {
@@ -181,8 +197,16 @@ public class MarketListing implements Serializable {
 		return bidder;
 	}
 
-	public boolean isEnded() {
+	public boolean isExpired() {
 		return creationTime + listingLength <= System.currentTimeMillis();
+	}
+
+	public boolean isEnded() {
+		return isExpired() || outOfStock;
+	}
+
+	public boolean isOutOfStock() {
+		return outOfStock;
 	}
 
 	public UUID getUUID() {

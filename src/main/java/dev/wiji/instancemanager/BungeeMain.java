@@ -9,6 +9,7 @@ import dev.wiji.instancemanager.alogging.LogManager;
 import dev.wiji.instancemanager.commands.*;
 import dev.wiji.instancemanager.discord.DiscordPlugin;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
+import dev.wiji.instancemanager.market.MarketMessaging;
 import dev.wiji.instancemanager.pitsim.*;
 import dev.wiji.instancemanager.skywars.PitsimQuestManager;
 import dev.wiji.instancemanager.skywars.PluginMessageSender;
@@ -69,6 +70,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new PlayerManager());
 		getProxy().getPluginManager().registerListener(this, new PitsimQuestManager());
 		getProxy().getPluginManager().registerListener(this, new LockdownManager());
+		getProxy().getPluginManager().registerListener(this, new MarketMessaging());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new DupeManager());
 		ConfigManager.getMiniServerList();
 

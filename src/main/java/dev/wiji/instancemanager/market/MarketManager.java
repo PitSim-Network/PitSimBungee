@@ -21,7 +21,7 @@ public class MarketManager {
 	static {
 		((ProxyRunnable) () -> {
 			for(MarketListing listing : listings) {
-				if(listing.isEnded()) listing.end();
+				if(listing.isExpired()) listing.end();
 			}
 		}).runAfterEvery(1, 1, TimeUnit.SECONDS);
 	}
@@ -35,11 +35,22 @@ public class MarketManager {
 		}
 	}
 
+	public static MarketListing getListing(UUID uuid) {
+		for(MarketListing listing : listings) {
+			if(listing.getUUID().equals(uuid)) return listing;
+		}
+		return null;
+	}
+
 	public static File getListingFile(MarketListing listing) {
 		return new File("market/" + listing.getUUID() + ".json");
 	}
 
 	public static void sendFailure(UUID playerUUID, MarketListing listing) {
+
+	}
+
+	public static void sendFailure(UUID playerUUID, UUID listingID) {
 
 	}
 
