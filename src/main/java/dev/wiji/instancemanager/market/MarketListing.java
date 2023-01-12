@@ -3,6 +3,7 @@ package dev.wiji.instancemanager.market;
 import dev.wiji.instancemanager.misc.Base64;
 import dev.wiji.instancemanager.misc.CustomSerializer;
 import dev.wiji.instancemanager.objects.DarkzoneServer;
+import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.pitsim.DarkzoneServerManager;
 
@@ -73,6 +74,13 @@ public class MarketListing implements Serializable {
 		}
 
 		message.writeString(bidMapBuilder.toString());
+
+		for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
+			if(!darkzoneServer.status.isOnline()) continue;
+			message.addServer(darkzoneServer.getServerInfo());
+		}
+
+		message.send();
 
 		save();
 	}
