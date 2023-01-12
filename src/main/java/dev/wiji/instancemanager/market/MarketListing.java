@@ -34,6 +34,8 @@ public class MarketListing implements Serializable {
 	private int claimableSouls = 0;
 	private boolean itemClaimed = false;
 
+	private boolean hasEnded = false;
+
 	public MarketListing(UUID ownerUUID, String itemData, int startingBid, int binPrice, boolean stackBIN, long listingLength) {
 		this.ownerUUID = ownerUUID;
 		this.startingBid = startingBid;
@@ -59,7 +61,7 @@ public class MarketListing implements Serializable {
 		message.writeString(itemData);
 		message.writeLong(listingLength);
 		message.writeLong(creationTime);
-		
+
 		StringBuilder bidMapBuilder = new StringBuilder();
 
 		int i = 0;
@@ -76,7 +78,7 @@ public class MarketListing implements Serializable {
 	}
 
 	public void placeBid(UUID playerUUID, int bidAmount) {
-		if(startingBid == -1 || isEnded() || bidAmount < getMinimumBid() || stackBIN) {
+		if(startingBid == -1 || isExpired() || bidAmount < getMinimumBid() || stackBIN) {
 			MarketManager.sendFailure(playerUUID, this);
 			return;
 		}
@@ -124,13 +126,22 @@ public class MarketListing implements Serializable {
 	}
 
 	public void claimItem(UUID playerUUID) {
-		if(startingBid == -1 || !playerUUID.equals(getHighestBidder()) || !isEnded()) {
+		if(startingBid == -1 || !isExpired()) {
 			MarketManager.sendFailure(playerUUID, this);
 			return;
 		}
 
+		if(playerUUID.equals(getHighestBidder()) ) {
+			MarketManager.sendSuccess(playerUUID, this);
+			itemClaimed = true;
+			return;
+		} else if(playerUUID.equals(ownerUUID)) {
+			MarketManager.sendSuccess(playerUUID, this);
+			itemClaimed = true;
+			return;
+		}
 
-		MarketManager.sendSuccess(playerUUID, this);
+		MarketManager.sendFailure(playerUUID, this);
 	}
 
 	public void claimSouls(UUID playerUUID) {
@@ -146,6 +157,7 @@ public class MarketListing implements Serializable {
 	}
 
 	public void end() {
+		hasEnded = true;
 		update();
 	}
 
@@ -196,8 +208,12 @@ public class MarketListing implements Serializable {
 		return bidder;
 	}
 
-	public boolean isEnded() {
+	public boolean isExpired() {
 		return creationTime + listingLength <= System.currentTimeMillis();
+	}
+
+	public boolean isEnded() {
+		return hasEnded;
 	}
 
 	public UUID getUUID() {

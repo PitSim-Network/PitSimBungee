@@ -9,6 +9,8 @@ import dev.wiji.instancemanager.alogging.LogManager;
 import dev.wiji.instancemanager.commands.*;
 import dev.wiji.instancemanager.discord.DiscordPlugin;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
+import dev.wiji.instancemanager.market.MarketManager;
+import dev.wiji.instancemanager.market.MarketMessaging;
 import dev.wiji.instancemanager.pitsim.*;
 import dev.wiji.instancemanager.skywars.PitsimQuestManager;
 import dev.wiji.instancemanager.skywars.PluginMessageSender;
@@ -52,6 +54,7 @@ public class BungeeMain extends Plugin {
 		FirestoreManager.init();
 
 		DiscordPlugin.onEnable(this);
+		MarketManager.init();
 
 		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
 		getProxy().getPluginManager().registerListener(this, new PluginMessageManager());
@@ -69,6 +72,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new PlayerManager());
 		getProxy().getPluginManager().registerListener(this, new PitsimQuestManager());
 		getProxy().getPluginManager().registerListener(this, new LockdownManager());
+		getProxy().getPluginManager().registerListener(this, new MarketMessaging());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new DupeManager());
 		ConfigManager.getMiniServerList();
 
@@ -106,6 +110,7 @@ public class BungeeMain extends Plugin {
 		//make sure to unregister the registered channels in case of a reload
 		this.getProxy().unregisterChannel("BungeeCord");
 		ConfigManager.onDisable();
+		MarketManager.shutdown();
 
 		if(FirestoreManager.registration != null) {
 			FirestoreManager.registration.remove();
