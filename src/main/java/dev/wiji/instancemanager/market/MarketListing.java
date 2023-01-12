@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class MarketListing implements Serializable {
+	private static final long serialVersionUID = -6903933977591709194L;
 
 	private UUID marketUUID;
 	private UUID ownerUUID;
@@ -34,7 +35,7 @@ public class MarketListing implements Serializable {
 	private int claimableSouls = 0;
 	private boolean itemClaimed = false;
 
-	private boolean outOfStock = false;
+	private boolean hasEnded = false;
 
 	public MarketListing(UUID ownerUUID, String itemData, int startingBid, int binPrice, boolean stackBIN, long listingLength) {
 		this.ownerUUID = ownerUUID;
@@ -91,14 +92,12 @@ public class MarketListing implements Serializable {
 			claimableSouls += (binPrice * amount);
 
 			if(stock == 0) {
-				outOfStock = true;
 				end();
 			}
 			else update();
 
 		} else {
 			claimableSouls += binPrice;
-			outOfStock = true;
 			MarketManager.sendSuccess(playerUUID, this);
 			end();
 		}
@@ -136,6 +135,7 @@ public class MarketListing implements Serializable {
 	}
 
 	public void end() {
+		hasEnded = true;
 		update();
 	}
 
@@ -202,11 +202,7 @@ public class MarketListing implements Serializable {
 	}
 
 	public boolean isEnded() {
-		return isExpired() || outOfStock;
-	}
-
-	public boolean isOutOfStock() {
-		return outOfStock;
+		return hasEnded;
 	}
 
 	public UUID getUUID() {
