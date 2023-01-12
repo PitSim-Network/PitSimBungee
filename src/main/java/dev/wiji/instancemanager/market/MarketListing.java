@@ -50,6 +50,31 @@ public class MarketListing implements Serializable {
 
 	}
 
+	public void update() {
+		PluginMessage message = new PluginMessage().writeString("MARKET UPDATE").writeString(marketUUID.toString());
+		message.writeString(ownerUUID.toString());
+		message.writeInt(startingBid);
+		message.writeInt(binPrice);
+		message.writeBoolean(stackBIN);
+		message.writeString(itemData);
+		message.writeLong(listingLength);
+		message.writeLong(creationTime);
+		
+		StringBuilder bidMapBuilder = new StringBuilder();
+
+		int i = 0;
+		for(Map.Entry<UUID, Integer> entry : bidMap.entrySet()) {
+			bidMapBuilder.append(entry.getKey()).append(":").append(entry.getValue());
+			if(i < bidMap.size() - 1) bidMapBuilder.append(",");
+
+			i++;
+		}
+
+		message.writeString(bidMapBuilder.toString());
+
+		save();
+	}
+
 	public void placeBid(UUID playerUUID, int bidAmount) {
 		if(startingBid == -1 || isEnded() || bidAmount < getMinimumBid() || stackBIN) {
 			MarketManager.sendFailure(playerUUID, this);
@@ -104,6 +129,7 @@ public class MarketListing implements Serializable {
 			return;
 		}
 
+
 		MarketManager.sendSuccess(playerUUID, this);
 	}
 
@@ -132,17 +158,6 @@ public class MarketListing implements Serializable {
 		message.send();
 
 		MarketManager.listings.remove(this);
-	}
-
-	public void update() {
-		PluginMessage message = new PluginMessage().writeString("MARKET UPDATE").writeString(marketUUID.toString());
-		message.writeString(Base64.serialize(this));
-		for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
-			if(!darkzoneServer.status.isOnline()) continue;
-			message.addServer(darkzoneServer.getServerInfo());
-		}
-		message.send();
-		save();
 	}
 
 	public void save() {
