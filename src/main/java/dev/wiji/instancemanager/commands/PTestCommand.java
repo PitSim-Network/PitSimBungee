@@ -1,8 +1,5 @@
 package dev.wiji.instancemanager.commands;
 
-import dev.wiji.instancemanager.objects.MainGamemodeServer;
-import dev.wiji.instancemanager.pitsim.IdentificationManager;
-import dev.wiji.instancemanager.storage.StorageManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -14,10 +11,10 @@ public class PTestCommand extends Command {
 	}
 
 	@Override
-	public void execute(CommandSender commandSender, String[] strings) {
+	public void execute(CommandSender sender, String[] args) {
 
-		if(!(commandSender instanceof ProxiedPlayer)) return;
-		ProxiedPlayer player = (ProxiedPlayer) commandSender;
+		if(!(sender instanceof ProxiedPlayer)) return;
+		ProxiedPlayer player = (ProxiedPlayer) sender;
 		if(!player.hasPermission("pitsim.admin")) return;
 
 	}

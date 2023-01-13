@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 public class DupeManager implements Listener {
-	public static boolean running = false;
+	public static boolean isRunning = false;
 	public static List<TrackedItem> dupedItems = new ArrayList<>();
 	public static List<TrackedMiscItem> miscItems = new ArrayList<>();
 
@@ -48,9 +48,10 @@ public class DupeManager implements Listener {
 	}
 
 	public static void run() {
-		if(running) throw new RuntimeException();
-		running = true;
+		if(isRunning) throw new RuntimeException();
+		isRunning = true;
 		dupedItems.clear();
+		for(TrackedMiscItem miscItem : miscItems) miscItem.itemMap.clear();
 		new Thread(() -> {
 			Set<UUID> exemptPlayers;
 			try {
@@ -116,7 +117,7 @@ public class DupeManager implements Listener {
 				}
 			}
 			checkForDuplicates(trackedItems, exemptPlayers);
-			running = false;
+			isRunning = false;
 		}).start();
 	}
 
@@ -218,8 +219,8 @@ public class DupeManager implements Listener {
 
 			try {
 				miscItemWebhook.execute();
-			} catch(IOException e) {
-				e.printStackTrace();
+			} catch(IOException exception) {
+				exception.printStackTrace();
 			}
 		}
 

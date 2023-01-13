@@ -1,0 +1,41 @@
+package dev.wiji.instancemanager.commands;
+
+import dev.wiji.instancemanager.misc.AOutput;
+import dev.wiji.instancemanager.storage.dupe.DupeManager;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.plugin.Command;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class DupeCheckCommand extends Command {
+	public Map<CommandSender, Long> confirmationMap = new HashMap<>();
+
+	public DupeCheckCommand() {
+		super("dupecheck");
+	}
+
+	@Override
+	public void execute(CommandSender sender, String[] args) {
+		if(!sender.hasPermission("pitsim.admin")) return;
+
+		if(DupeManager.isRunning) {
+			AOutput.color(sender, "&c&lERROR!&7 The dupe detection system is already running");
+			return;
+		}
+
+		if(confirmationMap.getOrDefault(sender, 0L) + 20_000 < System.currentTimeMillis()) {
+			AOutput.color(sender, "&c&lCONFIRM!&7 Run '/dupecheck confirm' to start checking");
+			confirmationMap.put(sender, System.currentTimeMillis());
+			return;
+		}
+
+		if(args.length >= 1 && args[0].equalsIgnoreCase("confirm")) {
+			DupeManager.run();
+			AOutput.color(sender, "&9&lNOTE!&7 It is possible for this to false flag when players are online");
+			AOutput.color(sender, "&c&lERROR!&7 Started checking for duped items");
+		} else {
+			AOutput.color(sender, "&c&lCONFIRM!&7 Run '/dupecheck confirm' to start checking");
+		}
+	}
+}
