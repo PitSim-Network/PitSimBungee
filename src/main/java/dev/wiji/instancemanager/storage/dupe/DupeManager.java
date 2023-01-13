@@ -165,8 +165,7 @@ public class DupeManager implements Listener {
 			} else {
 				UUID previousUUID = dupedItems.get(i - 1).itemUUID;
 				if(!previousUUID.equals(dupedItem.itemUUID)) {
-					embedBuilder.setDescription("Item found " + timesFound + " time" + (timesFound == 1 ? "" : "s") + " " +
-							(players.size() == 1 ? "on 1 account" : "across " + players.size() + " accounts"));
+					setDescription(embedBuilder, players.size(), timesFound);
 					dupeEmbeds.add(embedBuilder.build());
 
 					embedBuilder = getNextEmbed(dupedItem);
@@ -179,6 +178,11 @@ public class DupeManager implements Listener {
 
 			embedBuilder.addField(ChatColor.stripColor(dupedItem.itemStack.displayName), getPlayerName(dupedItem.playerUUID) + "'s " +
 					dupedItem.itemLocation.getUnformattedLocation(), true);
+
+			if(i == dupedItems.size() - 1) {
+				setDescription(embedBuilder, players.size(), timesFound);
+				dupeEmbeds.add(embedBuilder.build());
+			}
 		}
 		new Thread(() -> {
 			while(!dupeEmbeds.isEmpty()) {
@@ -220,6 +224,11 @@ public class DupeManager implements Listener {
 		}
 
 		System.out.println("Results posted/queued");
+	}
+
+	public static void setDescription(EmbedBuilder embedBuilder, int players, int timesFound) {
+		embedBuilder.setDescription("Item found " + timesFound + " time" + (timesFound == 1 ? "" : "s") + " " +
+				(players == 1 ? "on 1 account" : "across " + players + " accounts"));
 	}
 
 	public static EmbedBuilder getNextEmbed(TrackedItem dupedItem) {
