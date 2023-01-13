@@ -60,6 +60,12 @@ public class MarketManager {
 		return null;
 	}
 
+	public static void updateAll() {
+		for(MarketListing listing : listings) {
+			listing.update();
+		}
+	}
+
 	public static File getListingFile(MarketListing listing) {
 		return new File(BungeeMain.INSTANCE.getDataFolder() + "/market/" + listing.getUUID() + ".json");
 	}

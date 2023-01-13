@@ -2,6 +2,7 @@ package dev.wiji.instancemanager.pitsim;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.events.MessageEvent;
+import dev.wiji.instancemanager.market.MarketManager;
 import dev.wiji.instancemanager.objects.*;
 import dev.wiji.instancemanager.storage.EditSessionManager;
 import net.md_5.bungee.api.ChatColor;
@@ -56,6 +57,7 @@ public class MessageListener implements Listener {
 						System.out.println("Server " + serverName + " is now running!");
 						server.status = ServerStatus.RUNNING;
 						server.setStartTime(System.currentTimeMillis());
+						MarketManager.updateAll();
 						break;
 					}
 				}
