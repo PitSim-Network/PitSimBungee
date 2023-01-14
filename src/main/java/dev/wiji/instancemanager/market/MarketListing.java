@@ -1,9 +1,7 @@
 package dev.wiji.instancemanager.market;
 
-import dev.wiji.instancemanager.misc.Base64;
 import dev.wiji.instancemanager.misc.CustomSerializer;
 import dev.wiji.instancemanager.objects.DarkzoneServer;
-import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.pitsim.DarkzoneServerManager;
 
@@ -62,6 +60,9 @@ public class MarketListing implements Serializable {
 		message.writeString(itemData);
 		message.writeLong(listingLength);
 		message.writeLong(creationTime);
+		message.writeInt(claimableSouls);
+		message.writeBoolean(itemClaimed);
+		message.writeBoolean(hasEnded);
 
 		StringBuilder bidMapBuilder = new StringBuilder();
 
@@ -134,19 +135,26 @@ public class MarketListing implements Serializable {
 	}
 
 	public void claimItem(UUID playerUUID) {
-		if(startingBid == -1 || !isExpired()) {
-			MarketManager.sendFailure(playerUUID, this);
-			return;
+
+		if(!playerUUID.equals(ownerUUID)) {
+			if(startingBid == -1 || !isExpired()) {
+				MarketManager.sendFailure(playerUUID, this);
+				return;
+			}
 		}
 
 		if(playerUUID.equals(getHighestBidder()) ) {
 			MarketManager.sendSuccess(playerUUID, this);
 			itemClaimed = true;
 			return;
-		} else if(playerUUID.equals(ownerUUID)) {
+		} else if(playerUUID.equals(ownerUUID) && isExpired()) {
 			MarketManager.sendSuccess(playerUUID, this);
 			itemClaimed = true;
 			return;
+		}
+
+		if(itemClaimed && claimableSouls == 0) {
+			remove();
 		}
 
 		MarketManager.sendFailure(playerUUID, this);

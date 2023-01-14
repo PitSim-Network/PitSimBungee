@@ -19,6 +19,7 @@ public class MarketMessaging implements Listener {
 		List<Long> longs = message.getLongs();
 
 		if(strings.size() >= 3 && strings.get(0).equals("CREATE LISTING")) {
+
 			UUID owner = UUID.fromString(strings.get(1));
 			String item = strings.get(2);
 			int startingBid = ints.get(0);
