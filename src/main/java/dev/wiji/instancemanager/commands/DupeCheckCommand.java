@@ -1,5 +1,6 @@
 package dev.wiji.instancemanager.commands;
 
+import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.storage.dupe.DupeManager;
 import net.md_5.bungee.api.CommandSender;
@@ -7,6 +8,7 @@ import net.md_5.bungee.api.plugin.Command;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class DupeCheckCommand extends Command {
 	public Map<CommandSender, Long> confirmationMap = new HashMap<>();
@@ -32,8 +34,9 @@ public class DupeCheckCommand extends Command {
 
 		if(args.length >= 1 && args[0].equalsIgnoreCase("confirm")) {
 			DupeManager.run();
-			AOutput.color(sender, "&9&lNOTE!&7 It is possible for this to false flag when players are online");
 			AOutput.color(sender, "&c&lERROR!&7 Started checking for duped items");
+			((ProxyRunnable) () -> AOutput.color(sender,
+					"&9&lNOTE!&7 It is possible for this to false flag when players are online")).runAfter(1, TimeUnit.SECONDS);
 		} else {
 			AOutput.color(sender, "&c&lCONFIRM!&7 Run '/dupecheck confirm' to start checking");
 		}
