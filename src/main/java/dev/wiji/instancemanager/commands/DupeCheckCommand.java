@@ -24,9 +24,9 @@ public class DupeCheckCommand extends Command {
 			return;
 		}
 
+		if(args.length >= 1 && !args[0].equalsIgnoreCase("confirm")) confirmationMap.put(sender, System.currentTimeMillis());
 		if(confirmationMap.getOrDefault(sender, 0L) + 20_000 < System.currentTimeMillis()) {
 			AOutput.color(sender, "&c&lCONFIRM!&7 Run '/dupecheck confirm' to start checking");
-			confirmationMap.put(sender, System.currentTimeMillis());
 			return;
 		}
 
