@@ -123,6 +123,7 @@ public class StorageProfile {
 			MainGamemodeServer mainGamemodeServer = MainGamemodeServer.getServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
 			if(mainGamemodeServer == null) {
 				//TODO: Critical Error
+				System.out.println("CRITICAL ERROR WITH PLAYER " + uuid);
 				return;
 			}
 
