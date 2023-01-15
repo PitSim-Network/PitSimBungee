@@ -1,9 +1,11 @@
 package dev.wiji.instancemanager.market;
 
+import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.misc.CustomSerializer;
 import dev.wiji.instancemanager.objects.DarkzoneServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.pitsim.DarkzoneServerManager;
+import net.luckperms.api.model.user.User;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,6 +13,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 public class MarketListing implements Serializable {
 
@@ -63,6 +66,7 @@ public class MarketListing implements Serializable {
 		message.writeInt(claimableSouls);
 		message.writeBoolean(itemClaimed);
 		message.writeBoolean(hasEnded);
+		message.writeString(getDisplayName(ownerUUID));
 
 		StringBuilder bidMapBuilder = new StringBuilder();
 
@@ -73,8 +77,19 @@ public class MarketListing implements Serializable {
 
 			i++;
 		}
-
 		message.writeString(bidMapBuilder.toString());
+
+		StringBuilder builder = new StringBuilder();
+		int j = 0;
+		for(UUID uuid : bidMap.keySet()) {
+			builder.append(uuid.toString() + ":" + getDisplayName(uuid));
+			if(j < bidMap.size() - 1) bidMapBuilder.append(",");
+
+			j++;
+		}
+		message.writeString(builder.toString());
+
+
 
 		for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
 			if(!darkzoneServer.status.isOnline()) continue;
@@ -222,6 +237,17 @@ public class MarketListing implements Serializable {
 			}
 		}
 		return bidder;
+	}
+
+	public String getDisplayName(UUID player) {
+		User user;
+		try {
+			user = BungeeMain.LUCKPERMS.getUserManager().loadUser(player).get();
+			return user.getCachedData().getMetaData().getPrefix() + BungeeMain.getName(ownerUUID, false);
+		} catch(InterruptedException | ExecutionException exception) {
+			exception.printStackTrace();
+			return "&cERROR";
+		}
 	}
 
 	public boolean isExpired() {
