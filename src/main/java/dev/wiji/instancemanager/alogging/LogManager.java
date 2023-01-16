@@ -9,6 +9,7 @@ import dev.wiji.instancemanager.guilds.events.GuildChatEvent;
 import dev.wiji.instancemanager.guilds.events.GuildCreateEvent;
 import dev.wiji.instancemanager.misc.Misc;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -42,9 +43,11 @@ public class LogManager implements Listener {
 		ProxiedPlayer player = (ProxiedPlayer) event.getSender();
 
 		if(!event.isCommand()) {
-			if(!ConfigManager.isDev()) {
-				String message = event.getMessage().replaceAll("`", "");
-				logChatToDiscord("```[" + player.getServer().getInfo().getName() + "] " + player.getName() + " >> " + message + "```");
+			if(!ConfigManager.isDev() && !event.isCancelled()) {
+				String message = ChatColor.stripColor(event.getMessage()).replaceAll("`", "");
+				SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+				logChatToDiscord("```" + dateFormat.format(new Date()) + " [" + player.getServer().getInfo().getName() + "] " +
+						player.getName() + " >> " + message + "```");
 			}
 			return;
 		}
