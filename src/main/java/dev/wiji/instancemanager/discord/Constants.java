@@ -3,6 +3,7 @@ package dev.wiji.instancemanager.discord;
 public class Constants {
 	public static final long MAIN_GUILD_ROLE_ID = 841352044266651718L;
 	public static final long VERIFICATION_LOG_CHANNEL = 912620412800729089L;
+	public static final long INGAME_CHAT_CHANNEL = 1064666850383892550L;
 	public static final long NITRO_ROLE_ID = 844667047459291157L;
 
 	//	Private Server

@@ -1,10 +1,14 @@
 package dev.wiji.instancemanager.alogging;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ConfigManager;
+import dev.wiji.instancemanager.discord.Constants;
+import dev.wiji.instancemanager.discord.DiscordManager;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.guilds.events.GuildChatEvent;
 import dev.wiji.instancemanager.guilds.events.GuildCreateEvent;
 import dev.wiji.instancemanager.misc.Misc;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -34,8 +38,16 @@ public class LogManager implements Listener {
 
 	@EventHandler
 	public void onCommandSend(ChatEvent event) {
-		if(!(event.getSender() instanceof ProxiedPlayer) || !event.isCommand()) return;
+		if(!(event.getSender() instanceof ProxiedPlayer)) return;
 		ProxiedPlayer player = (ProxiedPlayer) event.getSender();
+
+		if(!event.isCommand()) {
+			if(!ConfigManager.isDev()) {
+				String message = event.getMessage().replaceAll("`", "");
+				logChatToDiscord("```[" + player.getServer().getInfo().getName() + "] " + player.getName() + " >> " + message + "```");
+			}
+			return;
+		}
 
 		String message = player.getName() + " executed ";
 		if(event.isCancelled()) message += "(cancelled) ";
@@ -75,5 +87,11 @@ public class LogManager implements Listener {
 		Date date = Misc.convertToEST(new Date());
 		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 		logMessage(logType, null, "[" + dateFormat.format(date) + "][proxy][" + logType + "]: " + logMessage, date);
+	}
+
+	public static void logChatToDiscord(String logMessage) {
+		TextChannel textChannel = DiscordManager.MAIN_GUILD.getTextChannelById(Constants.INGAME_CHAT_CHANNEL);
+		assert textChannel != null;
+		textChannel.sendMessage(logMessage).queue();
 	}
 }
