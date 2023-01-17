@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.objects.PluginMessage;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,17 +73,30 @@ public class MarketManager {
 	}
 
 	public static void sendFailure(UUID playerUUID, MarketListing listing) {
+		ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(playerUUID);
+		if(player == null) return;
+
 		PluginMessage message = new PluginMessage().writeString("MARKET ASYNC").writeString(playerUUID.toString());
-		message.writeString(listing.getUUID().toString()).writeBoolean(false).send();
+		message.writeString(listing.getUUID().toString()).writeBoolean(false);
+		message.addServer(player.getServer().getInfo()).send();
 	}
 
 	public static void sendFailure(UUID playerUUID, UUID listingID) {
+		ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(playerUUID);
+		if(player == null) return;
+
 		PluginMessage message = new PluginMessage().writeString("MARKET ASYNC").writeString(playerUUID.toString());
-		message.writeString(listingID.toString()).writeBoolean(false).send();
+
+		message.writeString(listingID.toString()).writeBoolean(false);
+		message.addServer(player.getServer().getInfo()).send();
 	}
 
 	public static void sendSuccess(UUID playerUUID, MarketListing listing) {
+		ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(playerUUID);
+		if(player == null) return;
+
 		PluginMessage message = new PluginMessage().writeString("MARKET ASYNC").writeString(playerUUID.toString());
-		message.writeString(listing.getUUID().toString()).writeBoolean(true).send();
+		message.writeString(listing.getUUID().toString()).writeBoolean(true);
+		message.addServer(player.getServer().getInfo()).send();
 	}
 }
