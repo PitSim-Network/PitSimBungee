@@ -216,7 +216,7 @@ public class MarketListing implements Serializable {
 
 	public int getMinimumBid() {
 		if(startingBid == -1) return -1;
-		return Math.max(getHighestBid(), startingBid);
+		return (int) Math.max(getHighestBid() * 1.2, startingBid);
 	}
 
 	public int getHighestBid() {

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ProxyRunnable;
+import dev.wiji.instancemanager.objects.PluginMessage;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,14 +72,17 @@ public class MarketManager {
 	}
 
 	public static void sendFailure(UUID playerUUID, MarketListing listing) {
-
+		PluginMessage message = new PluginMessage().writeString("MARKET ASYNC").writeString(playerUUID.toString());
+		message.writeString(listing.getUUID().toString()).writeBoolean(false).send();
 	}
 
 	public static void sendFailure(UUID playerUUID, UUID listingID) {
-
+		PluginMessage message = new PluginMessage().writeString("MARKET ASYNC").writeString(playerUUID.toString());
+		message.writeString(listingID.toString()).writeBoolean(false).send();
 	}
 
 	public static void sendSuccess(UUID playerUUID, MarketListing listing) {
-
+		PluginMessage message = new PluginMessage().writeString("MARKET ASYNC").writeString(playerUUID.toString());
+		message.writeString(listing.getUUID().toString()).writeBoolean(true).send();
 	}
 }
