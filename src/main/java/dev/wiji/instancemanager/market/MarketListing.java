@@ -37,6 +37,9 @@ public class MarketListing implements Serializable {
 	private boolean itemClaimed = false;
 
 	private boolean hasEnded = false;
+	private int originalStock;
+	private UUID buyer = null;
+	private String buyerDisplayName = "&cNONE";
 
 	public MarketListing(UUID ownerUUID, String itemData, int startingBid, int binPrice, boolean stackBIN, long listingLength) {
 		this.ownerUUID = ownerUUID;
@@ -48,6 +51,7 @@ public class MarketListing implements Serializable {
 		this.marketUUID = UUID.randomUUID();
 		this.creationTime = System.currentTimeMillis();
 		this.bidMap = new HashMap<>();
+		this.originalStock = stackBIN ? CustomSerializer.deserialize(itemData).amount : 1;
 	}
 
 	public MarketListing() {
@@ -67,6 +71,8 @@ public class MarketListing implements Serializable {
 		message.writeBoolean(itemClaimed);
 		message.writeBoolean(hasEnded);
 		message.writeString(getDisplayName(ownerUUID));
+		message.writeString(buyer == null ? "" : buyer.toString());
+		message.writeString(buyerDisplayName);
 
 		StringBuilder bidMapBuilder = new StringBuilder();
 
@@ -83,12 +89,13 @@ public class MarketListing implements Serializable {
 		int j = 0;
 		for(UUID uuid : bidMap.keySet()) {
 			builder.append(uuid.toString() + ":" + getDisplayName(uuid));
+
 			if(j < bidMap.size() - 1) bidMapBuilder.append(",");
 
 			j++;
 		}
 		message.writeString(builder.toString());
-
+		message.writeInt(originalStock);
 
 
 		for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
@@ -115,6 +122,10 @@ public class MarketListing implements Serializable {
 		bidMap.put(playerUUID, bidAmount);
 		MarketManager.sendSuccess(playerUUID, this);
 
+		buyer = playerUUID;
+		buyerDisplayName = getDisplayName(playerUUID);
+		claimableSouls = bidAmount;
+
 		update();
 	}
 
@@ -139,17 +150,27 @@ public class MarketListing implements Serializable {
 			itemData = CustomSerializer.serialize(stack);
 			claimableSouls += (binPrice * amount);
 
-			if(stock == 0) end();
+			if(stock == 0) {
+				itemClaimed = true;
+				end();
+			}
 			else update();
 
 		} else {
 			claimableSouls += binPrice;
+			itemClaimed = true;
+			buyer = playerUUID;
+			buyerDisplayName = getDisplayName(playerUUID);
 			MarketManager.sendSuccess(playerUUID, this);
 			end();
 		}
 	}
 
 	public void claimItem(UUID playerUUID) {
+		if(itemClaimed) {
+			MarketManager.sendFailure(playerUUID, this);
+			return;
+		}
 
 		if(!playerUUID.equals(ownerUUID)) {
 			if(startingBid == -1 || !isExpired()) {
@@ -158,17 +179,19 @@ public class MarketListing implements Serializable {
 			}
 		}
 
-		if(playerUUID.equals(getHighestBidder()) ) {
+		if(getHighestBidder() != null && playerUUID.equals(getHighestBidder())) {
 			MarketManager.sendSuccess(playerUUID, this);
 			itemClaimed = true;
+			update();
 			return;
 		} else if(playerUUID.equals(ownerUUID) && isExpired()) {
 			MarketManager.sendSuccess(playerUUID, this);
 			itemClaimed = true;
+			update();
 			return;
 		}
 
-		if(itemClaimed && claimableSouls == 0) {
+		if(itemClaimed && claimableSouls == 0 && bidMap.isEmpty()) {
 			remove();
 		}
 
@@ -176,6 +199,19 @@ public class MarketListing implements Serializable {
 	}
 
 	public void claimSouls(UUID playerUUID) {
+
+		if(playerUUID.equals(buyer)) {
+			MarketManager.sendFailure(playerUUID, this);
+			return;
+		}
+
+		if(bidMap.containsKey(playerUUID)) {
+			bidMap.remove(playerUUID);
+			MarketManager.sendSuccess(playerUUID, this);
+			update();
+			return;
+		}
+
 		if(!playerUUID.equals(ownerUUID) || claimableSouls == 0) {
 			MarketManager.sendFailure(playerUUID, this);
 			return;
@@ -184,7 +220,8 @@ public class MarketListing implements Serializable {
 		MarketManager.sendSuccess(playerUUID, this);
 		claimableSouls = 0;
 
-		if(!stackBIN && itemClaimed) remove();
+		if(itemClaimed && bidMap.isEmpty()) remove();
+		else update();
 	}
 
 	public void end() {
@@ -243,7 +280,7 @@ public class MarketListing implements Serializable {
 		User user;
 		try {
 			user = BungeeMain.LUCKPERMS.getUserManager().loadUser(player).get();
-			return user.getCachedData().getMetaData().getPrefix() + BungeeMain.getName(ownerUUID, false);
+			return user.getCachedData().getMetaData().getPrefix() + BungeeMain.getName(player, false);
 		} catch(InterruptedException | ExecutionException exception) {
 			exception.printStackTrace();
 			return "&cERROR";
@@ -292,6 +329,14 @@ public class MarketListing implements Serializable {
 
 	public boolean isItemClaimed() {
 		return itemClaimed;
+	}
+
+	public String getItemData() {
+		return itemData;
+	}
+
+	public int getOriginalStock() {
+		return originalStock;
 	}
 }
 
