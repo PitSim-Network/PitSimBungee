@@ -78,6 +78,7 @@ public class MarketMessaging implements Listener {
 		}
 
 		if(strings.size() >= 3 && strings.get(0).equals("CLAIM LISTING ITEM")) {
+			System.out.println("Listing Claim!");
 			UUID player = UUID.fromString(strings.get(1));
 			UUID listingID = UUID.fromString(strings.get(2));
 

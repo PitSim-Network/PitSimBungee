@@ -169,12 +169,14 @@ public class MarketListing implements Serializable {
 	public void claimItem(UUID playerUUID) {
 		if(itemClaimed) {
 			MarketManager.sendFailure(playerUUID, this);
+			System.out.println("Failure 1");
 			return;
 		}
 
 		if(!playerUUID.equals(ownerUUID)) {
 			if(startingBid == -1 || !isExpired()) {
 				MarketManager.sendFailure(playerUUID, this);
+				System.out.println("Failure 2");
 				return;
 			}
 		}
@@ -183,19 +185,17 @@ public class MarketListing implements Serializable {
 			MarketManager.sendSuccess(playerUUID, this);
 			itemClaimed = true;
 			update();
-			return;
 		} else if(playerUUID.equals(ownerUUID) && isExpired()) {
 			MarketManager.sendSuccess(playerUUID, this);
 			itemClaimed = true;
 			update();
-			return;
 		}
 
-		if(itemClaimed && claimableSouls == 0 && bidMap.isEmpty()) {
+		if(itemClaimed && claimableSouls == 0 && bidMap.size() <= 1) {
 			remove();
 		}
 
-		MarketManager.sendFailure(playerUUID, this);
+		if(!itemClaimed) MarketManager.sendFailure(playerUUID, this);
 	}
 
 	public void claimSouls(UUID playerUUID) {
@@ -220,7 +220,7 @@ public class MarketListing implements Serializable {
 		MarketManager.sendSuccess(playerUUID, this);
 		claimableSouls = 0;
 
-		if(itemClaimed && bidMap.isEmpty()) remove();
+		if(itemClaimed && bidMap.size() <= 1) remove();
 		else update();
 	}
 
@@ -237,7 +237,10 @@ public class MarketListing implements Serializable {
 		}
 		message.send();
 
+
 		MarketManager.listings.remove(this);
+
+		MarketManager.getListingFile(this).delete();
 	}
 
 	public void save() {
