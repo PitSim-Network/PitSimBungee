@@ -122,6 +122,9 @@ public class MarketListing implements Serializable {
 		bidMap.put(playerUUID, bidAmount);
 		MarketManager.sendSuccess(playerUUID, this);
 
+		if(getTimeLeft() < 1000 * 60 * 2) setTime();
+		//TODO: Alert to old top bidder and owner
+
 		buyer = playerUUID;
 		buyerDisplayName = getDisplayName(playerUUID);
 		claimableSouls = bidAmount;
@@ -150,6 +153,8 @@ public class MarketListing implements Serializable {
 			itemData = CustomSerializer.serialize(stack);
 			claimableSouls += (binPrice * amount);
 
+			//TODO: Alert to owner
+
 			if(stock == 0) {
 				itemClaimed = true;
 				end();
@@ -161,6 +166,8 @@ public class MarketListing implements Serializable {
 			itemClaimed = true;
 			buyer = playerUUID;
 			buyerDisplayName = getDisplayName(playerUUID);
+
+			//TODO: Alert to owner
 			MarketManager.sendSuccess(playerUUID, this);
 			end();
 		}
@@ -265,6 +272,14 @@ public class MarketListing implements Serializable {
 			if(value > highest) highest = value;
 		}
 		return highest;
+	}
+
+	public long getTimeLeft() {
+		return System.currentTimeMillis() - (creationTime + listingLength);
+	}
+
+	public void setTime() {
+		this.listingLength += (1000 * 60 * 2) + getTimeLeft();
 	}
 
 	public UUID getHighestBidder() {

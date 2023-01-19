@@ -25,7 +25,10 @@ public class MarketManager {
 		((ProxyRunnable) () -> {
 			for(MarketListing listing : listings) {
 				if(listing.isEnded()) continue;
-				if(listing.isExpired()) listing.end();
+				if(listing.isExpired()) {
+					//TODO: Send message to owner, bidders, and winner
+					listing.end();
+				}
 			}
 		}).runAfterEvery(1, 1, TimeUnit.SECONDS);
 	}
