@@ -44,7 +44,7 @@ public class MarketMessaging implements Listener {
 			}
 
 			MarketManager.sendSuccess(owner, listing);
-			listing.remove();
+			listing.end();
 		}
 
 		if(strings.size() >= 2 && strings.get(0).equals("PLACE MARKET BID")) {
@@ -74,7 +74,7 @@ public class MarketMessaging implements Listener {
 				return;
 			}
 
-			listing.bin(player, amount);
+			listing.bin(player, amount, false);
 		}
 
 		if(strings.size() >= 3 && strings.get(0).equals("CLAIM LISTING ITEM")) {
@@ -84,6 +84,7 @@ public class MarketMessaging implements Listener {
 
 			MarketListing listing = MarketManager.getListing(listingID);
 			if(listing == null) {
+				System.out.println("Failure 0");
 				MarketManager.sendFailure(player, listingID);
 				return;
 			}

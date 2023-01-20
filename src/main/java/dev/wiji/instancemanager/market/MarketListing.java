@@ -114,16 +114,28 @@ public class MarketListing implements Serializable {
 			return;
 		}
 
+		String message = "&a&lMARKET " + getDisplayName(playerUUID) + " &7has placed a bid of &f" + bidAmount + " Souls on "
+				+ CustomSerializer.deserialize(itemData).displayName + "&7!";
+		if(getHighestBidder() != null) {
+			new MarketAlertManager.MarketAlert(getHighestBidder(), marketUUID, message);
+		}
+		MarketManager.replaceAlerts(ownerUUID, marketUUID, message);
+
+
+		if(getTimeLeft() < 1000 * 60 * 2) setTime();
+
+		bidMap.put(playerUUID, bidAmount);
+
 		if(binPrice != -1 && bidAmount >= binPrice) {
-			bin(playerUUID, 1);
+			bin(playerUUID, 1, true);
+
+			String binMessage = "&a&lMARKET &7Since your bid went above the listing's BIN price, you have won the auction!";
+			new MarketAlertManager.MarketAlert(playerUUID, marketUUID, binMessage);
+
 			return;
 		}
 
-		bidMap.put(playerUUID, bidAmount);
 		MarketManager.sendSuccess(playerUUID, this);
-
-		if(getTimeLeft() < 1000 * 60 * 2) setTime();
-		//TODO: Alert to old top bidder and owner
 
 		buyer = playerUUID;
 		buyerDisplayName = getDisplayName(playerUUID);
@@ -132,14 +144,16 @@ public class MarketListing implements Serializable {
 		update();
 	}
 
-	public void bin(UUID playerUUID, int amount) {
+	public void bin(UUID playerUUID, int amount, boolean holdItem) {
+
 		if(binPrice == -1) {
 			MarketManager.sendFailure(playerUUID, this);
 			return;
 		}
 
+		CustomSerializer.LimitedItemStack stack = CustomSerializer.deserialize(itemData);
+
 		if(stackBIN) {
-			CustomSerializer.LimitedItemStack stack = CustomSerializer.deserialize(itemData);
 			int stock = stack.amount;
 
 			if(amount > stock) {
@@ -153,6 +167,8 @@ public class MarketListing implements Serializable {
 			itemData = CustomSerializer.serialize(stack);
 			claimableSouls += (binPrice * amount);
 
+			String message = "&a&lMARKET " + getDisplayName(playerUUID) + " &7has purchased &8" + amount + "x " + stack.displayName + " &7for &f" + (binPrice * amount) + " Souls&7!";
+			new MarketAlertManager.MarketAlert(ownerUUID, marketUUID, message);
 			//TODO: Alert to owner
 
 			if(stock == 0) {
@@ -163,10 +179,13 @@ public class MarketListing implements Serializable {
 
 		} else {
 			claimableSouls += binPrice;
-			itemClaimed = true;
+			if(!holdItem) itemClaimed = true;
 			buyer = playerUUID;
 			buyerDisplayName = getDisplayName(playerUUID);
 
+
+			String message = "&a&lMARKET " + getDisplayName(playerUUID) + " &7has purchased " + stack.displayName + " &7for &f" + (binPrice) + " Souls&7!";
+			new MarketAlertManager.MarketAlert(ownerUUID, marketUUID, message);
 			//TODO: Alert to owner
 			MarketManager.sendSuccess(playerUUID, this);
 			end();
@@ -181,7 +200,7 @@ public class MarketListing implements Serializable {
 		}
 
 		if(!playerUUID.equals(ownerUUID)) {
-			if(startingBid == -1 || !isExpired()) {
+			if(startingBid == -1 || !hasEnded) {
 				MarketManager.sendFailure(playerUUID, this);
 				System.out.println("Failure 2");
 				return;
@@ -192,7 +211,7 @@ public class MarketListing implements Serializable {
 			MarketManager.sendSuccess(playerUUID, this);
 			itemClaimed = true;
 			update();
-		} else if(playerUUID.equals(ownerUUID) && isExpired()) {
+		} else if(playerUUID.equals(ownerUUID) && hasEnded) {
 			MarketManager.sendSuccess(playerUUID, this);
 			itemClaimed = true;
 			update();
@@ -203,6 +222,7 @@ public class MarketListing implements Serializable {
 		}
 
 		if(!itemClaimed) MarketManager.sendFailure(playerUUID, this);
+		System.out.println("Failure 3");
 	}
 
 	public void claimSouls(UUID playerUUID) {
@@ -232,6 +252,29 @@ public class MarketListing implements Serializable {
 	}
 
 	public void end() {
+
+		CustomSerializer.LimitedItemStack item = CustomSerializer.deserialize(itemData);
+
+		if(startingBid != -1 && isExpired()) {
+			if(getHighestBidder() != null) {
+				String message = "&a&lMARKET &7You won " + item.displayName + " &7for &f" + getHighestBid() + " Souls&7!";
+				MarketManager.replaceAlerts(getHighestBidder(), marketUUID, message);
+
+				String ownerMessage = "&a&lMARKET " + getDisplayName(getHighestBidder()) + " &7 Bought your " + item.displayName + " &7for &f" + getHighestBid() + " Souls&7!";
+				MarketManager.replaceAlerts(ownerUUID, marketUUID, ownerMessage);
+			} else {
+				String ownerMessage = "&a&lMARKET &7Your " + item.displayName + " &7has expired with no bids!";
+				MarketManager.replaceAlerts(ownerUUID, marketUUID, ownerMessage);
+			}
+		}
+
+		if(stackBIN) {
+
+			String ownerMessage = "&a&lMARKET &7Your listing for " + item.displayName + " &7has expired with &a" + item.amount + " Items &7remaining!";
+			new MarketAlertManager.MarketAlert(ownerUUID, marketUUID, ownerMessage);
+		}
+
+
 		hasEnded = true;
 		update();
 	}
