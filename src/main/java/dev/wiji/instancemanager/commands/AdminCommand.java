@@ -295,6 +295,11 @@ public class AdminCommand extends Command {
 		}
 
 		if(args[0].equalsIgnoreCase("connections") || args[0].equalsIgnoreCase("connect")) {
+			if(!player.hasPermission("pitsim.connections")) {
+				AOutput.error(player, "&cYou do not have permission to use this command!");
+				return;
+			}
+
 			if(args.length < 2) {
 				ConnectionManager.calculateTotalJoins();
 				AOutput.color(player, "&2&m---------------&2<&a&lPLAYER CONNECTIONS&2>&m---------------");
