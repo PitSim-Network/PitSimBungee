@@ -1,5 +1,6 @@
 package dev.wiji.instancemanager.discord;
 
+import dev.wiji.instancemanager.ConfigManager;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
@@ -27,6 +28,11 @@ public class DiscordManager implements EventListener {
 	public static Guild PRIVATE_GUILD;
 
 	public DiscordManager() {
+
+		if(ConfigManager.isDev()) {
+			System.out.println("Bot is disabled in dev mode!");
+			return;
+		}
 
 		System.out.println("Discord bot loading");
 		BUILDER = JDABuilder.createDefault("***REMOVED***");
