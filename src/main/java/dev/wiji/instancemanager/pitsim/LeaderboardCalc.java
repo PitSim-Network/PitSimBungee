@@ -92,6 +92,7 @@ public class LeaderboardCalc {
 	public static int getPosition(UUID uuid, Leaderboard leaderboard) {
 		List<PlayerData> leaderboardData = leaderboardPositions.get(leaderboard);
 		PlayerData playerData = PlayerData.getPlayerData(uuid);
+		if(playerData == null) return leaderboardData.size();
 		int position = -1;
 		for(int i = 0; i < leaderboardData.size(); i++) {
 			PlayerData testData = leaderboardData.get(i);
