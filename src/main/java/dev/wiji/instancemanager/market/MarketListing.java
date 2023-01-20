@@ -114,7 +114,7 @@ public class MarketListing implements Serializable {
 			return;
 		}
 
-		String message = "&a&lMARKET " + getDisplayName(playerUUID) + " &7has placed a bid of &f" + bidAmount + " Souls on "
+		String message = "&a&lMARKET " + getDisplayName(playerUUID) + " &7has the top bid of &f" + bidAmount + " Souls &7on "
 				+ CustomSerializer.deserialize(itemData).displayName + "&7!";
 		if(getHighestBidder() != null) {
 			new MarketAlertManager.MarketAlert(getHighestBidder(), marketUUID, message);
@@ -266,12 +266,12 @@ public class MarketListing implements Serializable {
 				String ownerMessage = "&a&lMARKET &7Your " + item.displayName + " &7has expired with no bids!";
 				MarketManager.replaceAlerts(ownerUUID, marketUUID, ownerMessage);
 			}
-		}
-
-		if(stackBIN) {
-
+		} else if(stackBIN) {
 			String ownerMessage = "&a&lMARKET &7Your listing for " + item.displayName + " &7has expired with &a" + item.amount + " Items &7remaining!";
 			new MarketAlertManager.MarketAlert(ownerUUID, marketUUID, ownerMessage);
+		} else {
+			String ownerMessage = "&a&lMARKET &7Your listing for " + item.displayName + " &7has expired!";
+			MarketManager.replaceAlerts(ownerUUID, marketUUID, ownerMessage);
 		}
 
 
