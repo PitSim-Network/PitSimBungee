@@ -53,7 +53,7 @@ public class BungeeMain extends Plugin {
 		STARTUP_TIME = System.currentTimeMillis();
 		FirestoreManager.init();
 
-		DiscordPlugin.onEnable(this);
+		if(!ConfigManager.isDev()) DiscordPlugin.onEnable(this);
 		MarketManager.init();
 
 		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());

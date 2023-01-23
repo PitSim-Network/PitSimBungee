@@ -90,10 +90,12 @@ public class MarketListing implements Serializable {
 		for(UUID uuid : bidMap.keySet()) {
 			builder.append(uuid.toString() + ":" + getDisplayName(uuid));
 
-			if(j < bidMap.size() - 1) bidMapBuilder.append(",");
+			if(j < bidMap.size() - 1) builder.append(",");
 
 			j++;
 		}
+		System.out.println(builder.toString());
+		System.out.println("------------------");
 		message.writeString(builder.toString());
 		message.writeInt(originalStock);
 
