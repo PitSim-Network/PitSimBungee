@@ -24,4 +24,15 @@ public class Misc {
 			return null;
 		}
 	}
+
+	public static String longToTimeFormatted (long time) {
+		long days = time / (24 * 60 * 60 * 1000);
+		time = time % (24 * 60 * 60 * 1000);
+		long hours = time / (60 * 60 * 1000);
+		time = time % (60 * 60 * 1000);
+		long minutes = time / (60 * 1000);
+		time = time % (60 * 1000);
+		long seconds = time / 1000;
+		return days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+	}
 }
