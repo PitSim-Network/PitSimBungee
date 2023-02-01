@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -150,10 +149,9 @@ public class DupeManager implements Listener {
 
 		TextChannel dupeChannel = DiscordManager.PRIVATE_GUILD.getTextChannelById(Constants.DUPE_CHANNEL);
 		assert dupeChannel != null;
-		SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		if(!dupedItems.isEmpty()) dupeChannel.sendMessage(".\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" +
 				(ConfigManager.isDev() ? "" : "@everyone ") + "Logging " + dupedItems.size() + " duped item" + (dupedItems.size() == 1 ? "" : "s") + " from " +
-				dateFormat.format(Misc.convertToEST(new Date()))).queue();
+				Misc.getCurrentDateFormatted()).queue();
 
 		List<MessageEmbed> dupeEmbeds = new ArrayList<>();
 		EmbedBuilder embedBuilder = null;

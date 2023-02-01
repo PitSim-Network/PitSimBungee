@@ -1,5 +1,6 @@
 package dev.wiji.instancemanager.alogging;
 
+import com.sun.scenario.effect.Offset;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.discord.Constants;
@@ -19,7 +20,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -45,8 +46,7 @@ public class LogManager implements Listener {
 		if(!event.isCommand()) {
 			if(!ConfigManager.isDev() && !event.isCancelled()) {
 				String message = ChatColor.stripColor(event.getMessage()).replaceAll("`", "");
-				SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
-				logChatToDiscord("```" + dateFormat.format(new Date()) + " [" + player.getServer().getInfo().getName() + "] " +
+				logChatToDiscord("```" + Misc.getCurrentDateFormatted() + " [" + player.getServer().getInfo().getName() + "] " +
 						player.getName() + " >> " + message + "```");
 			}
 			return;
@@ -66,12 +66,11 @@ public class LogManager implements Listener {
 			LogType logType = LogType.valueOf(strings.get(1));
 			String serverName = strings.get(2);
 			String logMessage = strings.get(3);
-			Date date = Misc.convertToEST(new Date(event.getMessage().getLongs().get(0)));
-			logMessage(logType, serverName, logMessage, date);
+			logMessage(logType, serverName, logMessage, Misc.getCurrentDate());
 		}
 	}
 
-	public static void logMessage(LogType logType, String serverName, String logMessage, Date date) {
+	public static void logMessage(LogType logType, String serverName, String logMessage, OffsetDateTime date) {
 		for(LogType.LogFile logFile : logType.logFiles) {
 			try {
 				String dir = BungeeMain.INSTANCE.getDataFolder() + logFile.getRelativePath(serverName, date);
@@ -87,9 +86,7 @@ public class LogManager implements Listener {
 	}
 
 	public static void logProxyMessage(LogType logType, String logMessage) {
-		Date date = Misc.convertToEST(new Date());
-		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-		logMessage(logType, null, "[" + dateFormat.format(date) + "][proxy][" + logType + "]: " + logMessage, date);
+		logMessage(logType, null, "[" + Misc.getCurrentDateFormatted() + "][proxy][" + logType + "]: " + logMessage, Misc.getCurrentDate());
 	}
 
 	public static void logChatToDiscord(String logMessage) {

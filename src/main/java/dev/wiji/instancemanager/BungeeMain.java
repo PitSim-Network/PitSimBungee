@@ -26,6 +26,7 @@ import septogeddon.pluginquery.api.QueryMessenger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -39,6 +40,7 @@ public class BungeeMain extends Plugin {
 			"VILPyBXQfdJUEJEd4HUUbvTKsyDfbVD8KjYTOk2DMmyPfxCD");
 
 	public static long STARTUP_TIME;
+	public static final ZoneId TIME_ZONE = ZoneId.of("America/New_York");
 
 	public static LuckPerms LUCKPERMS;
 
