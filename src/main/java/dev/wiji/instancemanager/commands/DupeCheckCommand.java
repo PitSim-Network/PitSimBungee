@@ -34,7 +34,7 @@ public class DupeCheckCommand extends Command {
 
 		if(args.length >= 1 && args[0].equalsIgnoreCase("confirm")) {
 			DupeManager.run();
-			AOutput.color(sender, "&c&lERROR!&7 Started checking for duped items");
+			AOutput.color(sender, "&c&lDUPECHECK!&7 Started checking for duped items");
 			((ProxyRunnable) () -> AOutput.color(sender,
 					"&9&lNOTE!&7 It is possible for this to false flag when players are online")).runAfter(1, TimeUnit.SECONDS);
 		} else {
