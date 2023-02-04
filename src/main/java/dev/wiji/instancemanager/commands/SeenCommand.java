@@ -41,10 +41,13 @@ public class SeenCommand extends Command {
 		} catch (IllegalArgumentException e) {
 			ProxiedPlayer targetPlayer = BungeeMain.INSTANCE.getProxy().getPlayer(args[0]);
 			if(targetPlayer == null) {
-				AOutput.error(player, "&cPlayer not found.");
-				return;
-			}
-			target = targetPlayer.getUniqueId();
+
+				UUID playerUUID = BungeeMain.getUUID(args[0], false);
+				if(playerUUID == null) {
+					AOutput.error(player, "&cPlayer not found.");
+					return;
+				} else target = playerUUID;
+			} else target = targetPlayer.getUniqueId();
 		}
 
 		ProxiedPlayer targetPlayer = BungeeMain.INSTANCE.getProxy().getPlayer(target);
@@ -67,7 +70,7 @@ public class SeenCommand extends Command {
 				String username = rs.getString("username");
 				long lastJoin = rs.getLong("last_join");
 
-				AOutput.color(player, "&c" + username + " &7was last seen &6" + Misc.longToTimeFormatted(lastJoin) + " &7ago.");
+				AOutput.color(player, "&c" + username + " &7was last seen &6" + Misc.longToTimeFormatted(System.currentTimeMillis() - lastJoin) + " &7ago.");
 			} else {
 				AOutput.error(player, "&cPlayer not found. (Try UUID?)");
 			}
