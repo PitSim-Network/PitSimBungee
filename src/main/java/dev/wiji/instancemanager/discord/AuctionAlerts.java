@@ -23,6 +23,6 @@ public class AuctionAlerts implements Listener {
 
 	public void alert(String message) {
 		TextChannel channel = Objects.requireNonNull(DiscordManager.JDA.getTextChannelById(Constants.AUCTION_CHANNEL));
-		channel.sendMessage(message);
+		channel.sendMessage(message).queue();
 	}
 }
