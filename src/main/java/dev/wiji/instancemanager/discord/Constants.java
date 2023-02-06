@@ -9,6 +9,7 @@ public class Constants {
 	//	Private Server
 	public static final long PRIVATE_GUILD_ROLE_ID = 915463500644614185L;
 	public static final long DUPE_CHANNEL = 933261330469756988L;
+	public static final long AUCTION_CHANNEL = 1072058878981845054L;
 
 	public static final long WIJI_REMEMBER_TO_PUSH_CHANNEL = 888950624434135060L;
 }

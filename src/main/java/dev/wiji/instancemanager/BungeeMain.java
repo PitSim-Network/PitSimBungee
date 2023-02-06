@@ -7,6 +7,7 @@ import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
 import dev.wiji.instancemanager.alogging.ConnectionManager;
 import dev.wiji.instancemanager.alogging.LogManager;
 import dev.wiji.instancemanager.commands.*;
+import dev.wiji.instancemanager.discord.AuctionAlerts;
 import dev.wiji.instancemanager.discord.DiscordPlugin;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
 import dev.wiji.instancemanager.pitsim.*;
@@ -71,6 +72,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new PlayerManager());
 		getProxy().getPluginManager().registerListener(this, new PitsimQuestManager());
 		getProxy().getPluginManager().registerListener(this, new LockdownManager());
+		getProxy().getPluginManager().registerListener(this, new AuctionAlerts());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new DupeManager());
 		ConfigManager.getMiniServerList();
 
