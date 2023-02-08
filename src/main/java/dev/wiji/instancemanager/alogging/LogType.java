@@ -59,7 +59,7 @@ public enum LogType {
 		}
 
 		public String getRelativePath(String serverName, OffsetDateTime date) {
-			DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
+			DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 			String path = "/logs/" + dateFormat.format(date);
 			if(this == SERVER) {
 				path += "/servers/" + serverName + ".log";

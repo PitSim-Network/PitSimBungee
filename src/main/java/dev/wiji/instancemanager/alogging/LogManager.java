@@ -1,6 +1,5 @@
 package dev.wiji.instancemanager.alogging;
 
-import com.sun.scenario.effect.Offset;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.discord.Constants;
@@ -21,7 +20,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.OffsetDateTime;
-import java.util.Date;
 import java.util.List;
 
 public class LogManager implements Listener {
