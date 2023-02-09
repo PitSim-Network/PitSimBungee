@@ -17,10 +17,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class RestartManager {
 	public static boolean proxyRestarting = false;
-	public static long RESTART_TIME = 21600000;
-	public static long RESTART_BUFFER = 1800000;
+	public static long RESTART_TIME = 1000 * 60 * 60 * 12;
+	public static long RESTART_BUFFER = 1000 * 60 * 30;
 
-	public static long PROXY_RESTART_TIME = 604800000;
+	public static long PROXY_RESTART_TIME = 1000 * 60 * 60 * 24 * 7;
 
 	static {
 		((ProxyRunnable) () -> {
