@@ -13,9 +13,9 @@ public class DiscordVerification {
 	public static Connection getConnection() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			String dbUrl = "jdbc:mysql://sql.pitsim.net:3306/s1_PlayerData";
-			String username = "u1_tNdewbWGuJ";
-			String password = "xH@ngjlP8imF@PY8pP@psvRV";
+			String dbUrl = "jdbc:mysql://sql.pitsim.net:3306/s9_PlayerData";
+			String username = "***REMOVED***";
+			String password = "***REMOVED***";
 			return DriverManager.getConnection(dbUrl, username, password);
 		} catch(Exception ignored) {} ;
 		return null;

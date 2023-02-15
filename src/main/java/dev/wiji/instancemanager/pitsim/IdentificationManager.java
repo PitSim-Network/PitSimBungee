@@ -21,23 +21,6 @@ import java.util.UUID;
 public class IdentificationManager implements Listener {
 
 	public static String NEW_TABLE = "PlayerInfo";
-	public static String OLD_TABLE = "PlayerData";
-
-	public static void migrate() {
-		Connection connection = getConnection();
-		try {
-			assert connection != null;
-			createTable(connection);
-			connection = getConnection();
-			moveMalformedData(OLD_TABLE, NEW_TABLE, connection);
-			connection = getConnection();
-
-			updateDomainData(connection, new File(BungeeMain.INSTANCE.getDataFolder() + "/connection-data.json"));
-
-		} catch(SQLException | ClassNotFoundException throwables) {
-			throwables.printStackTrace();
-		}
-	}
 
 	public static void onLogin(UUID uuid, String name, String domain) {
 		Connection connection = getConnection();
@@ -98,9 +81,9 @@ public class IdentificationManager implements Listener {
 	public static Connection getConnection() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			String dbUrl = "jdbc:mysql://sql.pitsim.net:3306/s1_PlayerData";
-			String username = "u1_tNdewbWGuJ";
-			String password = "xH@ngjlP8imF@PY8pP@psvRV";
+			String dbUrl = "jdbc:mysql://sql.pitsim.net:3306/s9_PlayerData";
+			String username = "***REMOVED***";
+			String password = "***REMOVED***";
 			return DriverManager.getConnection(dbUrl, username, password);
 		} catch(Exception ignored) {} ;
 		return null;
