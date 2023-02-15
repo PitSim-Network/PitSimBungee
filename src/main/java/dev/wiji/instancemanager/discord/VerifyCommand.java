@@ -1,6 +1,7 @@
 package dev.wiji.instancemanager.discord;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.pitsim.LockdownManager;
 import dev.wiji.instancemanager.pitsim.OverworldServerManager;
@@ -25,7 +26,7 @@ public class VerifyCommand extends DiscordCommand {
 	public void execute(GuildMessageReceivedEvent event, List<String> args) {
 
 		if(recentVerificationPlayers.contains(event.getAuthor().getIdLong())) {
-			event.getChannel().sendMessage("Please wait before using this command again").queue();
+			event.getChannel().sendMessage("This command has a cooldown of 1 hour. Please try again later.").queue();
 			return;
 		}
 
@@ -56,7 +57,7 @@ public class VerifyCommand extends DiscordCommand {
 		} catch(Exception e) {
 			target = BungeeMain.INSTANCE.getProxy().getPlayer(nameUUID);
 		}
-		if(target != null) OverworldServerManager.queue(target, 0, false);
+		if(target != null && target.getServer().getInfo().getName().equals(ConfigManager.getLobbyServer())) OverworldServerManager.queue(target, 0, false);
 
 		recentVerificationPlayers.add(event.getAuthor().getIdLong());
 		((ProxyRunnable) () -> recentVerificationPlayers.remove(event.getAuthor().getIdLong())).runAfter(1, TimeUnit.HOURS);
