@@ -3,20 +3,20 @@ package dev.wiji.instancemanager.discord;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
+import dev.wiji.instancemanager.misc.Misc;
 import dev.wiji.instancemanager.pitsim.LockdownManager;
 import dev.wiji.instancemanager.pitsim.OverworldServerManager;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 //This is disabled
 public class VerifyCommand extends DiscordCommand {
-	public static List<Long> recentVerificationPlayers = new ArrayList<>();
+	public static Map<Long, Long> recentVerificationPlayers = new HashMap<>();
+
+	public static final long VERIFY_COOLDOWN = 1000 * 60 * 60;
 
 	public VerifyCommand() {
 		super("verify");
@@ -25,10 +25,15 @@ public class VerifyCommand extends DiscordCommand {
 	@Override
 	public void execute(GuildMessageReceivedEvent event, List<String> args) {
 
-		if(recentVerificationPlayers.contains(event.getAuthor().getIdLong())) {
-			event.getChannel().sendMessage("This command has a cooldown of 1 hour. Please try again later.").queue();
+		long time = recentVerificationPlayers.getOrDefault(event.getAuthor().getIdLong(), 0L);
+
+		if(time + VERIFY_COOLDOWN > System.currentTimeMillis()) {
+			long timeLeft = System.currentTimeMillis() - (time + VERIFY_COOLDOWN);
+			String timeMessage = Misc.formatDuration(timeLeft, true);
+
+			event.getChannel().sendMessage("You may not use this command for another " + timeMessage).queue();
 			return;
-		}
+		} else recentVerificationPlayers.remove(event.getAuthor().getIdLong());
 
 		if(args.size() < 1) {
 			event.getChannel().sendMessage("Usage: .verify <ign/uuid>").queue();
@@ -59,7 +64,7 @@ public class VerifyCommand extends DiscordCommand {
 		}
 		if(target != null && target.getServer().getInfo().getName().equals(ConfigManager.getLobbyServer())) OverworldServerManager.queue(target, 0, false);
 
-		recentVerificationPlayers.add(event.getAuthor().getIdLong());
+		recentVerificationPlayers.put(event.getAuthor().getIdLong(), System.currentTimeMillis());
 		((ProxyRunnable) () -> recentVerificationPlayers.remove(event.getAuthor().getIdLong())).runAfter(1, TimeUnit.HOURS);
 
 		try {

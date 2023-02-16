@@ -74,6 +74,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new PitsimQuestManager());
 		getProxy().getPluginManager().registerListener(this, new LockdownManager());
 		getProxy().getPluginManager().registerListener(this, new AuctionAlerts());
+		getProxy().getPluginManager().registerListener(this, new CommandBlocker());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new DupeManager());
 		ConfigManager.getMiniServerList();
 
