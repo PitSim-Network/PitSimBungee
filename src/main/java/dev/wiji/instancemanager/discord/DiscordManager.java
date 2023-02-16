@@ -1,5 +1,6 @@
 package dev.wiji.instancemanager.discord;
 
+import dev.wiji.instancemanager.ConfigManager;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
@@ -53,7 +54,7 @@ public class DiscordManager implements EventListener {
 	}
 
 	public static void disable() {
-
+		if(ConfigManager.isDev()) return;
 		JDA.shutdownNow();
 	}
 
