@@ -1,14 +1,11 @@
 package dev.wiji.instancemanager.pitsim;
 
 import com.google.gson.Gson;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.alogging.ConnectionData;
 import dev.wiji.instancemanager.alogging.ConnectionManager;
 import dev.wiji.instancemanager.alogging.OldConnectionData;
 import net.md_5.bungee.api.plugin.Listener;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.IOException;
@@ -98,9 +95,9 @@ public class IdentificationManager implements Listener {
 	public static Connection getConnection() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			String dbUrl = "jdbc:mysql://sql.pitsim.net:3306/s1_PlayerData";
-			String username = "u1_tNdewbWGuJ";
-			String password = "xH@ngjlP8imF@PY8pP@psvRV";
+			String dbUrl = "jdbc:mysql://sql.pitsim.net:3306/s9_PlayerData";
+			String username = "***REMOVED***";
+			String password = "***REMOVED***";
 			return DriverManager.getConnection(dbUrl, username, password);
 		} catch(Exception ignored) {} ;
 		return null;

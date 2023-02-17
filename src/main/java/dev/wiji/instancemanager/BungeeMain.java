@@ -36,9 +36,9 @@ import java.util.UUID;
 public class BungeeMain extends Plugin {
 	public static BungeeMain INSTANCE;
 	public static PteroApplication api = PteroBuilder.createApplication("***REMOVED***",
-			"4t1LoF4HF8cPHCDhScaXKxQkMLwnXRVBqFKvl0cAbYB0btzI");
+			"***REMOVED***");
 	public static PteroClient client = PteroBuilder.createClient("***REMOVED***",
-			"VILPyBXQfdJUEJEd4HUUbvTKsyDfbVD8KjYTOk2DMmyPfxCD");
+			"***REMOVED***");
 
 	public static long STARTUP_TIME;
 
