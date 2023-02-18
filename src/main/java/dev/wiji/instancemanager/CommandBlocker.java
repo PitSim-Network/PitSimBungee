@@ -27,7 +27,7 @@ public class CommandBlocker implements Listener {
 		ProxiedPlayer player = (ProxiedPlayer) event.getSender();
 
 		commandMap.put(player.getUniqueId(), commandMap.getOrDefault(player.getUniqueId(), 0) + 1);
-		if(commandMap.get(player.getUniqueId()) >= 5) player.disconnect(TextComponent.fromLegacyText(ChatColor.RED + "You are sending messages too fast!"));
+		if(commandMap.get(player.getUniqueId()) >= 5) player.disconnect(TextComponent.fromLegacyText(ChatColor.RED + "You are sending command too fast!"));
 	}
 
 }
