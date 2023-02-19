@@ -1,5 +1,6 @@
 package dev.wiji.instancemanager.misc;
 
+import dev.wiji.instancemanager.BungeeMain;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -28,4 +29,8 @@ public class AOutput {
 		player.sendMessage(components);
 	}
 
+	public static void log(String message) {
+		BungeeMain.INSTANCE.getProxy().getConsole().sendMessage(
+				"[" + BungeeMain.INSTANCE.getDescription().getName() + "] " + ChatColor.translateAlternateColorCodes('&', message));
+	}
 }
