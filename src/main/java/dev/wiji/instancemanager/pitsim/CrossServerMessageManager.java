@@ -87,7 +87,7 @@ public class CrossServerMessageManager implements Listener {
 
 			for(OverworldServer server : OverworldServerManager.serverList) {
 				if(!server.status.isOnline()) continue;
-				if(serverName != null && !server.getServerInfo().getName().equals(serverName)) continue;
+				if(!serverName.isEmpty() && !server.getServerInfo().getName().equals(serverName)) continue;
 				forwardMessage.addServer(server.getServerInfo());
 				AOutput.log("Received darkzone data. forwarding to " + server.getServerInfo().getName());
 			}
