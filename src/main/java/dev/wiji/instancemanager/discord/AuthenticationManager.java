@@ -117,12 +117,19 @@ public class AuthenticationManager implements Listener {
 				String refreshToken = tokens.getRefreshToken();
 				System.out.println(accessToken);
 				System.out.println(refreshToken);
+				System.out.println(state.toString());
 
 				DiscordAPI api = new DiscordAPI(accessToken);
 				User user = api.fetchUser();
 				long userId = Long.parseLong(user.getId());
 
-				UUID playerUUID = secretClientStateMap.get(state);
+				UUID playerUUID = null;
+				for(Map.Entry<UUID, UUID> entry : secretClientStateMap.entrySet()) {
+					if(!entry.getValue().equals(state)) continue;
+					playerUUID = entry.getKey();
+					break;
+				}
+				assert playerUUID != null;
 				ProxiedPlayer proxiedPlayer = BungeeMain.INSTANCE.getProxy().getPlayer(playerUUID);
 
 				DiscordUser previousUser = DiscordManager.getUser(userId);
