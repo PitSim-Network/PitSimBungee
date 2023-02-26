@@ -221,6 +221,7 @@ public class DiscordManager implements EventListener, Listener {
 	public void onMessage(MessageEvent event) {
 		PluginMessage message = event.getMessage();
 		List<String> strings = message.getStrings();
+		if(strings.isEmpty()) return;
 
 		if(!strings.get(0).equals("BOOSTER_CLAIM")) return;
 		String serverName = strings.get(1);
