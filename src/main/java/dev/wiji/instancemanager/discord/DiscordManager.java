@@ -203,13 +203,7 @@ public class DiscordManager implements EventListener {
 
 			while(rs.next()) {
 				UUID uuid = UUID.fromString(rs.getString("uuid"));
-				long discordID = rs.getLong("discord_id");
-				String access = rs.getString("access_token");
-				String refresh = rs.getString("refresh_token");
-				long refreshTime = rs.getLong("last_refresh");
-				long claim = rs.getLong("last_boosting_claim");
-
-				AuthenticationManager.queuedUsers.add(new DiscordUser(uuid, discordID, access, refresh, refreshTime, claim));
+				AuthenticationManager.queuedUsers.add(uuid);
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();

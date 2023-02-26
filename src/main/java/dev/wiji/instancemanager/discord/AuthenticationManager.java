@@ -35,7 +35,7 @@ public class AuthenticationManager implements Listener {
 	public static List<UUID> rewardVerificationList = new ArrayList<>(); // players who weren't on a pitsim server when they verified
 	public static Map<UUID, User> recentlyAuthenticatedUserMap = new HashMap<>();
 
-	public static List<DiscordUser> queuedUsers = new ArrayList<>();
+	public static List<UUID> queuedUsers = new ArrayList<>();
 
 	static {
 		oauthHandler = new DiscordOAuth(CLIENT_ID, OAUTH_SECRET,
@@ -58,7 +58,11 @@ public class AuthenticationManager implements Listener {
 			if(queuedUsers.isEmpty()) DiscordManager.populateQueue();
 			if(queuedUsers.isEmpty()) return;
 
-			DiscordUser user = queuedUsers.get(0);
+			UUID uuid = queuedUsers.get(0);
+			DiscordUser user = DiscordManager.getUser(uuid);
+
+
+			queuedUsers.remove(uuid);
 
 		}).runAfterEvery(1, 1, TimeUnit.MINUTES);
 	}
