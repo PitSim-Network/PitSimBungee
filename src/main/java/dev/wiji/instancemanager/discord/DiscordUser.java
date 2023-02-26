@@ -60,8 +60,9 @@ public class DiscordUser {
 			Connection connection = DiscordManager.getConnection();
 
 			try {
-				String sql = "INSERT INTO " + DISCORD_TABLE + " (uuid, discord_id, access_token, refresh_token, last_boosting_claim)" +
-						" VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = ?, discord_id = ?, access_token = ?, refresh_token = ?, last_refresh = ?, last_boosting_claim = ?";
+				String sql = "INSERT INTO " + DISCORD_TABLE + " (uuid, discord_id, access_token, refresh_token, last_refresh, last_boosting_claim)" +
+						" VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = ?, discord_id = ?, access_token = ?, refresh_token = ?," +
+						" last_refresh = ?, last_boosting_claim = ?";
 
 				assert connection != null;
 
