@@ -202,10 +202,9 @@ public class DiscordManager implements EventListener {
 		String playerUUID = strings.get(2);
 
 		new PluginMessage().writeString("BOOSTER_CLAIM")
-				.writeBoolean(isBoosting(UUID.fromString(playerUUID)))
 				.writeString(playerUUID)
+				.writeBoolean(isBoosting(UUID.fromString(playerUUID)))
 				.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(serverName))
 				.send();
-
 	}
 }
