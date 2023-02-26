@@ -149,7 +149,7 @@ public class AuthenticationManager implements Listener {
 					playerUUID = entry.getKey();
 					break;
 				}
-				assert playerUUID != null;
+				if(playerUUID == null) return;
 				ProxiedPlayer proxiedPlayer = BungeeMain.INSTANCE.getProxy().getPlayer(playerUUID);
 
 				DiscordUser previousUser = DiscordManager.getUser(userId);
