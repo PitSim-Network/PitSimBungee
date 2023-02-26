@@ -29,7 +29,7 @@ public class DiscordManager implements EventListener {
 	public static Guild MAIN_GUILD;
 	public static Guild PRIVATE_GUILD;
 
-	public static final String DISCORD_TABLE = "DiscordLink";
+	public static final String DISCORD_TABLE = "DiscordAuthentication";
 
 	public DiscordManager() {
 		System.out.println("Discord bot loading");
@@ -114,13 +114,65 @@ public class DiscordManager implements EventListener {
 		connection.close();
 	}
 
-	//	TODO: wiji implement (return null if no user)
 	public static DiscordUser getUser(UUID uuid) {
+		Connection connection = getConnection();
+		assert connection != null;
+
+		try {
+			String sql = "SELECT discord_id, access_token, refresh_token, last_boosting_claim FROM " + DISCORD_TABLE + " WHERE uuid = ?";
+			PreparedStatement stmt = connection.prepareStatement(sql);
+			stmt.setString(1, uuid.toString());
+			ResultSet rs = stmt.executeQuery();
+
+			if(rs.next()) {
+				long id = rs.getLong("discord_id");
+				String access = rs.getString("access_token");
+				String refresh = rs.getString("refresh_token");
+				long claim = rs.getLong("last_boosting_claim");
+
+				return new DiscordUser(uuid, id, access, refresh, claim);
+			} else return null;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			connection.close();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+
 		return null;
 	}
 
-	//	TODO: wiji implement (return null if no user)
 	public static DiscordUser getUser(long discordID) {
+		Connection connection = getConnection();
+		assert connection != null;
+
+		try {
+			String sql = "SELECT uuid, access_token, refresh_token, last_boosting_claim FROM " + DISCORD_TABLE + " WHERE discord_id = ?";
+			PreparedStatement stmt = connection.prepareStatement(sql);
+			stmt.setLong(1, discordID);
+			ResultSet rs = stmt.executeQuery();
+
+			if(rs.next()) {
+				UUID uuid = UUID.fromString(rs.getString("uuid"));
+				String access = rs.getString("access_token");
+				String refresh = rs.getString("refresh_token");
+				long claim = rs.getLong("last_boosting_claim");
+
+				return new DiscordUser(uuid, discordID, access, refresh, claim);
+			} else return null;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			connection.close();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+
 		return null;
 	}
 }
