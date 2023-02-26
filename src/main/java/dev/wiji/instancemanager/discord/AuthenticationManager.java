@@ -149,7 +149,7 @@ public class AuthenticationManager implements Listener {
 		}
 	}
 
-	public void attemptAuthentication(ProxiedPlayer proxiedPlayer) {
+	public static void attemptAuthentication(ProxiedPlayer proxiedPlayer) {
 		DiscordUser discordUser = DiscordManager.getUser(proxiedPlayer.getUniqueId());
 
 		if(discordUser != null && discordUser.isAuthenticated()) {
@@ -171,10 +171,7 @@ public class AuthenticationManager implements Listener {
 			break;
 		}
 		pluginMessage.send();
-
-		if(!isOnlinePitSim) {
-
-		}
+		if(!isOnlinePitSim) rewardVerificationList.add(proxiedPlayer.getUniqueId());
 
 		sendAuthenticationLink(proxiedPlayer, clientState);
 	}
