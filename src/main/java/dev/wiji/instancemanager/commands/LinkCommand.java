@@ -8,7 +8,7 @@ import net.md_5.bungee.api.plugin.Command;
 public class LinkCommand extends Command {
 
 	public LinkCommand() {
-		super("link");
+		super("link", null, "verify");
 	}
 
 	@Override
