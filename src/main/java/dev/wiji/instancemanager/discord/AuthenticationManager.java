@@ -10,9 +10,14 @@ import io.mokulu.discord.oauth.DiscordAPI;
 import io.mokulu.discord.oauth.DiscordOAuth;
 import io.mokulu.discord.oauth.model.TokensResponse;
 import io.mokulu.discord.oauth.model.User;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,10 +26,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class AuthenticationManager implements Listener {
 	public static DiscordOAuth oauthHandler;
@@ -32,6 +34,7 @@ public class AuthenticationManager implements Listener {
 	public static final String OAUTH_SECRET = "L-X8MhiQ8Gi2H7wgLm3-FBjBfrSxrOql";
 
 	public static Map<UUID, UUID> secretClientStateMap = new HashMap<>();
+	public static List<UUID> rewardVerificationList = new ArrayList<>(); // players who weren't on a pitsim server when they verified
 
 	static {
 		oauthHandler = new DiscordOAuth(CLIENT_ID, OAUTH_SECRET,
@@ -49,44 +52,6 @@ public class AuthenticationManager implements Listener {
 				throw new RuntimeException(e);
 			}
 		}).start();
-	}
-
-	@EventHandler
-	public void onMessage(MessageEvent event) {
-		PluginMessage message = event.getMessage();
-		List<String> strings = message.getStrings();
-		List<Integer> integers = message.getIntegers();
-		List<Long> longs = message.getLongs();
-		List<Boolean> booleans = message.getBooleans();
-		if(strings.isEmpty()) return;
-
-		if(strings.get(0).equals("AUTH_REQUEST")) {
-			String serverName = strings.get(1);
-			UUID playerUUID = UUID.fromString(strings.get(2));
-
-			PluginMessage pluginMessage = new PluginMessage()
-					.writeString("AUTH_RESPONSE")
-					.writeString(playerUUID.toString());
-
-			DiscordUser discordUser = DiscordManager.getUser(playerUUID);
-
-			if(discordUser != null && discordUser.isAuthenticated()) {
-				pluginMessage.writeString(AuthStatus.MINECRAFT_ALREADY_AUTHENTICATED.name());
-			} else {
-				secretClientStateMap.putIfAbsent(playerUUID, UUID.randomUUID());
-				UUID clientState = secretClientStateMap.get(playerUUID);
-
-				pluginMessage.writeString(AuthStatus.READY_FOR_AUTHENTICATION.name());
-				pluginMessage.writeString(clientState.toString());
-			}
-
-			for(MainGamemodeServer server : MainGamemodeServer.serverList) {
-				if(!server.status.isOnline() || !server.getServerInfo().getName().equals(serverName)) continue;
-				pluginMessage.addServer(server.getServerInfo());
-				break;
-			}
-			pluginMessage.send();
-		}
 	}
 
 	public static class RequestHandler extends Thread {
@@ -164,7 +129,7 @@ public class AuthenticationManager implements Listener {
 				UUID playerUUID = secretClientStateMap.get(state);
 				ProxiedPlayer proxiedPlayer = BungeeMain.INSTANCE.getProxy().getPlayer(playerUUID);
 
-				DiscordUser previousUser = DiscordManager.getUser();
+				DiscordUser previousUser = DiscordManager.getUser(userId);
 				if(previousUser != null) {
 					try {
 						AOutput.error(proxiedPlayer, "&c&lERROR!&7 Your discord (" + user.getFullUsername() +
@@ -176,7 +141,7 @@ public class AuthenticationManager implements Listener {
 					return;
 				}
 
-				DiscordUser discordUser = new DiscordUser(playerUUID, user.getId())
+				DiscordUser discordUser = new DiscordUser(playerUUID, userId, accessToken, refreshToken);
 				System.out.println(user.getFullUsername() + " " + user.getUsername() + " " + user.getId());
 			} catch(IOException e) {
 				throw new RuntimeException(e);
@@ -184,9 +149,42 @@ public class AuthenticationManager implements Listener {
 		}
 	}
 
-	public enum AuthStatus {
-		DISCORD_ALREADY_AUTHENTICATED,
-		MINECRAFT_ALREADY_AUTHENTICATED,
-		READY_FOR_AUTHENTICATION
+	public void attemptAuthentication(ProxiedPlayer proxiedPlayer) {
+		DiscordUser discordUser = DiscordManager.getUser(proxiedPlayer.getUniqueId());
+
+		if(discordUser != null && discordUser.isAuthenticated()) {
+			AOutput.error(proxiedPlayer, "&c&lERROR!&7 You are already authenticated");
+			return;
+		}
+
+		secretClientStateMap.putIfAbsent(proxiedPlayer.getUniqueId(), UUID.randomUUID());
+		UUID clientState = secretClientStateMap.get(proxiedPlayer.getUniqueId());
+
+		boolean isOnlinePitSim = false;
+		PluginMessage pluginMessage = new PluginMessage()
+				.writeString("AUTH_SUCCESS")
+				.writeString(proxiedPlayer.toString());
+		for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+			if(!server.status.isOnline() || server.getServerInfo() != proxiedPlayer.getServer().getInfo()) continue;
+			pluginMessage.addServer(server.getServerInfo());
+			isOnlinePitSim = true;
+			break;
+		}
+		pluginMessage.send();
+
+		if(!isOnlinePitSim) {
+
+		}
+
+		sendAuthenticationLink(proxiedPlayer, clientState);
+	}
+
+	public static void sendAuthenticationLink(ProxiedPlayer proxiedPlayer, UUID clientState) {
+		TextComponent text = new TextComponent(ChatColor.translateAlternateColorCodes('&',
+				"&9&lLINK!&7 Click me to link your discord account"));
+		text.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://discord.com/api/oauth2/authorize?" +
+				"client_id=841567626466951171&redirect_uri=http%3A%2F%2F51.81.48.25%3A3000&response_type=code&" +
+				"scope=identify%20guilds.join&state=" + clientState.toString()));
+		proxiedPlayer.sendMessage(text);
 	}
 }
