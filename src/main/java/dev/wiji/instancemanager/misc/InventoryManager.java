@@ -19,7 +19,7 @@ public class InventoryManager implements Listener {
 	}
 
 	@EventHandler
-	public static void onClick(InventoryClickEvent event) {
+	public void onClick(InventoryClickEvent event) {
 
 		PreparedInventoryPanel panel;
 		for(PreparedInventoryPanel preparedInventoryPanel : PreparedInventoryPanel.panels) {
@@ -32,13 +32,13 @@ public class InventoryManager implements Listener {
 	}
 
 	@EventHandler
-	public static void onOpen(InventoryOpenEvent event) {
+	public void onOpen(InventoryOpenEvent event) {
 
 
 	}
 
 	@EventHandler
-	public static void onClose(InventoryCloseEvent event) {
+	public void onClose(InventoryCloseEvent event) {
 		PreparedInventoryPanel panel;
 		for(PreparedInventoryPanel preparedInventoryPanel : PreparedInventoryPanel.panels) {
 			if(preparedInventoryPanel.player.equals(event.getPlayer())) {

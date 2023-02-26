@@ -2,6 +2,7 @@ package dev.wiji.instancemanager.discord;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
+import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.PluginMessage;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class DiscordManager implements EventListener, Listener {
 
@@ -225,10 +227,13 @@ public class DiscordManager implements EventListener, Listener {
 
 	@EventHandler
 	public void onConnect(PostLoginEvent event) {
-		ProxiedPlayer player = event.getPlayer();
-		DiscordUser discordUser = DiscordManager.getUser(player.getUniqueId());
+		ProxiedPlayer proxiedPlayer = event.getPlayer();
+		DiscordUser discordUser = DiscordManager.getUser(proxiedPlayer.getUniqueId());
 		if(discordUser != null && discordUser.wasAuthenticatedRecently()) return;
-		AOutput.color(player, "&9&lLINK!&7 Link your minecraft account to your discord account with /link for a free key");
+		((ProxyRunnable) () -> {
+			if(!proxiedPlayer.isConnected()) return;
+			AOutput.color(proxiedPlayer, "&9&lLINK!&7 Link your minecraft account to your discord account with /link for a free key");
+		}).runAfter(1, TimeUnit.SECONDS);
 	}
 
 	@EventHandler
