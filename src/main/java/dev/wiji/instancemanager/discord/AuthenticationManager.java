@@ -1,6 +1,7 @@
 package dev.wiji.instancemanager.discord;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
@@ -23,6 +24,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class AuthenticationManager implements Listener {
 	public static DiscordOAuth oauthHandler;
@@ -31,7 +33,9 @@ public class AuthenticationManager implements Listener {
 
 	public static Map<UUID, UUID> secretClientStateMap = new HashMap<>();
 	public static List<UUID> rewardVerificationList = new ArrayList<>(); // players who weren't on a pitsim server when they verified
-	public  static Map<UUID, User> recentlyAuthenticatedUserMap = new HashMap<>();
+	public static Map<UUID, User> recentlyAuthenticatedUserMap = new HashMap<>();
+
+	private static List<DiscordUser> queuedUsers = new ArrayList<>();
 
 	static {
 		oauthHandler = new DiscordOAuth(CLIENT_ID, OAUTH_SECRET,
@@ -49,6 +53,10 @@ public class AuthenticationManager implements Listener {
 				throw new RuntimeException(e);
 			}
 		}).start();
+
+		((ProxyRunnable) () -> {
+
+		}).runAfterEvery(1, 1, TimeUnit.MINUTES);
 	}
 
 	public static class RequestHandler extends Thread {
@@ -158,6 +166,14 @@ public class AuthenticationManager implements Listener {
 					rewardPlayer(proxiedPlayer);
 				} else {
 					rewardVerificationList.add(proxiedPlayer.getUniqueId());
+				}
+
+				try {
+					Objects.requireNonNull(DiscordManager.JDA.getTextChannelById(Constants.VERIFICATION_LOG_CHANNEL))
+							.sendMessage("Discord: `" + user.getFullUsername() + "`" +
+									"\nIGN/UUID: `" + IdentificationManager.getUsername(IdentificationManager.getConnection(), playerUUID) + "`").queue();
+				} catch(Exception exception) {
+					exception.printStackTrace();
 				}
 			} catch(IOException e) {
 				throw new RuntimeException(e);
