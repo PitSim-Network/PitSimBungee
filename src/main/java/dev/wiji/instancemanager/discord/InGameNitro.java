@@ -7,7 +7,6 @@ import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.pitsim.OverworldServerManager;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
 import net.luckperms.api.node.Node;
@@ -21,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-public class InGameNitro extends ListenerAdapter {
+public class InGameNitro {
 	public Role nitroRole = DiscordManager.MAIN_GUILD.getRoleById(Constants.NITRO_ROLE_ID);
 
 	public InGameNitro() {
