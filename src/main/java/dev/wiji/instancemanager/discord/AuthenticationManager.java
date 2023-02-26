@@ -173,8 +173,8 @@ public class AuthenticationManager implements Listener {
 					isOnlinePitSim = true;
 					break;
 				}
+				AOutput.color(proxiedPlayer, "&9&lLINK!&7 You have successfully been linked to " + user.getFullUsername());
 				if(isOnlinePitSim) {
-					AOutput.color(proxiedPlayer, "&9&lLINK!&7 You have successfully been linked to " + user.getFullUsername());
 					rewardPlayer(proxiedPlayer);
 				} else {
 					rewardVerificationList.add(proxiedPlayer.getUniqueId());
