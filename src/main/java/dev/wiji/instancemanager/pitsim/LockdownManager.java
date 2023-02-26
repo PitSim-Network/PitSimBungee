@@ -3,6 +3,8 @@ package dev.wiji.instancemanager.pitsim;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
+import dev.wiji.instancemanager.discord.AuthenticationManager;
+import dev.wiji.instancemanager.discord.DiscordManager;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.Leaderboard;
 import dev.wiji.instancemanager.objects.MainGamemodeServer;
@@ -45,6 +47,7 @@ public class LockdownManager implements Listener {
 		if(!isVerified(player)) {
 			event.setCancelled(true);
 			AOutput.error(player, verificationMessage);
+			AuthenticationManager
 			return;
 		}
 		if(!isCaptcha(player)) {
@@ -78,15 +81,7 @@ public class LockdownManager implements Listener {
 		if(!requireVerification || player.hasPermission("pitsim.autoverify")) return true;
 		if(getPlaytime(player) >= MINUTES_TO_PASS) return true;
 
-		return DiscordVerification.getDiscord(player.getUniqueId()) != 0;
-	}
-
-	public static boolean verify(String name, long discordId) {
-		return DiscordVerification.verify(name, discordId);
-	}
-
-	public static boolean removeVerifiedPlayer(long discordId) {
-		return DiscordVerification.unverifyDiscord(discordId);
+		return DiscordManager.getUser(player.getUniqueId()) != null;
 	}
 
 	public static boolean isCaptcha(ProxiedPlayer player) {
