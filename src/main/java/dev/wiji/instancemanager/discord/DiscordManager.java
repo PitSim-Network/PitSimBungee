@@ -197,7 +197,7 @@ public class DiscordManager implements EventListener {
 		assert connection != null;
 
 		try {
-			String sql = "SELECT uuid, access_token, refresh_token, last_refresh, last_boosting_claim FROM " + DISCORD_TABLE;
+			String sql = "SELECT uuid FROM " + DISCORD_TABLE;
 			PreparedStatement stmt = connection.prepareStatement(sql);
 			ResultSet rs = stmt.executeQuery();
 
