@@ -39,7 +39,7 @@ public class AuthenticationManager implements Listener {
 
 	static {
 		oauthHandler = new DiscordOAuth(CLIENT_ID, OAUTH_SECRET,
-				"http://51.81.48.25:3000", new String[] {"identify", "guilds.join"});
+				"http://147.135.8.130:3000", new String[] {"identify", "guilds.join"});
 
 		new Thread(() -> {
 			try(ServerSocket serverSocket = new ServerSocket(3000)) {
@@ -138,8 +138,6 @@ public class AuthenticationManager implements Listener {
 				TokensResponse tokens = oauthHandler.getTokens(code);
 				String accessToken = tokens.getAccessToken();
 				String refreshToken = tokens.getRefreshToken();
-				System.out.println(accessToken);
-				System.out.println(refreshToken);
 
 				DiscordAPI api = new DiscordAPI(accessToken);
 				User user = api.fetchUser();
@@ -175,6 +173,7 @@ public class AuthenticationManager implements Listener {
 					isOnlinePitSim = true;
 					break;
 				}
+				AOutput.color(proxiedPlayer, "&9&lLINK!&7 You have successfully been linked to " + user.getFullUsername());
 				if(isOnlinePitSim) {
 					rewardPlayer(proxiedPlayer);
 				} else {
@@ -213,7 +212,7 @@ public class AuthenticationManager implements Listener {
 		TextComponent text = new TextComponent(ChatColor.translateAlternateColorCodes('&',
 				"&9&lLINK!&7 Click me to link your discord account"));
 		text.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://discord.com/api/oauth2/authorize?" +
-				"client_id=841567626466951171&redirect_uri=http%3A%2F%2F51.81.48.25%3A3000&response_type=code&" +
+				"client_id=841567626466951171&redirect_uri=http%3A%2F%2F147.135.8.130%3A3000&response_type=code&" +
 				"scope=identify%20guilds.join&state=" + clientState.toString()));
 		proxiedPlayer.sendMessage(text);
 	}
