@@ -58,6 +58,28 @@ public class DiscordUser {
 		return true;
 	}
 
+	public void remove() {
+		Connection connection = DiscordManager.getConnection();
+		assert connection != null;
+
+		String sql = "DELETE FROM " + DISCORD_TABLE + " WHERE uuid = ?";
+
+		try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+			stmt.setString(1, uuid.toString());
+			stmt.executeUpdate();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			connection.close();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+
+		AuthenticationManager.queuedUsers.remove(uuid);
+	}
+
 	public void save() {
 			Connection connection = DiscordManager.getConnection();
 

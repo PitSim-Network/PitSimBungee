@@ -15,6 +15,7 @@ public class UnlinkCommand extends Command {
 	public void execute(CommandSender sender, String[] args) {
 		if(!(sender instanceof ProxiedPlayer)) return;
 		ProxiedPlayer proxiedPlayer = (ProxiedPlayer) sender;
-		AuthenticationManager.attemptAuthentication(proxiedPlayer);
+
+
 	}
 }

@@ -181,7 +181,7 @@ public class DiscordManager implements EventListener, Listener {
 				long lastLink = rs.getLong("last_link");
 				long claim = rs.getLong("last_boosting_claim");
 
-				return new DiscordUser(uuid, discordID, access, refresh, refreshTime, claim);
+				return new DiscordUser(uuid, discordID, access, refresh, refreshTime, lastLink, claim);
 			} else return null;
 		} catch(SQLException e) {
 			e.printStackTrace();
