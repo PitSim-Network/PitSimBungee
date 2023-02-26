@@ -192,6 +192,36 @@ public class DiscordManager implements EventListener {
 		return null;
 	}
 
+	public static void populateQueue() {
+		Connection connection = getConnection();
+		assert connection != null;
+
+		try {
+			String sql = "SELECT uuid, access_token, refresh_token, last_refresh, last_boosting_claim FROM " + DISCORD_TABLE;
+			PreparedStatement stmt = connection.prepareStatement(sql);
+			ResultSet rs = stmt.executeQuery();
+
+			while(rs.next()) {
+				UUID uuid = UUID.fromString(rs.getString("uuid"));
+				long discordID = rs.getLong("discord_id");
+				String access = rs.getString("access_token");
+				String refresh = rs.getString("refresh_token");
+				long refreshTime = rs.getLong("last_refresh");
+				long claim = rs.getLong("last_boosting_claim");
+
+				AuthenticationManager.queuedUsers.add(new DiscordUser(uuid, discordID, access, refresh, refreshTime, claim));
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			connection.close();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	@EventHandler
 	public void onMessage(MessageEvent event) {
 		PluginMessage message = event.getMessage();
