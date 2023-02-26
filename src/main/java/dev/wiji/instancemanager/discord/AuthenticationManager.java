@@ -183,7 +183,7 @@ public class AuthenticationManager implements Listener {
 	public static void rewardPlayer(ProxiedPlayer proxiedPlayer) {
 		PluginMessage pluginMessage = new PluginMessage()
 				.writeString("AUTH_SUCCESS")
-				.writeString(proxiedPlayer.toString());
+				.writeString(proxiedPlayer.getUniqueId().toString());
 		for(MainGamemodeServer server : MainGamemodeServer.serverList) {
 			if(!server.status.isOnline() || server.getServerInfo() != proxiedPlayer.getServer().getInfo()) continue;
 			pluginMessage.addServer(server.getServerInfo());
