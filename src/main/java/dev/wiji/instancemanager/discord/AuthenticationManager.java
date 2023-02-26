@@ -139,6 +139,18 @@ public class AuthenticationManager implements Listener {
 
 				DiscordUser discordUser = new DiscordUser(playerUUID, userId, accessToken, refreshToken, System.currentTimeMillis());
 				discordUser.save();
+
+				boolean isOnlinePitSim = false;
+				for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+					if(!server.status.isOnline() || server.getServerInfo() != proxiedPlayer.getServer().getInfo()) continue;
+					isOnlinePitSim = true;
+					break;
+				}
+				if(isOnlinePitSim) {
+					rewardPlayer(proxiedPlayer);
+				} else {
+					rewardVerificationList.add(proxiedPlayer.getUniqueId());
+				}
 			} catch(IOException e) {
 				throw new RuntimeException(e);
 			}
@@ -155,18 +167,6 @@ public class AuthenticationManager implements Listener {
 
 		secretClientStateMap.putIfAbsent(proxiedPlayer.getUniqueId(), UUID.randomUUID());
 		UUID clientState = secretClientStateMap.get(proxiedPlayer.getUniqueId());
-
-		boolean isOnlinePitSim = false;
-		for(MainGamemodeServer server : MainGamemodeServer.serverList) {
-			if(!server.status.isOnline() || server.getServerInfo() != proxiedPlayer.getServer().getInfo()) continue;
-			isOnlinePitSim = true;
-			break;
-		}
-		if(isOnlinePitSim) {
-			rewardPlayer(proxiedPlayer);
-		} else {
-			rewardVerificationList.add(proxiedPlayer.getUniqueId());
-		}
 
 		sendAuthenticationLink(proxiedPlayer, clientState);
 	}
