@@ -18,7 +18,7 @@ public class DiscordPlugin {
 		BasicConfigurator.configure();
 		Logger.getRootLogger().setLevel(Level.INFO);
 
-		new DiscordManager();
+		BungeeMain.INSTANCE.getProxy().getPluginManager().registerListener(BungeeMain.INSTANCE, new DiscordManager());
 
 		if(ConfigManager.isDev()) return;
 		new InGameNitro();

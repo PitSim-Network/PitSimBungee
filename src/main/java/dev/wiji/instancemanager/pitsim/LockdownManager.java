@@ -135,15 +135,20 @@ public class LockdownManager implements Listener {
 	}
 
 	public static boolean canJoin(ProxiedPlayer player) {
-		boolean captcha = isCaptcha(player);
-		boolean verified = isVerified(player);
-
-		if(!captcha) sendCaptchaMessage(player);
-		if(!verified) AOutput.color(player, verificationMessage);
-
-		if(requireCaptcha && requireVerification) return captcha && verified;
-		else if(requireVerification) return verified;
-		else if(requireCaptcha) return captcha;
+		if(requireVerification) {
+			boolean verified = isVerified(player);
+			if(!verified) {
+				AOutput.color(player, verificationMessage);
+				return false;
+			}
+		}
+		if(requireCaptcha) {
+			boolean captcha = isCaptcha(player);
+			if(!captcha) {
+				sendCaptchaMessage(player);
+				return false;
+			}
+		}
 		return true;
 	}
 
