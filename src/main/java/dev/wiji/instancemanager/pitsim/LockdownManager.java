@@ -28,7 +28,7 @@ public class LockdownManager implements Listener {
 	public static Map<ProxiedPlayer, UUID> captchaAnswers = new HashMap<>();
 	private static boolean requireVerification = false;
 	private static boolean requireCaptcha = false;
-	public static String verificationMessage = "&c&lVERIFICATION! &7Verify your account in discord.pitsim.net (.verify)";
+	public static String verificationMessage = "&c&lVERIFICATION! &7Discord verification is required to join";
 
 	public static final int MINUTES_TO_PASS = 120;
 
@@ -47,7 +47,7 @@ public class LockdownManager implements Listener {
 		if(!isVerified(player)) {
 			event.setCancelled(true);
 			AOutput.error(player, verificationMessage);
-			AuthenticationManager
+			AuthenticationManager.attemptAuthentication(player);
 			return;
 		}
 		if(!isCaptcha(player)) {
