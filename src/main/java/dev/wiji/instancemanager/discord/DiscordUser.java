@@ -61,7 +61,7 @@ public class DiscordUser {
 
 			try {
 				String sql = "INSERT INTO " + DISCORD_TABLE + " (uuid, discord_id, access_token, refresh_token, last_boosting_claim)" +
-						" VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = ?, discord_id = ?, access_token = ?, refresh_token = ?, last_boosting_claim = ?";
+						" VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = ?, discord_id = ?, access_token = ?, refresh_token = ?, last_refresh = ?, last_boosting_claim = ?";
 
 				assert connection != null;
 
@@ -70,13 +70,15 @@ public class DiscordUser {
 				stmt.setLong(2, discordID);
 				stmt.setString(3, accessToken);
 				stmt.setString(4, refreshToken);
-				stmt.setLong(5, lastBoostingClaim);
+				stmt.setLong(5, lastRefresh);
+				stmt.setLong(6, lastBoostingClaim);
 
-				stmt.setString(6, uuid.toString());
-				stmt.setLong(7, discordID);
-				stmt.setString(8, accessToken);
-				stmt.setString(9, refreshToken);
-				stmt.setLong(10, lastBoostingClaim);
+				stmt.setString(7, uuid.toString());
+				stmt.setLong(8, discordID);
+				stmt.setString(9, accessToken);
+				stmt.setString(10, refreshToken);
+				stmt.setLong(11, lastRefresh);
+				stmt.setLong(12, lastBoostingClaim);
 				stmt.executeUpdate();
 			} catch(SQLException e) {
 				throw new RuntimeException(e);
