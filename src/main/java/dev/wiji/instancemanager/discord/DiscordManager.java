@@ -102,7 +102,7 @@ public class DiscordManager implements EventListener {
 			String username = "***REMOVED***";
 			String password = "***REMOVED***";
 			return DriverManager.getConnection(dbUrl, username, password);
-		} catch(Exception ignored) {} ;
+		} catch(Exception ignored) {}
 		return null;
 	}
 
