@@ -14,6 +14,9 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.event.ProxyReloadEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
@@ -218,6 +221,13 @@ public class DiscordManager implements EventListener, Listener {
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@EventHandler
+	public void onConnect(PostLoginEvent event) {
+		ProxiedPlayer player = event.getPlayer();
+		if(DiscordManager.getUser(player.getUniqueId()) == null) return;
+
 	}
 
 	@EventHandler
