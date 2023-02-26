@@ -3,6 +3,7 @@ package dev.wiji.instancemanager.discord;
 import dev.wiji.instancemanager.ConfigManager;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -56,6 +57,17 @@ public class DiscordManager implements EventListener {
 	public static void disable() {
 		if(ConfigManager.isDev()) return;
 		JDA.shutdownNow();
+	}
+
+	public static boolean isBoosting(UUID uuid) {
+		DiscordUser user = getUser(uuid);
+		if(user == null) return false;
+		long id = user.discordID;
+
+//		List<Member> members = DiscordManager.MAIN_GUILD.findMembers(member -> member.getRoles().contains(nitroRole)).get();
+
+//		Member member = MAIN_GUILD.getMember(id);
+		return false;
 	}
 
 	public static void onMessage(GuildMessageReceivedEvent event) {

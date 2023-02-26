@@ -35,35 +35,35 @@ public class DiscordUser {
 	}
 
 	public void save() {
-		Connection connection = DiscordManager.getConnection();
+			Connection connection = DiscordManager.getConnection();
 
-		try {
-			String sql = "INSERT INTO " + DISCORD_TABLE + " (uuid, discord_id, access_token, refresh_token, last_boosting_claim)" +
-					" VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = ?, discord_id = ?, access_token, refresh_token, last_boosting_claim";
+			try {
+				String sql = "INSERT INTO " + DISCORD_TABLE + " (uuid, discord_id, access_token, refresh_token, last_boosting_claim)" +
+						" VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = ?, discord_id = ?, access_token = ?, refresh_token = ?, last_boosting_claim = ?";
 
-			assert connection != null;
+				assert connection != null;
 
-			PreparedStatement stmt = connection.prepareStatement(sql);
-			stmt.setString(1, uuid.toString());
-			stmt.setLong(2, discordID);
-			stmt.setString(3, accessToken);
-			stmt.setString(4, refreshToken);
-			stmt.setLong(5, lastBoostingClaim);
+				PreparedStatement stmt = connection.prepareStatement(sql);
+				stmt.setString(1, uuid.toString());
+				stmt.setLong(2, discordID);
+				stmt.setString(3, accessToken);
+				stmt.setString(4, refreshToken);
+				stmt.setLong(5, lastBoostingClaim);
 
-			stmt.setString(6, uuid.toString());
-			stmt.setLong(7, discordID);
-			stmt.setString(8, accessToken);
-			stmt.setString(9, refreshToken);
-			stmt.setLong(10, lastBoostingClaim);
-			stmt.executeUpdate();
-		} catch(SQLException e) {
-			throw new RuntimeException(e);
+				stmt.setString(6, uuid.toString());
+				stmt.setLong(7, discordID);
+				stmt.setString(8, accessToken);
+				stmt.setString(9, refreshToken);
+				stmt.setLong(10, lastBoostingClaim);
+				stmt.executeUpdate();
+			} catch(SQLException e) {
+				throw new RuntimeException(e);
+			}
+
+			try {
+				connection.close();
+			} catch(SQLException e) {
+				throw new RuntimeException(e);
+			}
 		}
-
-		try {
-			connection.close();
-		} catch(SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
 }
