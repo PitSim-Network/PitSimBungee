@@ -92,7 +92,6 @@ public class AuthenticationManager implements Listener {
 				while(true) {
 					String line = in.readLine();
 					if(line == null || line.isEmpty()) break;
-					System.out.println(line);
 
 					String[] parts = line.split(" ");
 					String requestUrl = parts[1];
@@ -175,6 +174,7 @@ public class AuthenticationManager implements Listener {
 					break;
 				}
 				if(isOnlinePitSim) {
+					AOutput.color(proxiedPlayer, "&9&lLINK!&7 You have successfully been linked to " + user.getFullUsername());
 					rewardPlayer(proxiedPlayer);
 				} else {
 					rewardVerificationList.add(proxiedPlayer.getUniqueId());

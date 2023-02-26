@@ -22,9 +22,10 @@ public class UnlinkCommand extends Command {
 	public void execute(CommandSender sender, String[] args) {
 		if(!(sender instanceof ProxiedPlayer)) return;
 		ProxiedPlayer proxiedPlayer = (ProxiedPlayer) sender;
+		boolean isAdmin = proxiedPlayer.hasPermission("pitsim.admin");
 
 		UUID targetUUID = proxiedPlayer.getUniqueId();
-		if(proxiedPlayer.hasPermission("pitsim.admin") && args.length != 0) {
+		if(isAdmin && args.length != 0) {
 			try {
 				targetUUID = UUID.fromString(args[0]);
 			} catch(Exception ignored) {
@@ -34,13 +35,17 @@ public class UnlinkCommand extends Command {
 
 		DiscordUser discordUser = DiscordManager.getUser(targetUUID);
 		if(discordUser == null) {
-			AOutput.error(proxiedPlayer, "&c&lERROR!&7 You do not have a discord account linked");
+			if(proxiedPlayer.getUniqueId().equals(targetUUID)) {
+				AOutput.error(proxiedPlayer, "&c&lERROR!&7 You do not have a discord account linked");
+			} else {
+				AOutput.error(proxiedPlayer, "&c&lERROR!&7 They do not have a discord account linked");
+			}
 			return;
 		}
 
 		long nextVerifyTime = discordUser.lastLink + 1000 * 60 * 60 * 24 * 7;
 		long currentTime = System.currentTimeMillis();
-		if(nextVerifyTime > currentTime) {
+		if(!isAdmin && nextVerifyTime > currentTime) {
 			String timeLeft = Misc.formatDurationFull(nextVerifyTime - currentTime, false);
 			AOutput.color(proxiedPlayer, "&c&lERROR!&7 You cannot do this for another " + timeLeft);
 			return;
@@ -48,13 +53,13 @@ public class UnlinkCommand extends Command {
 
 		discordUser.remove();
 		if(proxiedPlayer.getUniqueId().equals(targetUUID)) {
-			AOutput.color(proxiedPlayer, "&9&lLINK! Unliked your discord account");
+			AOutput.color(proxiedPlayer, "&9&lLINK!&7 Unliked your discord account");
 		} else {
 			try {
 				String username = IdentificationManager.getUsername(IdentificationManager.getConnection(), targetUUID);
-				AOutput.color(proxiedPlayer, "&9&lLINK! Unliked discord account for " + username);
+				AOutput.color(proxiedPlayer, "&9&lLINK!&7 Unliked discord account for " + username);
 				ProxiedPlayer proxiedTarget = BungeeMain.INSTANCE.getProxy().getPlayer(targetUUID);
-				if(proxiedTarget != null) AOutput.color(proxiedTarget, "&9&lLINK! Unliked your discord account");
+				if(proxiedTarget != null) AOutput.color(proxiedTarget, "&9&lLINK!&7 Unliked your discord account");
 			} catch(Exception ignored) {}
 		}
 	}
