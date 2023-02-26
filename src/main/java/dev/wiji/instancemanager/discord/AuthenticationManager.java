@@ -1,7 +1,6 @@
 package dev.wiji.instancemanager.discord;
 
 import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
@@ -14,10 +13,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.event.EventHandler;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -141,8 +137,8 @@ public class AuthenticationManager implements Listener {
 					return;
 				}
 
-				DiscordUser discordUser = new DiscordUser(playerUUID, userId, accessToken, refreshToken);
-				System.out.println(user.getFullUsername() + " " + user.getUsername() + " " + user.getId());
+				DiscordUser discordUser = new DiscordUser(playerUUID, userId, accessToken, refreshToken, System.currentTimeMillis());
+				discordUser.save();
 			} catch(IOException e) {
 				throw new RuntimeException(e);
 			}
@@ -161,17 +157,16 @@ public class AuthenticationManager implements Listener {
 		UUID clientState = secretClientStateMap.get(proxiedPlayer.getUniqueId());
 
 		boolean isOnlinePitSim = false;
-		PluginMessage pluginMessage = new PluginMessage()
-				.writeString("AUTH_SUCCESS")
-				.writeString(proxiedPlayer.toString());
 		for(MainGamemodeServer server : MainGamemodeServer.serverList) {
 			if(!server.status.isOnline() || server.getServerInfo() != proxiedPlayer.getServer().getInfo()) continue;
-			pluginMessage.addServer(server.getServerInfo());
 			isOnlinePitSim = true;
 			break;
 		}
-		pluginMessage.send();
-		if(!isOnlinePitSim) rewardVerificationList.add(proxiedPlayer.getUniqueId());
+		if(isOnlinePitSim) {
+			rewardPlayer(proxiedPlayer);
+		} else {
+			rewardVerificationList.add(proxiedPlayer.getUniqueId());
+		}
 
 		sendAuthenticationLink(proxiedPlayer, clientState);
 	}
@@ -183,5 +178,17 @@ public class AuthenticationManager implements Listener {
 				"client_id=841567626466951171&redirect_uri=http%3A%2F%2F51.81.48.25%3A3000&response_type=code&" +
 				"scope=identify%20guilds.join&state=" + clientState.toString()));
 		proxiedPlayer.sendMessage(text);
+	}
+
+	public static void rewardPlayer(ProxiedPlayer proxiedPlayer) {
+		PluginMessage pluginMessage = new PluginMessage()
+				.writeString("AUTH_SUCCESS")
+				.writeString(proxiedPlayer.toString());
+		for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+			if(!server.status.isOnline() || server.getServerInfo() != proxiedPlayer.getServer().getInfo()) continue;
+			pluginMessage.addServer(server.getServerInfo());
+			break;
+		}
+		pluginMessage.send();
 	}
 }
