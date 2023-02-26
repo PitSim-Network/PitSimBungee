@@ -176,7 +176,7 @@ public class AuthenticationManager implements Listener {
 					return;
 				}
 
-				DiscordUser discordUser = new DiscordUser(playerUUID, user.getId())
+				DiscordUser discordUser = new DiscordUser(playerUUID, user.getId());
 				System.out.println(user.getFullUsername() + " " + user.getUsername() + " " + user.getId());
 			} catch(IOException e) {
 				throw new RuntimeException(e);
