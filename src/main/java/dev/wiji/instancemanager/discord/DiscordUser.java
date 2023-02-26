@@ -1,9 +1,13 @@
 package dev.wiji.instancemanager.discord;
 
+import io.mokulu.discord.oauth.DiscordAPI;
+import io.mokulu.discord.oauth.model.User;
+
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.UUID;
+import java.util.*;
 
 public class DiscordUser {
 	public UUID uuid;
@@ -30,8 +34,26 @@ public class DiscordUser {
 		this.lastBoostingClaim = lastBoostingClaim;
 	}
 
+	public boolean wasAuthenticatedRecently() {
+		if(AuthenticationManager.recentlyAuthenticatedUserMap.containsKey(uuid)) return true;
+		try {
+			DiscordAPI api = new DiscordAPI(accessToken);
+			User user = api.fetchUser();
+			AuthenticationManager.recentlyAuthenticatedUserMap.put(uuid, user);
+		} catch(IOException exception) {
+			return false;
+		}
+		return true;
+	}
+
 	public boolean isAuthenticated() {
-		return false;
+		try {
+			DiscordAPI api = new DiscordAPI(accessToken);
+			api.fetchUser();
+		} catch(IOException exception) {
+			return false;
+		}
+		return true;
 	}
 
 	public void save() {

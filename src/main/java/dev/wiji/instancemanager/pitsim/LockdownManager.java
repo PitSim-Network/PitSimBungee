@@ -5,6 +5,7 @@ import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.discord.AuthenticationManager;
 import dev.wiji.instancemanager.discord.DiscordManager;
+import dev.wiji.instancemanager.discord.DiscordUser;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.Leaderboard;
 import dev.wiji.instancemanager.objects.MainGamemodeServer;
@@ -81,7 +82,8 @@ public class LockdownManager implements Listener {
 		if(!requireVerification || player.hasPermission("pitsim.autoverify")) return true;
 		if(getPlaytime(player) >= MINUTES_TO_PASS) return true;
 
-		return DiscordManager.getUser(player.getUniqueId()) != null;
+		DiscordUser discordUser = DiscordManager.getUser(player.getUniqueId());
+		return discordUser != null && discordUser.wasAuthenticatedRecently();
 	}
 
 	public static boolean isCaptcha(ProxiedPlayer player) {

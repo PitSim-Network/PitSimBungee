@@ -31,6 +31,7 @@ public class AuthenticationManager implements Listener {
 
 	public static Map<UUID, UUID> secretClientStateMap = new HashMap<>();
 	public static List<UUID> rewardVerificationList = new ArrayList<>(); // players who weren't on a pitsim server when they verified
+	public  static Map<UUID, User> recentlyAuthenticatedUserMap = new HashMap<>();
 
 	static {
 		oauthHandler = new DiscordOAuth(CLIENT_ID, OAUTH_SECRET,
@@ -167,8 +168,9 @@ public class AuthenticationManager implements Listener {
 	public static void attemptAuthentication(ProxiedPlayer proxiedPlayer) {
 		DiscordUser discordUser = DiscordManager.getUser(proxiedPlayer.getUniqueId());
 
-		if(discordUser != null && discordUser.isAuthenticated()) {
-			AOutput.error(proxiedPlayer, "&c&lERROR!&7 You are already authenticated");
+		if(discordUser != null && discordUser.wasAuthenticatedRecently()) {
+			User user = recentlyAuthenticatedUserMap.get(proxiedPlayer.getUniqueId());
+			AOutput.error(proxiedPlayer, "&c&lERROR!&7 You are already authenticated (" + user.getFullUsername() + ")");
 			return;
 		}
 
