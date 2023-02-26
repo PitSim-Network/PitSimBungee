@@ -1,7 +1,6 @@
 package dev.wiji.instancemanager.commands;
 
 import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.discord.AuthenticationManager;
 import dev.wiji.instancemanager.discord.DiscordManager;
 import dev.wiji.instancemanager.discord.DiscordUser;
 import dev.wiji.instancemanager.misc.AOutput;
@@ -23,7 +22,6 @@ public class UnlinkCommand extends Command {
 	public void execute(CommandSender sender, String[] args) {
 		if(!(sender instanceof ProxiedPlayer)) return;
 		ProxiedPlayer proxiedPlayer = (ProxiedPlayer) sender;
-		AuthenticationManager.attemptAuthentication(proxiedPlayer);
 
 		UUID targetUUID = proxiedPlayer.getUniqueId();
 		if(proxiedPlayer.hasPermission("pitsim.admin") && args.length != 0) {
