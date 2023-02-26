@@ -1,13 +1,16 @@
 package dev.wiji.instancemanager.discord;
 
+import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.events.MessageEvent;
+import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
+import dev.wiji.instancemanager.pitsim.IdentificationManager;
 import io.mokulu.discord.oauth.DiscordAPI;
 import io.mokulu.discord.oauth.DiscordOAuth;
-import io.mokulu.discord.oauth.model.Guild;
 import io.mokulu.discord.oauth.model.TokensResponse;
 import io.mokulu.discord.oauth.model.User;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -17,6 +20,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +71,7 @@ public class AuthenticationManager implements Listener {
 			DiscordUser discordUser = DiscordManager.getUser(playerUUID);
 
 			if(discordUser != null && discordUser.isAuthenticated()) {
-				pluginMessage.writeString(AuthStatus.ALREADY_AUTHENTICATED.name());
+				pluginMessage.writeString(AuthStatus.MINECRAFT_ALREADY_AUTHENTICATED.name());
 			} else {
 				secretClientStateMap.putIfAbsent(playerUUID, UUID.randomUUID());
 				UUID clientState = secretClientStateMap.get(playerUUID);
@@ -113,7 +117,7 @@ public class AuthenticationManager implements Listener {
 					String[] params = queryString.split("&");
 
 					String code = null;
-					String state = null;
+					UUID state = null;
 					for(String param : params) {
 						String[] keyValue = param.split("=");
 						if(keyValue.length <= 1) continue;
@@ -122,7 +126,7 @@ public class AuthenticationManager implements Listener {
 						if(key.equals("code")) {
 							code = value;
 						} else if(key.equals("state")) {
-							state = value;
+							state = UUID.fromString(value);
 						}
 					}
 					if(code != null && state != null) {
@@ -137,7 +141,6 @@ public class AuthenticationManager implements Listener {
 				out.print(response);
 				out.flush();
 
-				// Close our connection
 				in.close();
 				out.close();
 				socket.close();
@@ -146,7 +149,7 @@ public class AuthenticationManager implements Listener {
 			}
 		}
 
-		public void authenticate(String code, String state) {
+		public void authenticate(String code, UUID state) {
 			try {
 				TokensResponse tokens = oauthHandler.getTokens(code);
 				String accessToken = tokens.getAccessToken();
@@ -156,6 +159,24 @@ public class AuthenticationManager implements Listener {
 
 				DiscordAPI api = new DiscordAPI(accessToken);
 				User user = api.fetchUser();
+				long userId = Long.parseLong(user.getId());
+
+				UUID playerUUID = secretClientStateMap.get(state);
+				ProxiedPlayer proxiedPlayer = BungeeMain.INSTANCE.getProxy().getPlayer(playerUUID);
+
+				DiscordUser previousUser = DiscordManager.getUser();
+				if(previousUser != null) {
+					try {
+						AOutput.error(proxiedPlayer, "&c&lERROR!&7 Your discord (" + user.getFullUsername() +
+								") is already linked to " + IdentificationManager.getUsername(
+										IdentificationManager.getConnection(), previousUser.uuid));
+					} catch(SQLException e) {
+						throw new RuntimeException(e);
+					}
+					return;
+				}
+
+				DiscordUser discordUser = new DiscordUser(playerUUID, user.getId())
 				System.out.println(user.getFullUsername() + " " + user.getUsername() + " " + user.getId());
 			} catch(IOException e) {
 				throw new RuntimeException(e);
@@ -164,7 +185,8 @@ public class AuthenticationManager implements Listener {
 	}
 
 	public enum AuthStatus {
-		ALREADY_AUTHENTICATED,
+		DISCORD_ALREADY_AUTHENTICATED,
+		MINECRAFT_ALREADY_AUTHENTICATED,
 		READY_FOR_AUTHENTICATION
 	}
 }

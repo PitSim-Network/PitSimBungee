@@ -1,14 +1,11 @@
 package dev.wiji.instancemanager.pitsim;
 
 import com.google.gson.Gson;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.alogging.ConnectionData;
 import dev.wiji.instancemanager.alogging.ConnectionManager;
 import dev.wiji.instancemanager.alogging.OldConnectionData;
 import net.md_5.bungee.api.plugin.Listener;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -125,8 +122,8 @@ public class IdentificationManager implements Listener {
 			String username = "***REMOVED***";
 			String password = "***REMOVED***";
 			return DriverManager.getConnection(dbUrl, username, password);
-		} catch(Exception ignored) {} ;
-		return null;
+		} catch(Exception ignored) {}
+		throw new RuntimeException();
 	}
 
 	public static String getUsername(Connection conn, UUID uuid) throws SQLException {

@@ -10,6 +10,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 public class AOutput {
 
 	public static void color(CommandSender sender, String message) {
+		if(sender == null) return;
 		if(!(sender instanceof ProxiedPlayer)) {
 			System.out.println(message);
 			return;
@@ -20,13 +21,7 @@ public class AOutput {
 	}
 
 	public static void error(CommandSender sender, String message) {
-		if(!(sender instanceof ProxiedPlayer)) {
-			System.out.println(message);
-			return;
-		}
-		ProxiedPlayer player = (ProxiedPlayer) sender;
-		BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&c" + message));
-		player.sendMessage(components);
+		color(sender, "&c" + message);
 	}
 
 	public static void log(String message) {
