@@ -74,6 +74,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new AuctionAlerts());
 		getProxy().getPluginManager().registerListener(this, new CommandBlocker());
 		getProxy().getPluginManager().registerListener(this, new AuthenticationManager());
+		getProxy().getPluginManager().registerListener(this, new DiscordManager());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new DupeManager());
 		ConfigManager.getMiniServerList();
 
