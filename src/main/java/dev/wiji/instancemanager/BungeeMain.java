@@ -7,9 +7,7 @@ import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
 import dev.wiji.instancemanager.alogging.ConnectionManager;
 import dev.wiji.instancemanager.alogging.LogManager;
 import dev.wiji.instancemanager.commands.*;
-import dev.wiji.instancemanager.discord.AuctionAlerts;
-import dev.wiji.instancemanager.discord.AuthenticationManager;
-import dev.wiji.instancemanager.discord.DiscordPlugin;
+import dev.wiji.instancemanager.discord.*;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
 import dev.wiji.instancemanager.pitsim.*;
 import dev.wiji.instancemanager.skywars.PitsimQuestManager;
@@ -48,6 +46,12 @@ public class BungeeMain extends Plugin {
 
 	@Override
 	public void onEnable() {
+		try {
+			DiscordManager.createTable(DiscordManager.getConnection());
+		} catch(SQLException | ClassNotFoundException throwables) {
+			throwables.printStackTrace();
+		}
+
 		INSTANCE = this;
 		ConfigManager.onEnable();
 		LUCKPERMS = LuckPermsProvider.get();
