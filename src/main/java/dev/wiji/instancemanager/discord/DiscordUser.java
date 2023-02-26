@@ -8,7 +8,7 @@ public class DiscordUser {
 	public String accessToken;
 	public String refreshToken;
 	public long lastRefresh;
-	public int boostingKeys;
+	public long lastBoostingClaim;
 
 //	initial construction
 	public DiscordUser(UUID uuid, long discordID, String accessToken, String refreshToken, long lastRefresh) {
@@ -16,13 +16,13 @@ public class DiscordUser {
 	}
 
 //	loading from db
-	public DiscordUser(UUID uuid, long discordID, String accessToken, String refreshToken, long lastRefresh, int boostingKeys) {
+	public DiscordUser(UUID uuid, long discordID, String accessToken, String refreshToken, long lastRefresh, long lastBoostingClaim) {
 		this.uuid = uuid;
 		this.discordID = discordID;
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;
 		this.lastRefresh = lastRefresh;
-		this.boostingKeys = boostingKeys;
+		this.lastBoostingClaim = lastBoostingClaim;
 	}
 
 	public boolean isAuthenticated() {

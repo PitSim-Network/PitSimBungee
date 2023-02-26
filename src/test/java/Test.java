@@ -19,10 +19,6 @@ public class Test {
 		oauthHandler = new DiscordOAuth(CLIENT_ID, OAUTH_SECRET,
 				"http://localhost:3000", new String[] {"identify", "guilds.join"});
 
-
-
-		if(true) return;
-
 		new Thread(() -> {
 			try(ServerSocket serverSocket = new ServerSocket(3000)) {
 				while(true) {
