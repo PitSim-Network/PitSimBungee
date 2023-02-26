@@ -22,7 +22,6 @@ public class DiscordPlugin {
 
 		if(ConfigManager.isDev()) return;
 		DiscordManager.registerCommand(new PingCommand());
-		DiscordManager.registerCommand(new VerifyCommand());
 	}
 
 	public static void onDisable() {
