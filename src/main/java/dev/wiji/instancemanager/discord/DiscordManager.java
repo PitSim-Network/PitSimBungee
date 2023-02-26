@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.jetbrains.annotations.NotNull;
 
 import javax.security.auth.login.LoginException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +28,8 @@ public class DiscordManager implements EventListener {
 
 	public static Guild MAIN_GUILD;
 	public static Guild PRIVATE_GUILD;
+
+	public static final String DISCORD_TABLE = "DiscordLink";
 
 	public DiscordManager() {
 		System.out.println("Discord bot loading");
@@ -81,6 +84,34 @@ public class DiscordManager implements EventListener {
 
 		if(event instanceof GuildMessageReceivedEvent)
 			onMessage((GuildMessageReceivedEvent) event);
+	}
+
+	public static Connection getConnection() {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			String dbUrl = "jdbc:mysql://sql.pitsim.net:3306/s9_PlayerData";
+			String username = "***REMOVED***";
+			String password = "***REMOVED***";
+			return DriverManager.getConnection(dbUrl, username, password);
+		} catch(Exception ignored) {} ;
+		return null;
+	}
+
+	public static void createTable(Connection connection) throws SQLException, ClassNotFoundException {
+		Statement stmt = connection.createStatement();
+
+		// Create the table
+		String createTableSQL = "CREATE TABLE " + DISCORD_TABLE + " (" +
+				"uuid VARCHAR(36) PRIMARY KEY, " +
+				"discord_id BIGINT NOT NULL, " +
+				"access_token VARCHAR(50), " +
+				"refresh_token VARCHAR(50), " +
+				"last_boosting_claim BIGINT NOT NULL)";
+		stmt.executeUpdate(createTableSQL);
+
+		// Close the statement and connection
+		stmt.close();
+		connection.close();
 	}
 
 	//	TODO: wiji implement (return null if no user)
