@@ -39,7 +39,7 @@ public class AuthenticationManager implements Listener {
 
 	static {
 		oauthHandler = new DiscordOAuth(CLIENT_ID, OAUTH_SECRET,
-				"https://mc.pitsim.net:3000", new String[] {"identify", "guilds.join"});
+				"http://147.135.8.130:3000", new String[] {"identify", "guilds.join"});
 
 		new Thread(() -> {
 			try(ServerSocket serverSocket = new ServerSocket(3000)) {
@@ -92,6 +92,7 @@ public class AuthenticationManager implements Listener {
 				while(true) {
 					String line = in.readLine();
 					if(line == null || line.isEmpty()) break;
+					System.out.println(line);
 
 					String[] parts = line.split(" ");
 					String requestUrl = parts[1];
@@ -138,8 +139,6 @@ public class AuthenticationManager implements Listener {
 				TokensResponse tokens = oauthHandler.getTokens(code);
 				String accessToken = tokens.getAccessToken();
 				String refreshToken = tokens.getRefreshToken();
-				System.out.println(accessToken);
-				System.out.println(refreshToken);
 
 				DiscordAPI api = new DiscordAPI(accessToken);
 				User user = api.fetchUser();
