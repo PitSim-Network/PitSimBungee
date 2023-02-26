@@ -46,12 +46,6 @@ public class BungeeMain extends Plugin {
 
 	@Override
 	public void onEnable() {
-		try {
-			DiscordManager.createTable(DiscordManager.getConnection());
-		} catch(SQLException | ClassNotFoundException throwables) {
-			throwables.printStackTrace();
-		}
-
 		INSTANCE = this;
 		ConfigManager.onEnable();
 		LUCKPERMS = LuckPermsProvider.get();
