@@ -1,6 +1,9 @@
 package dev.wiji.instancemanager.discord;
 
+import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
+import dev.wiji.instancemanager.events.MessageEvent;
+import dev.wiji.instancemanager.objects.PluginMessage;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -11,6 +14,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import net.md_5.bungee.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.security.auth.login.LoginException;
@@ -186,5 +190,22 @@ public class DiscordManager implements EventListener {
 		}
 
 		return null;
+	}
+
+	@EventHandler
+	public void onMessage(MessageEvent event) {
+		PluginMessage message = event.getMessage();
+		List<String> strings = message.getStrings();
+
+		if(!strings.get(0).equals("BOOSTER_CLAIM")) return;
+		String serverName = strings.get(1);
+		String playerUUID = strings.get(2);
+
+		new PluginMessage().writeString("BOOSTER_CLAIM")
+				.writeBoolean(isBoosting(UUID.fromString(playerUUID)))
+				.writeString(playerUUID)
+				.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(serverName))
+				.send();
+
 	}
 }
