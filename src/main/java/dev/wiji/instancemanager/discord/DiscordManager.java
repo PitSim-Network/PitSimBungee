@@ -3,6 +3,7 @@ package dev.wiji.instancemanager.discord;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.events.MessageEvent;
+import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -16,7 +17,6 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
-import net.md_5.bungee.api.event.ProxyReloadEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
@@ -226,8 +226,9 @@ public class DiscordManager implements EventListener, Listener {
 	@EventHandler
 	public void onConnect(PostLoginEvent event) {
 		ProxiedPlayer player = event.getPlayer();
-		if(DiscordManager.getUser(player.getUniqueId()) == null) return;
-
+		DiscordUser discordUser = DiscordManager.getUser(player.getUniqueId());
+		if(discordUser != null && discordUser.wasAuthenticatedRecently()) return;
+		AOutput.color(player, "&9&lLINK!&7 Link your minecraft account to your discord account with /link for a free key");
 	}
 
 	@EventHandler
