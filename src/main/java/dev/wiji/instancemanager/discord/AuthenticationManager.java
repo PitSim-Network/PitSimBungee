@@ -57,13 +57,19 @@ public class AuthenticationManager implements Listener {
 		((ProxyRunnable) () -> {
 			if(queuedUsers.isEmpty()) DiscordManager.populateQueue();
 			if(queuedUsers.isEmpty()) return;
+			UUID uuid = queuedUsers.remove(0);
 
-			UUID uuid = queuedUsers.get(0);
 			DiscordUser user = DiscordManager.getUser(uuid);
+			if(user == null || user.lastRefresh + 1000 * 60 * 60 * 24 > System.currentTimeMillis()) return;
 
-
-			queuedUsers.remove(uuid);
-
+			try {
+				TokensResponse tokens = oauthHandler.refreshTokens(user.refreshToken);
+				user.accessToken = tokens.getAccessToken();
+				user.refreshToken = tokens.getRefreshToken();
+				user.save();
+			} catch(IOException exception) {
+				exception.printStackTrace();
+			}
 		}).runAfterEvery(1, 1, TimeUnit.MINUTES);
 	}
 
@@ -122,8 +128,8 @@ public class AuthenticationManager implements Listener {
 				in.close();
 				out.close();
 				socket.close();
-			} catch(Exception e) {
-				e.printStackTrace();
+			} catch(Exception exception) {
+				exception.printStackTrace();
 			}
 		}
 
@@ -134,7 +140,6 @@ public class AuthenticationManager implements Listener {
 				String refreshToken = tokens.getRefreshToken();
 				System.out.println(accessToken);
 				System.out.println(refreshToken);
-				System.out.println(state.toString());
 
 				DiscordAPI api = new DiscordAPI(accessToken);
 				User user = api.fetchUser();
