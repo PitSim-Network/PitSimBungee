@@ -63,11 +63,9 @@ public class DiscordManager implements EventListener {
 		DiscordUser user = getUser(uuid);
 		if(user == null) return false;
 		long id = user.discordID;
+		Member member = MAIN_GUILD.retrieveMemberById(id).complete();
 
-//		List<Member> members = DiscordManager.MAIN_GUILD.findMembers(member -> member.getRoles().contains(nitroRole)).get();
-
-//		Member member = MAIN_GUILD.getMember(id);
-		return false;
+		return member.getRoles().contains(InGameNitro.nitroRole);
 	}
 
 	public static void onMessage(GuildMessageReceivedEvent event) {
