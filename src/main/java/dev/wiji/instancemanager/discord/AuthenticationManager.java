@@ -1,7 +1,15 @@
+package dev.wiji.instancemanager.discord;
+
+import dev.wiji.instancemanager.events.MessageEvent;
+import dev.wiji.instancemanager.objects.MainGamemodeServer;
+import dev.wiji.instancemanager.objects.PluginMessage;
 import io.mokulu.discord.oauth.DiscordAPI;
 import io.mokulu.discord.oauth.DiscordOAuth;
+import io.mokulu.discord.oauth.model.Guild;
 import io.mokulu.discord.oauth.model.TokensResponse;
 import io.mokulu.discord.oauth.model.User;
+import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.event.EventHandler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,22 +17,25 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-public class Test {
+public class AuthenticationManager implements Listener {
 	public static DiscordOAuth oauthHandler;
 	public static final String CLIENT_ID = "841567626466951171";
 	public static final String OAUTH_SECRET = "L-X8MhiQ8Gi2H7wgLm3-FBjBfrSxrOql";
 
-	public static void main(String[] args) {
+	public static Map<UUID, UUID> secretClientStateMap = new HashMap<>();
+
+	static {
 		oauthHandler = new DiscordOAuth(CLIENT_ID, OAUTH_SECRET,
-				"http://localhost:3000", new String[] {"identify", "guilds.join"});
-
-
-
-		if(true) return;
+				"http://51.81.48.25:3000", new String[] {"identify", "guilds.join"});
 
 		new Thread(() -> {
 			try(ServerSocket serverSocket = new ServerSocket(3000)) {
+				System.out.println("listening on port 3000");
 				while(true) {
 					Socket socket = serverSocket.accept();
 					RequestHandler requestHandler = new RequestHandler(socket);
@@ -34,6 +45,44 @@ public class Test {
 				throw new RuntimeException(e);
 			}
 		}).start();
+	}
+
+	@EventHandler
+	public void onMessage(MessageEvent event) {
+		PluginMessage message = event.getMessage();
+		List<String> strings = message.getStrings();
+		List<Integer> integers = message.getIntegers();
+		List<Long> longs = message.getLongs();
+		List<Boolean> booleans = message.getBooleans();
+		if(strings.isEmpty()) return;
+
+		if(strings.get(0).equals("AUTH_REQUEST")) {
+			String serverName = strings.get(1);
+			UUID playerUUID = UUID.fromString(strings.get(2));
+
+			PluginMessage pluginMessage = new PluginMessage()
+					.writeString("AUTH_RESPONSE")
+					.writeString(playerUUID.toString());
+
+			DiscordUser discordUser = DiscordManager.getUser(playerUUID);
+
+			if(discordUser != null && discordUser.isAuthenticated()) {
+				pluginMessage.writeString(AuthStatus.ALREADY_AUTHENTICATED.name());
+			} else {
+				secretClientStateMap.putIfAbsent(playerUUID, UUID.randomUUID());
+				UUID clientState = secretClientStateMap.get(playerUUID);
+
+				pluginMessage.writeString(AuthStatus.READY_FOR_AUTHENTICATION.name());
+				pluginMessage.writeString(clientState.toString());
+			}
+
+			for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+				if(!server.status.isOnline() || !server.getServerInfo().getName().equals(serverName)) continue;
+				pluginMessage.addServer(server.getServerInfo());
+				break;
+			}
+			pluginMessage.send();
+		}
 	}
 
 	public static class RequestHandler extends Thread {
@@ -46,7 +95,7 @@ public class Test {
 		@Override
 		public void run() {
 			try {
-				System.out.println("Received a connection");
+				System.out.println("receiving a connection on port 3000");
 
 				// Get input and output streams
 				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -55,7 +104,6 @@ public class Test {
 				while(true) {
 					String line = in.readLine();
 					if(line == null || line.isEmpty()) break;
-					System.out.println(line);
 
 					String[] parts = line.split(" ");
 					String requestUrl = parts[1];
@@ -89,34 +137,18 @@ public class Test {
 				out.print(response);
 				out.flush();
 
-				// Write out our header to the client
-//			out.println("Echo Server 1.0");
-//			out.flush();
-
-				// Echo lines back to the client until the client closes the connection or we receive an empty line
-//			String line = in.readLine();
-//			while(line != null && line.length() > 0) {
-//				out.println("Echo: " + line);
-//				out.flush();
-//				line = in.readLine();
-//			}
-
 				// Close our connection
 				in.close();
 				out.close();
 				socket.close();
-
-				System.out.println("Connection closed");
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
 		}
 
 		public void authenticate(String code, String state) {
-			System.out.println("Code: " + code + " State: " + state);
 			try {
-				TokensResponse tokens = Test.oauthHandler.getTokens(code);
-				System.out.println(tokens.getExpiresIn());
+				TokensResponse tokens = oauthHandler.getTokens(code);
 				String accessToken = tokens.getAccessToken();
 				String refreshToken = tokens.getRefreshToken();
 				System.out.println(accessToken);
@@ -129,5 +161,10 @@ public class Test {
 				throw new RuntimeException(e);
 			}
 		}
+	}
+
+	public enum AuthStatus {
+		ALREADY_AUTHENTICATED,
+		READY_FOR_AUTHENTICATION
 	}
 }

@@ -7,10 +7,13 @@ import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.pitsim.OverworldServerManager;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
 import net.luckperms.api.node.Node;
 import net.luckperms.api.node.NodeEqualityPredicate;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -20,11 +23,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-public class InGameNitro {
+public class InGameNitro extends ListenerAdapter {
 	public Role nitroRole = DiscordManager.MAIN_GUILD.getRoleById(Constants.NITRO_ROLE_ID);
 
 	public InGameNitro() {
-
 		((ProxyRunnable) () -> {
 			List<Member> members = DiscordManager.MAIN_GUILD.findMembers(member -> member.getRoles().contains(nitroRole)).get();
 			List<String> memberIGNs = new ArrayList<>();
@@ -82,5 +84,11 @@ public class InGameNitro {
 		}
 
 		message.send();
+	}
+
+	@Override
+	public void onGuildMemberUpdateBoostTime(@NotNull GuildMemberUpdateBoostTimeEvent event) {
+		Member member = event.getMember();
+//		event.get
 	}
 }

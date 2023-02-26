@@ -16,6 +16,7 @@ import javax.security.auth.login.LoginException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class DiscordManager implements EventListener {
 
@@ -28,13 +29,13 @@ public class DiscordManager implements EventListener {
 	public static Guild PRIVATE_GUILD;
 
 	public DiscordManager() {
-
 		System.out.println("Discord bot loading");
 		BUILDER = JDABuilder.createDefault("***REMOVED***");
 		try {
 			BUILDER.setMemberCachePolicy(MemberCachePolicy.ALL);
 			BUILDER.enableIntents(GatewayIntent.GUILD_MEMBERS);
 			BUILDER.addEventListeners(this);
+			BUILDER.addEventListeners(new InGameNitro());
 			JDA = BUILDER.build();
 			JDA.awaitReady();
 		} catch(LoginException | InterruptedException e) {
@@ -43,9 +44,6 @@ public class DiscordManager implements EventListener {
 
 		MAIN_GUILD = JDA.getGuildById(Constants.MAIN_GUILD_ROLE_ID);
 		PRIVATE_GUILD = JDA.getGuildById(Constants.PRIVATE_GUILD_ROLE_ID);
-//
-//		DiscordPlugin.INSTANCE.getServer().getPluginManager().registerEvents(new InGameNitro(), DiscordPlugin.INSTANCE);
-//		DiscordPlugin.INSTANCE.getServer().getPluginManager().registerEvents(new MiscManager(), DiscordPlugin.INSTANCE);
 	}
 
 	public static void registerCommand(DiscordCommand command) {
@@ -59,7 +57,6 @@ public class DiscordManager implements EventListener {
 	}
 
 	public static void onMessage(GuildMessageReceivedEvent event) {
-
 		Message message = event.getMessage();
 		if(!message.getContentRaw().startsWith(prefix)) return;
 
@@ -84,5 +81,15 @@ public class DiscordManager implements EventListener {
 
 		if(event instanceof GuildMessageReceivedEvent)
 			onMessage((GuildMessageReceivedEvent) event);
+	}
+
+	//	TODO: wiji implement (return null if no user)
+	public static DiscordUser getUser(UUID uuid) {
+		return null;
+	}
+
+	//	TODO: wiji implement (return null if no user)
+	public static DiscordUser getUser(long discordID) {
+		return null;
 	}
 }

@@ -15,6 +15,8 @@ repositories {
 }
 
 dependencies {
+    compile 'com.github.Mokulu:discord-oauth2-api:1.0.2'
+
     compileOnly 'com.mattmalec:Pterodactyl4J:2.BETA_81'
     compileOnly 'net.md-5:bungeecord-api:1.8-SNAPSHOT'
     compileOnly files('libs/PluginQuery.jar')

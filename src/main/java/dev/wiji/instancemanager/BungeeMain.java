@@ -8,6 +8,7 @@ import dev.wiji.instancemanager.alogging.ConnectionManager;
 import dev.wiji.instancemanager.alogging.LogManager;
 import dev.wiji.instancemanager.commands.*;
 import dev.wiji.instancemanager.discord.AuctionAlerts;
+import dev.wiji.instancemanager.discord.AuthenticationManager;
 import dev.wiji.instancemanager.discord.DiscordPlugin;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
 import dev.wiji.instancemanager.pitsim.*;
@@ -25,7 +26,6 @@ import net.md_5.bungee.api.plugin.Plugin;
 import septogeddon.pluginquery.PluginQuery;
 import septogeddon.pluginquery.api.QueryMessenger;
 
-import javax.persistence.Id;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.ZoneId;
@@ -75,6 +75,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new LockdownManager());
 		getProxy().getPluginManager().registerListener(this, new AuctionAlerts());
 		getProxy().getPluginManager().registerListener(this, new CommandBlocker());
+		getProxy().getPluginManager().registerListener(this, new AuthenticationManager());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new DupeManager());
 		ConfigManager.getMiniServerList();
 
