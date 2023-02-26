@@ -21,6 +21,7 @@ public class DiscordPlugin {
 		new DiscordManager();
 
 		if(ConfigManager.isDev()) return;
+		new InGameNitro();
 		DiscordManager.registerCommand(new PingCommand());
 	}
 
