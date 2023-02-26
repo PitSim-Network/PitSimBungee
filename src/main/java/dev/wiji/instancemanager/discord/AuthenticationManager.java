@@ -161,7 +161,7 @@ public class AuthenticationManager implements Listener {
 					return;
 				}
 
-				DiscordUser discordUser = new DiscordUser(playerUUID, userId, accessToken, refreshToken, System.currentTimeMillis());
+				DiscordUser discordUser = new DiscordUser(playerUUID, userId, accessToken, refreshToken, System.currentTimeMillis(), System.currentTimeMillis());
 				discordUser.save();
 
 				boolean isOnlinePitSim = false;

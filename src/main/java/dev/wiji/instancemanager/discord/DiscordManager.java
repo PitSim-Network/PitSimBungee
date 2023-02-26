@@ -121,6 +121,7 @@ public class DiscordManager implements EventListener, Listener {
 				"access_token VARCHAR(50), " +
 				"refresh_token VARCHAR(50), " +
 				"last_refresh BIGINT NOT NULL, " +
+				"last_link BIGINT NOT NULL, " +
 				"last_boosting_claim BIGINT NOT NULL)";
 		stmt.executeUpdate(createTableSQL);
 
@@ -134,7 +135,7 @@ public class DiscordManager implements EventListener, Listener {
 		assert connection != null;
 
 		try {
-			String sql = "SELECT discord_id, access_token, refresh_token, last_refresh, last_boosting_claim FROM " + DISCORD_TABLE + " WHERE uuid = ?";
+			String sql = "SELECT discord_id, access_token, refresh_token, last_refresh, last_link, last_boosting_claim FROM " + DISCORD_TABLE + " WHERE uuid = ?";
 			PreparedStatement stmt = connection.prepareStatement(sql);
 			stmt.setString(1, uuid.toString());
 			ResultSet rs = stmt.executeQuery();
@@ -144,9 +145,10 @@ public class DiscordManager implements EventListener, Listener {
 				String access = rs.getString("access_token");
 				String refresh = rs.getString("refresh_token");
 				long refreshTime = rs.getLong("last_refresh");
+				long lastLink = rs.getLong("last_link");
 				long claim = rs.getLong("last_boosting_claim");
 
-				return new DiscordUser(uuid, id, access, refresh, refreshTime, claim);
+				return new DiscordUser(uuid, id, access, refresh, refreshTime, lastLink, claim);
 			} else return null;
 		} catch(SQLException e) {
 			e.printStackTrace();
@@ -166,7 +168,7 @@ public class DiscordManager implements EventListener, Listener {
 		assert connection != null;
 
 		try {
-			String sql = "SELECT uuid, access_token, refresh_token, last_refresh, last_boosting_claim FROM " + DISCORD_TABLE + " WHERE discord_id = ?";
+			String sql = "SELECT uuid, access_token, refresh_token, last_refresh, last_link, last_boosting_claim FROM " + DISCORD_TABLE + " WHERE discord_id = ?";
 			PreparedStatement stmt = connection.prepareStatement(sql);
 			stmt.setLong(1, discordID);
 			ResultSet rs = stmt.executeQuery();
@@ -176,6 +178,7 @@ public class DiscordManager implements EventListener, Listener {
 				String access = rs.getString("access_token");
 				String refresh = rs.getString("refresh_token");
 				long refreshTime = rs.getLong("last_refresh");
+				long lastLink = rs.getLong("last_link");
 				long claim = rs.getLong("last_boosting_claim");
 
 				return new DiscordUser(uuid, discordID, access, refresh, refreshTime, claim);
