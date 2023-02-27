@@ -29,7 +29,7 @@ public class DeploymentManager extends ListenerAdapter {
 
 		new Thread(() -> {
 			try(ServerSocket serverSocket = new ServerSocket(thisPort)) {
-				System.out.println("listening for deployment requests on port " + thisPort);
+				log("listening for deployment requests on port " + thisPort);
 				while(true) {
 					Socket socket = serverSocket.accept();
 					RequestHandler requestHandler = new RequestHandler(socket);
@@ -51,7 +51,7 @@ public class DeploymentManager extends ListenerAdapter {
 		@Override
 		public void run() {
 			try {
-				System.out.println("receiving a connection on port " + thisPort);
+				log("receiving a connection on port " + thisPort);
 
 				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				PrintWriter out = new PrintWriter(socket.getOutputStream());
@@ -74,20 +74,17 @@ public class DeploymentManager extends ListenerAdapter {
 					log("Invalid handshake");
 					return;
 				}
-				log("Handshake authentication valid");
 
 				String serverName = lines.get(1);
-				log("Auto deploy request coming from server: " + serverName);
+				log("Valid handshake received from server: " + serverName);
 
 				String fileName = lines.get(2);
 				String fileNameNoExtension = fileName.split("\\.")[0];
 				String extension = fileName.split("\\.")[1];
 
-				System.out.println(fileNameNoExtension + " " + extension);
-
 				if(!ConfigManager.configuration.getSection("allowed-downloads").getKeys().contains(fileNameNoExtension) ||
 						!extension.equals("jar")) {
-					log("request failed; this file is not on the whitelist");
+					log("Request failed; this file is not on the whitelist");
 					return;
 				}
 
@@ -98,7 +95,6 @@ public class DeploymentManager extends ListenerAdapter {
 				} catch(Exception ignored) {
 					return;
 				}
-				System.out.println(messageID + " " + requestedMessageID);
 
 				File file = new File(BungeeMain.INSTANCE.getDataFolder() + "/autodeploy/" + fileName);
 				if(!file.exists()) log("Cannot find file to deploy: " + fileName);
@@ -114,9 +110,13 @@ public class DeploymentManager extends ListenerAdapter {
 					String path = file.getAbsolutePath();
 					byte[] fileBytes = Files.readAllBytes(Paths.get(path));
 
+					log("Sending File to Server: " + serverName);
+
 					OutputStream outputStream = socket.getOutputStream();
 					outputStream.write(fileBytes);
 					outputStream.flush();
+
+					log("Sent File to Server: " + serverName);
 				}
 
 				in.close();
@@ -142,28 +142,24 @@ public class DeploymentManager extends ListenerAdapter {
 		String fileNameNoExtension = attachment.getFileName().split("\\.")[0];
 		String extension = attachment.getFileName().split("\\.")[1];
 
-		System.out.println(fileNameNoExtension + " " + extension);
-
 		if(!ConfigManager.configuration.getSection("allowed-downloads").getKeys().contains(fileNameNoExtension) ||
 				!extension.equals("jar")) {
-			log("upload failed; this file is not on the whitelist");
+			message.reply("Upload failed: jar is not on the whitelist").queue();
 			return;
 		}
-
-		System.out.println("downloading file");
 
 		File file = new File(BungeeMain.INSTANCE.getDataFolder() + "/autodeploy/" + attachment.getFileName());
 		try {
 			file.createNewFile();
 			attachment.downloadToFile(file).get();
-			System.out.println(file.length());
 		} catch(InterruptedException | ExecutionException | IOException exception) {
 			throw new RuntimeException(exception);
 		}
 
 		ConfigManager.configuration.set("allowed-downloads." + fileNameNoExtension, message.getIdLong());
 		ConfigManager.save();
-		System.out.println("set config option");
+
+		message.reply("Downloaded File: " + attachment.getFileName()).queue();
 	}
 
 	public static void log(String message) {
