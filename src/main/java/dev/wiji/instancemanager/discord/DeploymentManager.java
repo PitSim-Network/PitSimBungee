@@ -110,13 +110,13 @@ public class DeploymentManager extends ListenerAdapter {
 					String path = file.getAbsolutePath();
 					byte[] fileBytes = Files.readAllBytes(Paths.get(path));
 
-					log("Sending File to Server: " + serverName);
+					log("Sending File (" + fileName + ") to Server: " + serverName);
 
 					OutputStream outputStream = socket.getOutputStream();
 					outputStream.write(fileBytes);
 					outputStream.flush();
 
-					log("Sent File to Server: " + serverName);
+					log("Sent File (" + fileName + ") to Server: " + serverName);
 				}
 
 				in.close();
@@ -148,6 +148,7 @@ public class DeploymentManager extends ListenerAdapter {
 			return;
 		}
 
+		new File(BungeeMain.INSTANCE.getDataFolder() + "/autodeploy/").mkdirs();
 		File file = new File(BungeeMain.INSTANCE.getDataFolder() + "/autodeploy/" + attachment.getFileName());
 		try {
 			file.createNewFile();
