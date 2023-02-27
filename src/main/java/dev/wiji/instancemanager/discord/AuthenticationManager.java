@@ -1,6 +1,7 @@
 package dev.wiji.instancemanager.discord;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.MainGamemodeServer;
@@ -38,39 +39,42 @@ public class AuthenticationManager implements Listener {
 	public static List<UUID> queuedUsers = new ArrayList<>();
 
 	static {
-		oauthHandler = new DiscordOAuth(CLIENT_ID, OAUTH_SECRET,
-				"http://147.135.8.130:3000", new String[] {"identify", "guilds.join"});
+		if(!ConfigManager.isDev()) {
+			oauthHandler = new DiscordOAuth(CLIENT_ID, OAUTH_SECRET,
+					"http://147.135.8.130:3000", new String[] {"identify", "guilds.join"});
 
-		new Thread(() -> {
-			try(ServerSocket serverSocket = new ServerSocket(3000)) {
-				System.out.println("listening for discord authentications on port 3000");
-				while(true) {
-					Socket socket = serverSocket.accept();
-					RequestHandler requestHandler = new RequestHandler(socket);
-					requestHandler.start();
+			new Thread(() -> {
+				try(ServerSocket serverSocket = new ServerSocket(3000)) {
+					System.out.println("listening for discord authentications on port 3000");
+					while(true) {
+						Socket socket = serverSocket.accept();
+						RequestHandler requestHandler = new RequestHandler(socket);
+						requestHandler.start();
+					}
+				} catch(IOException e) {
+					throw new RuntimeException(e);
 				}
-			} catch(IOException e) {
-				throw new RuntimeException(e);
-			}
-		}).start();
+			}).start();
 
-		((ProxyRunnable) () -> {
-			if(queuedUsers.isEmpty()) DiscordManager.populateQueue();
-			if(queuedUsers.isEmpty()) return;
-			UUID uuid = queuedUsers.remove(0);
+			((ProxyRunnable) () -> {
+				if(queuedUsers.isEmpty()) DiscordManager.populateQueue();
+				if(queuedUsers.isEmpty()) return;
+				UUID uuid = queuedUsers.remove(0);
 
-			DiscordUser user = DiscordManager.getUser(uuid);
-			if(user == null || user.lastRefresh + 1000 * 60 * 60 * 24 > System.currentTimeMillis()) return;
+				DiscordUser user = DiscordManager.getUser(uuid);
+				if(user == null || user.lastRefresh + 1000 * 60 * 60 * 24 > System.currentTimeMillis()) return;
 
-			try {
-				TokensResponse tokens = oauthHandler.refreshTokens(user.refreshToken);
-				user.accessToken = tokens.getAccessToken();
-				user.refreshToken = tokens.getRefreshToken();
-				user.save();
-			} catch(IOException exception) {
-				exception.printStackTrace();
-			}
-		}).runAfterEvery(1, 1, TimeUnit.MINUTES);
+				try {
+					TokensResponse tokens = oauthHandler.refreshTokens(user.refreshToken);
+					user.accessToken = tokens.getAccessToken();
+					user.refreshToken = tokens.getRefreshToken();
+					user.save();
+				} catch(IOException exception) {
+					exception.printStackTrace();
+					queuedUsers.add(uuid);
+				}
+			}).runAfterEvery(1, 1, TimeUnit.MINUTES);
+		}
 	}
 
 	public static class RequestHandler extends Thread {
