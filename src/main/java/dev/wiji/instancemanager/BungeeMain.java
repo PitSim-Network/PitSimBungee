@@ -77,7 +77,6 @@ public class BungeeMain extends Plugin {
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new DupeManager());
 		ConfigManager.getMiniServerList();
 
-
 		ServerManager.onEnable();
 		SkywarsGameManager.fetchServer();
 		PluginMessageSender.sendPlayerStats();
@@ -112,7 +111,7 @@ public class BungeeMain extends Plugin {
 	public void onDisable() {
 		//make sure to unregister the registered channels in case of a reload
 		this.getProxy().unregisterChannel("BungeeCord");
-		ConfigManager.onDisable();
+		ConfigManager.save();
 
 		if(FirestoreManager.registration != null) {
 			FirestoreManager.registration.remove();

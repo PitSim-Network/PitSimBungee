@@ -43,7 +43,7 @@ public class AuthenticationManager implements Listener {
 
 		new Thread(() -> {
 			try(ServerSocket serverSocket = new ServerSocket(3000)) {
-				System.out.println("listening on port 3000");
+				System.out.println("listening for discord authentications on port 3000");
 				while(true) {
 					Socket socket = serverSocket.accept();
 					RequestHandler requestHandler = new RequestHandler(socket);

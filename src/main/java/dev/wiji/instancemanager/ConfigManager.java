@@ -29,7 +29,7 @@ public class ConfigManager {
 		}
 	}
 
-	public static void onDisable() {
+	public static void save() {
 		try {
 			ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, file);
 		} catch(IOException e) {
@@ -43,7 +43,6 @@ public class ConfigManager {
 			miniServerMap.put(split[0], split[1]);
 			ServerManager.inactiveServers.add(split[0]);
 		}
-
 	}
 
 	public static void getPitSimServerList() {
