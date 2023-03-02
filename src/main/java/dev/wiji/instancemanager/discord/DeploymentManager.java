@@ -97,11 +97,15 @@ public class DeploymentManager extends ListenerAdapter {
 				}
 
 				File file = new File(BungeeMain.INSTANCE.getDataFolder() + "/autodeploy/" + fileName);
-				if(!file.exists()) log("Cannot find file to deploy: " + fileName);
 
-				if(messageID == requestedMessageID || !file.exists()) {
+				if(messageID == requestedMessageID) {
 					out.println("FAILED");
 					out.flush();
+					log("Server already has up-to-date file: " + fileName);
+				} else if(!file.exists()) {
+					out.println("FAILED");
+					out.flush();
+					log("Cannot find file to deploy: " + fileName);
 				} else {
 					out.println("SUCCESS");
 					out.println(messageID);
