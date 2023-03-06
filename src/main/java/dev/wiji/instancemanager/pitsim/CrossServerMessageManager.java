@@ -84,6 +84,7 @@ public class CrossServerMessageManager implements Listener {
 			strings.remove(0);
 			strings.remove(0);
 			for(String string : strings) forwardMessage.writeString(string);
+			for(int integer : integers) forwardMessage.writeInt(integer);
 
 			for(OverworldServer server : OverworldServerManager.serverList) {
 				if(!server.status.isOnline()) continue;
