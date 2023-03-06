@@ -1,6 +1,7 @@
 package dev.wiji.instancemanager.pitsim;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.discord.AuctionAlerts;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.market.MarketManager;
 import dev.wiji.instancemanager.objects.*;
@@ -225,6 +226,7 @@ public class MessageListener implements Listener {
 
 			PluginMessage responseMessage = new PluginMessage().writeBoolean(isOnline);
 			event.getMessage().respond(responseMessage, serverInfo);
+			AuctionAlerts.alert(playerName + " auction response is " + isOnline);
 
 			if(isOnline) {
 				ServerInfo playerServer = player.getServer().getInfo();

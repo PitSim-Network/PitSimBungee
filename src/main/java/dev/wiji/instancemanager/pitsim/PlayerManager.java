@@ -45,7 +45,7 @@ public class PlayerManager implements Listener {
 	@EventHandler
 	public void onLeave(PlayerDisconnectEvent event) {
 		ProxiedPlayer player = event.getPlayer();
-		if(event.getPlayer().getServer() == null) return;
+		if(event.getPlayer() == null || event.getPlayer().getServer() == null) return;
 		ServerInfo previousServer = event.getPlayer().getServer().getInfo();
 
 		if(BungeeVanishAPI.isInvisible(player)) return;

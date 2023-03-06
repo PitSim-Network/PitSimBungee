@@ -3,6 +3,9 @@ package dev.wiji.instancemanager.pitsim;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
+import dev.wiji.instancemanager.discord.AuthenticationManager;
+import dev.wiji.instancemanager.discord.DiscordManager;
+import dev.wiji.instancemanager.discord.DiscordUser;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.Leaderboard;
 import dev.wiji.instancemanager.objects.MainGamemodeServer;
@@ -26,7 +29,7 @@ public class LockdownManager implements Listener {
 	public static Map<ProxiedPlayer, UUID> captchaAnswers = new HashMap<>();
 	private static boolean requireVerification = false;
 	private static boolean requireCaptcha = false;
-	public static String verificationMessage = "&c&lVERIFICATION! &7Verify your account in discord.pitsim.net (.verify)";
+	public static String verificationMessage = "&c&lVERIFICATION! &7Discord verification is required to join";
 
 	public static final int MINUTES_TO_PASS = 120;
 
@@ -45,6 +48,7 @@ public class LockdownManager implements Listener {
 		if(!isVerified(player)) {
 			event.setCancelled(true);
 			AOutput.error(player, verificationMessage);
+			AuthenticationManager.attemptAuthentication(player);
 			return;
 		}
 		if(!isCaptcha(player)) {
@@ -78,15 +82,8 @@ public class LockdownManager implements Listener {
 		if(!requireVerification || player.hasPermission("pitsim.autoverify")) return true;
 		if(getPlaytime(player) >= MINUTES_TO_PASS) return true;
 
-		return DiscordVerification.getDiscord(player.getUniqueId()) != 0;
-	}
-
-	public static boolean verify(String name, long discordId) {
-		return DiscordVerification.verify(name, discordId);
-	}
-
-	public static boolean removeVerifiedPlayer(long discordId) {
-		return DiscordVerification.unverifyDiscord(discordId);
+		DiscordUser discordUser = DiscordManager.getUser(player.getUniqueId());
+		return discordUser != null && discordUser.wasAuthenticatedRecently();
 	}
 
 	public static boolean isCaptcha(ProxiedPlayer player) {
@@ -138,15 +135,20 @@ public class LockdownManager implements Listener {
 	}
 
 	public static boolean canJoin(ProxiedPlayer player) {
-		boolean captcha = isCaptcha(player);
-		boolean verified = isVerified(player);
-
-		if(!captcha) sendCaptchaMessage(player);
-		if(!verified) AOutput.color(player, verificationMessage);
-
-		if(requireCaptcha && requireVerification) return captcha && verified;
-		else if(requireVerification) return verified;
-		else if(requireCaptcha) return captcha;
+		if(requireVerification) {
+			boolean verified = isVerified(player);
+			if(!verified) {
+				AOutput.color(player, verificationMessage);
+				return false;
+			}
+		}
+		if(requireCaptcha) {
+			boolean captcha = isCaptcha(player);
+			if(!captcha) {
+				sendCaptchaMessage(player);
+				return false;
+			}
+		}
 		return true;
 	}
 

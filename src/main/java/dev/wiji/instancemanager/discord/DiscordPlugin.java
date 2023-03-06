@@ -20,15 +20,14 @@ public class DiscordPlugin {
 		BasicConfigurator.configure();
 		Logger.getRootLogger().setLevel(Level.INFO);
 
-		new DiscordManager();
+		BungeeMain.INSTANCE.getProxy().getPluginManager().registerListener(BungeeMain.INSTANCE, new DiscordManager());
 
-		DiscordManager.registerCommand(new PingCommand());
+		if(ConfigManager.isDev()) return;
 		new InGameNitro();
-		DiscordManager.registerCommand(new VerifyCommand());
+		DiscordManager.registerCommand(new PingCommand());
 	}
 
 	public static void onDisable() {
-
 		DiscordManager.disable();
 	}
 }

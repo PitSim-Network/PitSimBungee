@@ -7,7 +7,7 @@ import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
 import dev.wiji.instancemanager.alogging.ConnectionManager;
 import dev.wiji.instancemanager.alogging.LogManager;
 import dev.wiji.instancemanager.commands.*;
-import dev.wiji.instancemanager.discord.DiscordPlugin;
+import dev.wiji.instancemanager.discord.*;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
 import dev.wiji.instancemanager.market.MarketManager;
 import dev.wiji.instancemanager.market.MarketMessaging;
@@ -28,6 +28,7 @@ import septogeddon.pluginquery.api.QueryMessenger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -41,6 +42,7 @@ public class BungeeMain extends Plugin {
 			"***REMOVED***");
 
 	public static long STARTUP_TIME;
+	public static final ZoneId TIME_ZONE = ZoneId.of("America/New_York");
 
 	public static LuckPerms LUCKPERMS;
 
@@ -74,9 +76,11 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new LockdownManager());
 		getProxy().getPluginManager().registerListener(this, new MarketMessaging());
 		getProxy().getPluginManager().registerListener(this, new MarketManager());
+		getProxy().getPluginManager().registerListener(this, new AuctionAlerts());
+		getProxy().getPluginManager().registerListener(this, new CommandBlocker());
+		getProxy().getPluginManager().registerListener(this, new AuthenticationManager());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new DupeManager());
 		ConfigManager.getMiniServerList();
-
 
 		ServerManager.onEnable();
 		SkywarsGameManager.fetchServer();
@@ -87,7 +91,6 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerCommand(this, new PlayCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new ToggleCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new LobbyCommand(this));
-		getProxy().getPluginManager().registerCommand(this, new BetaCommad(this));
 		getProxy().getPluginManager().registerCommand(this, new DevCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new AdminCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new PTestCommand(this));
@@ -97,6 +100,9 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerCommand(this, new LockdownCommand());
 		getProxy().getPluginManager().registerCommand(this, new CaptchaCommand());
 		getProxy().getPluginManager().registerCommand(this, new SeenCommand());
+		getProxy().getPluginManager().registerCommand(this, new DupeCheckCommand());
+		getProxy().getPluginManager().registerCommand(this, new LinkCommand());
+		getProxy().getPluginManager().registerCommand(this, new UnlinkCommand());
 
 		ConfigManager.getPitSimServerList();
 		ConfigManager.getDarkzoneServerList();
@@ -111,7 +117,7 @@ public class BungeeMain extends Plugin {
 	public void onDisable() {
 		//make sure to unregister the registered channels in case of a reload
 		this.getProxy().unregisterChannel("BungeeCord");
-		ConfigManager.onDisable();
+		ConfigManager.save();
 		MarketManager.shutdown();
 
 		if(FirestoreManager.registration != null) {

@@ -23,14 +23,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 public class DupeManager implements Listener {
-	public static boolean running = false;
+	public static boolean isRunning = false;
 	public static List<TrackedItem> dupedItems = new ArrayList<>();
 	public static List<TrackedMiscItem> miscItems = new ArrayList<>();
 
@@ -48,9 +47,10 @@ public class DupeManager implements Listener {
 	}
 
 	public static void run() {
-		if(running) throw new RuntimeException();
-		running = true;
+		if(isRunning) throw new RuntimeException();
+		isRunning = true;
 		dupedItems.clear();
+		for(TrackedMiscItem miscItem : miscItems) miscItem.itemMap.clear();
 		new Thread(() -> {
 			Set<UUID> exemptPlayers;
 			try {
@@ -116,7 +116,7 @@ public class DupeManager implements Listener {
 				}
 			}
 			checkForDuplicates(trackedItems, exemptPlayers);
-			running = false;
+			isRunning = false;
 		}).start();
 	}
 
@@ -149,10 +149,9 @@ public class DupeManager implements Listener {
 
 		TextChannel dupeChannel = DiscordManager.PRIVATE_GUILD.getTextChannelById(Constants.DUPE_CHANNEL);
 		assert dupeChannel != null;
-		SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		if(!dupedItems.isEmpty()) dupeChannel.sendMessage(".\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" +
 				(ConfigManager.isDev() ? "" : "@everyone ") + "Logging " + dupedItems.size() + " duped item" + (dupedItems.size() == 1 ? "" : "s") + " from " +
-				dateFormat.format(Misc.convertToEST(new Date()))).queue();
+				Misc.getCurrentDateFormatted()).queue();
 
 		List<MessageEmbed> dupeEmbeds = new ArrayList<>();
 		EmbedBuilder embedBuilder = null;
@@ -165,8 +164,7 @@ public class DupeManager implements Listener {
 			} else {
 				UUID previousUUID = dupedItems.get(i - 1).itemUUID;
 				if(!previousUUID.equals(dupedItem.itemUUID)) {
-					embedBuilder.setDescription("Item found " + timesFound + " time" + (timesFound == 1 ? "" : "s") + " " +
-							(players.size() == 1 ? "on 1 account" : "across " + players.size() + " accounts"));
+					setDescription(embedBuilder, players.size(), timesFound);
 					dupeEmbeds.add(embedBuilder.build());
 
 					embedBuilder = getNextEmbed(dupedItem);
@@ -179,6 +177,11 @@ public class DupeManager implements Listener {
 
 			embedBuilder.addField(ChatColor.stripColor(dupedItem.itemStack.displayName), getPlayerName(dupedItem.playerUUID) + "'s " +
 					dupedItem.itemLocation.getUnformattedLocation(), true);
+
+			if(i == dupedItems.size() - 1) {
+				setDescription(embedBuilder, players.size(), timesFound);
+				dupeEmbeds.add(embedBuilder.build());
+			}
 		}
 		new Thread(() -> {
 			while(!dupeEmbeds.isEmpty()) {
@@ -214,12 +217,17 @@ public class DupeManager implements Listener {
 
 			try {
 				miscItemWebhook.execute();
-			} catch(IOException e) {
-				e.printStackTrace();
+			} catch(IOException exception) {
+				exception.printStackTrace();
 			}
 		}
 
 		System.out.println("Results posted/queued");
+	}
+
+	public static void setDescription(EmbedBuilder embedBuilder, int players, int timesFound) {
+		embedBuilder.setDescription("Item found " + timesFound + " time" + (timesFound == 1 ? "" : "s") + " " +
+				(players == 1 ? "on 1 account" : "across " + players + " accounts"));
 	}
 
 	public static EmbedBuilder getNextEmbed(TrackedItem dupedItem) {

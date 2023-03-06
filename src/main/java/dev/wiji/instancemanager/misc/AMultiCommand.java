@@ -5,6 +5,8 @@
 
 package dev.wiji.instancemanager.misc;
 
+import dev.wiji.instancemanager.guilds.commands.guildcommands.DepositCommand;
+import dev.wiji.instancemanager.guilds.commands.guildcommands.WithdrawCommand;
 import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -42,8 +44,6 @@ public abstract class AMultiCommand extends ACommandBase {
 			}
 		}
 
-		MainGamemodeServer.guildCooldown.put(((ProxiedPlayer) sender).getUniqueId(), System.currentTimeMillis());
-
 		if(args.isEmpty()) {
 			if(sender instanceof ProxiedPlayer) {
 				this.createHelp().send((ProxiedPlayer) sender);
@@ -66,6 +66,10 @@ public abstract class AMultiCommand extends ACommandBase {
 			} while(!subCommand.getExecutor().equals(args.get(0)));
 
 			args.remove(0);
+			if(subCommand instanceof WithdrawCommand || subCommand instanceof DepositCommand) {
+				assert sender instanceof ProxiedPlayer;
+				MainGamemodeServer.guildCooldown.put(((ProxiedPlayer) sender).getUniqueId(), System.currentTimeMillis());
+			}
 			subCommand.execute(sender, args);
 		}
 	}

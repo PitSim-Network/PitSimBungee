@@ -11,12 +11,12 @@ public interface ProxyRunnable extends Runnable {
 		return ProxyServer.getInstance().getScheduler().runAsync(BungeeMain.INSTANCE, this);
 	}
 
-	default ScheduledTask runAfter(long time, TimeUnit unit) {
-		return ProxyServer.getInstance().getScheduler().schedule(BungeeMain.INSTANCE, this, time, unit);
+	default ScheduledTask runAfter(long delay, TimeUnit unit) {
+		return ProxyServer.getInstance().getScheduler().schedule(BungeeMain.INSTANCE, this, delay, unit);
 	}
 
-	default ScheduledTask runAfterEvery(long time, long repeat, TimeUnit unit) {
-		return ProxyServer.getInstance().getScheduler().schedule(BungeeMain.INSTANCE, this, time, repeat, unit);
+	default ScheduledTask runAfterEvery(long delay, long repeat, TimeUnit unit) {
+		return ProxyServer.getInstance().getScheduler().schedule(BungeeMain.INSTANCE, this, delay, repeat, unit);
 	}
 
 	default void cancel(ProxyRunnable task) {

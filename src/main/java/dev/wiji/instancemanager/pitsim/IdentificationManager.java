@@ -7,32 +7,55 @@ import dev.wiji.instancemanager.alogging.ConnectionManager;
 import dev.wiji.instancemanager.alogging.OldConnectionData;
 import net.md_5.bungee.api.plugin.Listener;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.nio.file.Files;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 public class IdentificationManager implements Listener {
 
 	public static String NEW_TABLE = "PlayerInfo";
-	public static String OLD_TABLE = "PlayerData";
 
 	public static void migrate() {
 		Connection connection = getConnection();
+
+		File file = new File(BungeeMain.INSTANCE.getDataFolder().getPath() + "/s1_PlayerData_PlayerData.csv");
+
 		try {
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			String line;
+
+			List<UUID> migratedUUIDs = new ArrayList<>();
+
+			while(true) {
+				line = reader.readLine();
+				if(line == null || line.isEmpty()) break;
+
+				String[] split = line.split(",");
+				assert connection != null;
+
+				UUID uuid;
+				String name = split[1];
+				try {
+					uuid = UUID.fromString(split[0]);
+				} catch(Exception e) {
+					uuid = UUID.fromString(split[1]);
+					name = split[0];
+				}
+
+				if(migratedUUIDs.contains(uuid)) continue;
+				migratedUUIDs.add(uuid);
+				insertIntoTableInitial(connection, uuid, name, System.currentTimeMillis(), "mc.pitsim.net");
+			}
+
 			assert connection != null;
-			createTable(connection);
-			connection = getConnection();
-			moveMalformedData(OLD_TABLE, NEW_TABLE, connection);
-			connection = getConnection();
+			connection.close();
 
-			updateDomainData(connection, new File(BungeeMain.INSTANCE.getDataFolder() + "/connection-data.json"));
-
-		} catch(SQLException | ClassNotFoundException throwables) {
-			throwables.printStackTrace();
+		} catch(IOException | SQLException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -99,8 +122,8 @@ public class IdentificationManager implements Listener {
 			String username = "***REMOVED***";
 			String password = "***REMOVED***";
 			return DriverManager.getConnection(dbUrl, username, password);
-		} catch(Exception ignored) {} ;
-		return null;
+		} catch(Exception ignored) {}
+		throw new RuntimeException();
 	}
 
 	public static String getUsername(Connection conn, UUID uuid) throws SQLException {

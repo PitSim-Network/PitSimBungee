@@ -7,6 +7,7 @@ import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
 import dev.wiji.instancemanager.commands.LobbiesCommand;
 import dev.wiji.instancemanager.commands.ServerJoinCommand;
+import dev.wiji.instancemanager.discord.AuthenticationManager;
 import dev.wiji.instancemanager.guilds.GuildMessaging;
 import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.OverworldServer;
@@ -254,6 +255,14 @@ public class OverworldServerManager implements Listener {
 
 		OverworldServer finalTargetServer = targetServer;
 		((ProxyRunnable) () -> player.connect(finalTargetServer.getServerInfo())).runAfter(1, TimeUnit.SECONDS);
+
+		if(AuthenticationManager.rewardVerificationList.contains(player.getUniqueId())) {
+			((ProxyRunnable) () -> {
+				if(player.getServer().getInfo() != finalTargetServer.getServerInfo()) return;
+				AuthenticationManager.rewardPlayer(player);
+				AuthenticationManager.rewardVerificationList.remove(player.getUniqueId());
+			}).runAfter(3, TimeUnit.SECONDS);
+		}
 
 		return true;
 	}

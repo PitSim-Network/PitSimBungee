@@ -1,9 +1,9 @@
 package dev.wiji.instancemanager.alogging;
 
-import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 // Enum needs to be mirrored in the pitsim plugin
@@ -58,8 +58,8 @@ public enum LogType {
 			this.fileName = fileName;
 		}
 
-		public String getRelativePath(String serverName, Date date) {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+		public String getRelativePath(String serverName, OffsetDateTime date) {
+			DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 			String path = "/logs/" + dateFormat.format(date);
 			if(this == SERVER) {
 				path += "/servers/" + serverName + ".log";
