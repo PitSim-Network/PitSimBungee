@@ -21,8 +21,8 @@ public class DiscordUser {
 	public static final String DISCORD_TABLE = DiscordManager.DISCORD_TABLE;
 
 //	initial construction
-	public DiscordUser(UUID uuid, long discordID, String accessToken, String refreshToken, long lastRefresh, long lastLink) {
-		this(uuid, discordID, accessToken, refreshToken, lastRefresh, lastLink, 0);
+	public DiscordUser(UUID uuid, long discordID, String accessToken, String refreshToken) {
+		this(uuid, discordID, accessToken, refreshToken, System.currentTimeMillis(), System.currentTimeMillis(), 0);
 	}
 
 //	loading from db
