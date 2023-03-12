@@ -57,7 +57,7 @@ public class AuthenticationManager implements Listener {
 			}).start();
 
 			((ProxyRunnable) () -> {
-				if(queuedUsers.isEmpty()) DiscordManager.populateQueue();
+				if(queuedUsers.isEmpty()) queuedUsers = DiscordManager.getAllDiscordUserUUIDs();
 				if(queuedUsers.isEmpty()) return;
 				UUID uuid = queuedUsers.remove(0);
 
@@ -176,6 +176,9 @@ public class AuthenticationManager implements Listener {
 
 				DiscordUser discordUser = new DiscordUser(playerUUID, userId, accessToken, refreshToken);
 				discordUser.save();
+				try {
+					discordUser.joinDiscord();
+				} catch(Exception ignored) {}
 
 				boolean isOnlinePitSim = false;
 				for(MainGamemodeServer server : MainGamemodeServer.serverList) {
@@ -197,8 +200,8 @@ public class AuthenticationManager implements Listener {
 				} catch(Exception exception) {
 					exception.printStackTrace();
 				}
-			} catch(IOException e) {
-				throw new RuntimeException(e);
+			} catch(IOException exception) {
+				throw new RuntimeException(exception);
 			}
 		}
 	}

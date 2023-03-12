@@ -5,6 +5,7 @@ import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.misc.AOutput;
+import dev.wiji.instancemanager.misc.PrivateInfo;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -43,8 +44,8 @@ public class DiscordManager implements EventListener, Listener {
 	public static final String DISCORD_TABLE = "DiscordAuthentication";
 
 	public DiscordManager() {
-		System.out.println("Discord bot loading");
-		BUILDER = JDABuilder.createDefault("***REMOVED***");
+		AOutput.log("Discord bot loading");
+		BUILDER = JDABuilder.createDefault(PrivateInfo.BOT_TOKEN);
 		try {
 			BUILDER.setMemberCachePolicy(MemberCachePolicy.ALL);
 			BUILDER.enableIntents(GatewayIntent.GUILD_MEMBERS);
@@ -100,7 +101,7 @@ public class DiscordManager implements EventListener, Listener {
 	public void onEvent(@NotNull GenericEvent event) {
 
 		if(event instanceof ReadyEvent)
-			System.out.println("Discord bot enabled");
+			AOutput.log("Discord bot enabled");
 
 		if(event instanceof GuildMessageReceivedEvent)
 			onMessage((GuildMessageReceivedEvent) event);
@@ -202,7 +203,8 @@ public class DiscordManager implements EventListener, Listener {
 		return null;
 	}
 
-	public static void populateQueue() {
+	public static List<UUID> getAllDiscordUserUUIDs() {
+		List<UUID> discordUsers = new ArrayList<>();
 		Connection connection = getConnection();
 		assert connection != null;
 
@@ -213,7 +215,7 @@ public class DiscordManager implements EventListener, Listener {
 
 			while(rs.next()) {
 				UUID uuid = UUID.fromString(rs.getString("uuid"));
-				AuthenticationManager.queuedUsers.add(uuid);
+				discordUsers.add(uuid);
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
@@ -224,6 +226,8 @@ public class DiscordManager implements EventListener, Listener {
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
+
+		return discordUsers;
 	}
 
 	@EventHandler

@@ -26,6 +26,7 @@ dependencies {
     compileOnly 'com.google.firebase:firebase-admin:8.0.0'
     compileOnly files('libs/craftbukkit-1.8.8-R0.1-SNAPSHOT-latest.jar')
     compileOnly 'net.luckperms:api:5.4'
+    compileOnly 'com.squareup.okhttp3:okhttp:4.9.2'
 
     compileOnly group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
     compileOnly ('net.dv8tion:JDA:4.2.1_262') {
@@ -34,7 +35,7 @@ dependencies {
 }
 
 shadowJar {
-
     relocate 'dev.kyro.arcticapi', 'dev.kyro.pitsim.arcticapi'
     relocate 'net.kyori', 'dev.kyro.pitsim.kyori'
+    relocate 'com.squareup.okhttp3', 'dev.pitsim.libs.okhhtp'
 }
