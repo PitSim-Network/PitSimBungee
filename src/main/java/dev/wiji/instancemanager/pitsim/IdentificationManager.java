@@ -126,15 +126,17 @@ public class IdentificationManager implements Listener {
 		throw new RuntimeException();
 	}
 
-	public static String getUsername(Connection conn, UUID uuid) throws SQLException {
-		String sql = "SELECT username FROM " + NEW_TABLE + " WHERE uuid = ?";
-		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setString(1, uuid.toString());
-		ResultSet rs = stmt.executeQuery();
-		if(rs.next()) {
-			return rs.getString("username");
+	public static String getUsername(Connection conn, UUID uuid) {
+		try {
+			String sql = "SELECT username FROM " + NEW_TABLE + " WHERE uuid = ?";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1, uuid.toString());
+			ResultSet rs = stmt.executeQuery();
+			if(rs.next()) return rs.getString("username");
+		} catch(SQLException exception) {
+			exception.printStackTrace();
 		}
-		return null;
+		return uuid.toString();
 	}
 
 	public static UUID getUuid(Connection conn, String username) throws SQLException {
