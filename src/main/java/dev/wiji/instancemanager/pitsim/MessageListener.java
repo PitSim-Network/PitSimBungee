@@ -162,12 +162,39 @@ public class MessageListener implements Listener {
 		if(strings.size() >= 3 && strings.get(0).equals("BOOSTER USE")) {
 			String boosterName = strings.get(1);
 			String announcement = strings.get(2);
+			String activatorUUID = strings.get(3);
 			int time = integers.get(0);
 
 			PluginMessage outgoingMessage = new PluginMessage();
-			outgoingMessage.writeString("BOOSTER USE").writeString(boosterName).writeString(announcement).writeInt(time);
+			outgoingMessage.writeString("BOOSTER USE")
+					.writeString(boosterName)
+					.writeString(announcement)
+					.writeString(activatorUUID)
+					.writeInt(time);
 			for(MainGamemodeServer pitSimServer : MainGamemodeServer.serverList) {
 				if(pitSimServer.status.isOnline()) message.addServer(pitSimServer.getServerInfo());
+			}
+
+			message.send();
+		}
+
+		if(strings.size() >= 1 && strings.get(0).equals("BOOSTER_SHARE")) {
+			String boosterName = strings.get(1);
+			UUID activatorUUID = UUID.fromString(strings.get(2));
+			int amount = integers.get(0);
+
+			ProxiedPlayer proxiedPlayer = BungeeMain.INSTANCE.getProxy().getPlayer(activatorUUID);
+			if(proxiedPlayer == null) return;
+
+			PluginMessage outgoingMessage = new PluginMessage();
+			outgoingMessage.writeString("BOOSTER_SHARE")
+					.writeString(boosterName)
+					.writeString(activatorUUID.toString())
+					.writeInt(amount);
+			for(MainGamemodeServer pitSimServer : MainGamemodeServer.serverList) {
+				if(!pitSimServer.status.isOnline() || !pitSimServer.getPlayers().contains(proxiedPlayer)) continue;
+				message.addServer(pitSimServer.getServerInfo());
+				break;
 			}
 
 			message.send();
