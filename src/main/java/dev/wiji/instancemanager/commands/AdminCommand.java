@@ -330,7 +330,7 @@ public class AdminCommand extends Command {
 
 		if(args[0].equalsIgnoreCase("discord")) {
 			if(!Misc.isKyro(player.getUniqueId())) {
-				AOutput.error(player, "&c&lERROR!&7 You have to be kyro to do this");
+				AOutput.error(player, "&c&lERROR!&7 You have to be &9Kyro &7to do this");
 				return;
 			}
 
