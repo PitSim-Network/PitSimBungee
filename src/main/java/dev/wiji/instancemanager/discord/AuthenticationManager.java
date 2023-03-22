@@ -16,6 +16,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import org.bukkit.ChatColor;
+import org.jsoup.HttpStatusException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,7 +24,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -57,18 +57,28 @@ public class AuthenticationManager implements Listener {
 			}).start();
 
 			((ProxyRunnable) () -> {
-				if(queuedUsers.isEmpty()) DiscordManager.populateQueue();
+				if(queuedUsers.isEmpty()) queuedUsers = DiscordManager.getAllDiscordUserUUIDs();
 				if(queuedUsers.isEmpty()) return;
 				UUID uuid = queuedUsers.remove(0);
 
 				DiscordUser user = DiscordManager.getUser(uuid);
-				if(user == null || user.lastRefresh + 1000 * 60 * 60 * 24 > System.currentTimeMillis()) return;
+				if(user == null || user.lastRefresh + 1000 * 60 * 60 * 24 > System.currentTimeMillis() || user.accessToken.equals("INVALID")) return;
 
 				try {
 					TokensResponse tokens = oauthHandler.refreshTokens(user.refreshToken);
 					user.accessToken = tokens.getAccessToken();
 					user.refreshToken = tokens.getRefreshToken();
+					user.lastRefresh = System.currentTimeMillis();
 					user.save();
+				} catch(HttpStatusException exception) {
+					int statusCode = exception.getStatusCode();
+					String name = IdentificationManager.getUsername(IdentificationManager.getConnection(), user.uuid);
+					if(statusCode == 400) {
+						System.out.println("Marking discord user as invalid: " + name);
+						user.accessToken = "INVALID";
+						user.refreshToken = "INVALID";
+						user.save();
+					}
 				} catch(IOException exception) {
 					exception.printStackTrace();
 					queuedUsers.add(uuid);
@@ -158,18 +168,17 @@ public class AuthenticationManager implements Listener {
 
 				DiscordUser previousUser = DiscordManager.getUser(userId);
 				if(previousUser != null) {
-					try {
-						AOutput.error(proxiedPlayer, "&c&lERROR!&7 Your discord (" + user.getFullUsername() +
-								") is already linked to " + IdentificationManager.getUsername(
-										IdentificationManager.getConnection(), previousUser.uuid));
-					} catch(SQLException e) {
-						throw new RuntimeException(e);
-					}
+					AOutput.error(proxiedPlayer, "&c&lERROR!&7 Your discord (" + user.getFullUsername() +
+							") is already linked to " + IdentificationManager.getUsername(
+									IdentificationManager.getConnection(), previousUser.uuid));
 					return;
 				}
 
-				DiscordUser discordUser = new DiscordUser(playerUUID, userId, accessToken, refreshToken, System.currentTimeMillis(), System.currentTimeMillis());
+				DiscordUser discordUser = new DiscordUser(playerUUID, userId, accessToken, refreshToken);
 				discordUser.save();
+				try {
+					discordUser.joinDiscord();
+				} catch(Exception ignored) {}
 
 				boolean isOnlinePitSim = false;
 				for(MainGamemodeServer server : MainGamemodeServer.serverList) {
@@ -191,8 +200,8 @@ public class AuthenticationManager implements Listener {
 				} catch(Exception exception) {
 					exception.printStackTrace();
 				}
-			} catch(IOException e) {
-				throw new RuntimeException(e);
+			} catch(IOException exception) {
+				throw new RuntimeException(exception);
 			}
 		}
 	}
@@ -200,7 +209,7 @@ public class AuthenticationManager implements Listener {
 	public static void attemptAuthentication(ProxiedPlayer proxiedPlayer) {
 		DiscordUser discordUser = DiscordManager.getUser(proxiedPlayer.getUniqueId());
 
-		if(discordUser != null && discordUser.wasAuthenticatedRecently()) {
+		if(discordUser != null && discordUser.isAuthenticated()) {
 			User user = recentlyAuthenticatedUserMap.get(proxiedPlayer.getUniqueId());
 			AOutput.error(proxiedPlayer, "&c&lERROR!&7 You are already authenticated (" + user.getFullUsername() + ")");
 			return;

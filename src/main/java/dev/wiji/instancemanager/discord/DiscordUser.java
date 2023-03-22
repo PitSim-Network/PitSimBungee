@@ -1,13 +1,18 @@
 package dev.wiji.instancemanager.discord;
 
+import dev.wiji.instancemanager.misc.AOutput;
+import dev.wiji.instancemanager.misc.PrivateInfo;
 import io.mokulu.discord.oauth.DiscordAPI;
 import io.mokulu.discord.oauth.model.User;
+import okhttp3.*;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class DiscordUser {
 	public UUID uuid;
@@ -21,8 +26,8 @@ public class DiscordUser {
 	public static final String DISCORD_TABLE = DiscordManager.DISCORD_TABLE;
 
 //	initial construction
-	public DiscordUser(UUID uuid, long discordID, String accessToken, String refreshToken, long lastRefresh, long lastLink) {
-		this(uuid, discordID, accessToken, refreshToken, lastRefresh, lastLink, 0);
+	public DiscordUser(UUID uuid, long discordID, String accessToken, String refreshToken) {
+		this(uuid, discordID, accessToken, refreshToken, System.currentTimeMillis(), System.currentTimeMillis(), 0);
 	}
 
 //	loading from db
@@ -81,40 +86,71 @@ public class DiscordUser {
 	}
 
 	public void save() {
-			Connection connection = DiscordManager.getConnection();
+		Connection connection = DiscordManager.getConnection();
 
-			try {
-				String sql = "INSERT INTO " + DISCORD_TABLE + " (uuid, discord_id, access_token, refresh_token, last_refresh, last_link, last_boosting_claim)" +
-						" VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = ?, discord_id = ?, access_token = ?, refresh_token = ?," +
-						" last_refresh = ?, last_link = ?, last_boosting_claim = ?";
+		try {
+			String sql = "INSERT INTO " + DISCORD_TABLE + " (uuid, discord_id, access_token, refresh_token, last_refresh, last_link, last_boosting_claim)" +
+					" VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = ?, discord_id = ?, access_token = ?, refresh_token = ?," +
+					" last_refresh = ?, last_link = ?, last_boosting_claim = ?";
 
-				assert connection != null;
+			assert connection != null;
 
-				PreparedStatement stmt = connection.prepareStatement(sql);
-				stmt.setString(1, uuid.toString());
-				stmt.setLong(2, discordID);
-				stmt.setString(3, accessToken);
-				stmt.setString(4, refreshToken);
-				stmt.setLong(5, lastRefresh);
-				stmt.setLong(6, lastLink);
-				stmt.setLong(7, lastBoostingClaim);
+			PreparedStatement stmt = connection.prepareStatement(sql);
+			stmt.setString(1, uuid.toString());
+			stmt.setLong(2, discordID);
+			stmt.setString(3, accessToken);
+			stmt.setString(4, refreshToken);
+			stmt.setLong(5, lastRefresh);
+			stmt.setLong(6, lastLink);
+			stmt.setLong(7, lastBoostingClaim);
 
-				stmt.setString(8, uuid.toString());
-				stmt.setLong(9, discordID);
-				stmt.setString(10, accessToken);
-				stmt.setString(11, refreshToken);
-				stmt.setLong(12, lastRefresh);
-				stmt.setLong(13, lastLink);
-				stmt.setLong(14, lastBoostingClaim);
-				stmt.executeUpdate();
-			} catch(SQLException e) {
-				throw new RuntimeException(e);
-			}
-
-			try {
-				connection.close();
-			} catch(SQLException e) {
-				throw new RuntimeException(e);
-			}
+			stmt.setString(8, uuid.toString());
+			stmt.setLong(9, discordID);
+			stmt.setString(10, accessToken);
+			stmt.setString(11, refreshToken);
+			stmt.setLong(12, lastRefresh);
+			stmt.setLong(13, lastLink);
+			stmt.setLong(14, lastBoostingClaim);
+			stmt.executeUpdate();
+		} catch(SQLException e) {
+			throw new RuntimeException(e);
 		}
+
+		try {
+			connection.close();
+		} catch(SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void joinDiscord() throws Exception {
+		String requestUrl = "https://discord.com/api/guilds/" + Constants.MAIN_GUILD_ROLE_ID + "/members/" + discordID;
+
+		List<String> roles = new ArrayList<>();
+		roles.add(Constants.MEMBER_ROLE_ID + "");
+		String requestBody = "{"
+				+ "\"access_token\":\"" + accessToken + "\","
+				+ "\"roles\":" + roles
+				+ "}";
+
+		OkHttpClient client = new OkHttpClient();
+		MediaType mediaType = MediaType.parse("application/json");
+		RequestBody body = RequestBody.create(mediaType, requestBody);
+		Request request = new Request.Builder()
+				.url(requestUrl)
+				.method("PUT", body)
+				.addHeader("Content-Type", "application/json")
+				.addHeader("Authorization", "Bot " + PrivateInfo.BOT_TOKEN)
+				.build();
+
+		Response response = client.newCall(request).execute();
+
+		int responseCode = response.code();
+		if(responseCode != 201 && responseCode != 204) {
+			String errorMessage = response.body().string();
+			AOutput.log("Error joining user: " + discordID);
+			AOutput.log("Error message: " + errorMessage);
+			throw new Exception("Unexpected response code: " + responseCode);
+		}
+	}
 }

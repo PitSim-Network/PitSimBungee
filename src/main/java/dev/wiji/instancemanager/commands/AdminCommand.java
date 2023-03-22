@@ -5,11 +5,16 @@ import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.alogging.ConnectionData;
 import dev.wiji.instancemanager.alogging.ConnectionManager;
 import dev.wiji.instancemanager.builders.MessageBuilder;
+import dev.wiji.instancemanager.discord.DiscordManager;
+import dev.wiji.instancemanager.discord.DiscordUser;
 import dev.wiji.instancemanager.misc.AOutput;
+import dev.wiji.instancemanager.misc.Misc;
 import dev.wiji.instancemanager.objects.*;
 import dev.wiji.instancemanager.pitsim.DarkzoneServerManager;
 import dev.wiji.instancemanager.pitsim.OverworldServerManager;
 import dev.wiji.instancemanager.storage.EditSessionManager;
+import io.mokulu.discord.oauth.DiscordAPI;
+import io.mokulu.discord.oauth.model.User;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -21,7 +26,9 @@ import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
 
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class AdminCommand extends Command {
 	public AdminCommand(Plugin bungeeMain) {
@@ -319,6 +326,41 @@ public class AdminCommand extends Command {
 				return;
 			}
 			AOutput.color(player, "&a&lCONNECT!&7 " + connectionData.name + " &7first connected with: &a" + connectionData.host);
+		}
+
+		if(args[0].equalsIgnoreCase("discord")) {
+			if(!Misc.isKyro(player.getUniqueId())) {
+				AOutput.error(player, "&c&lERROR!&7 You have to be &9Kyro &7to do this");
+				return;
+			}
+
+			if(args.length < 2) {
+				AOutput.error(player, "&c&lERROR!&7 Usage: /admin discord <forcejoin>");
+				return;
+			}
+
+			if(args[1].equalsIgnoreCase("forcejoin")) {
+				List<UUID> queue = DiscordManager.getAllDiscordUserUUIDs();
+				new Thread(() -> {
+					while(!queue.isEmpty()) {
+						DiscordUser discordUser = DiscordManager.getUser(queue.remove(0));
+						try {
+							DiscordAPI api = new DiscordAPI(discordUser.accessToken);
+							User user = api.fetchUser();
+
+							AOutput.log("Attempting to join account to discord: " + user.getFullUsername());
+							discordUser.joinDiscord();
+						} catch(Exception exception) {
+							continue;
+						}
+						try {
+							Thread.sleep(10_000);
+						} catch(InterruptedException exception) {
+							throw new RuntimeException(exception);
+						}
+					}
+				}).start();
+			}
 		}
 	}
 }

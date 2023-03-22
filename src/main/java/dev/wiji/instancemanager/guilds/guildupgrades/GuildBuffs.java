@@ -21,7 +21,7 @@ public class GuildBuffs extends GuildUpgrade {
 		ALoreBuilder lore = new ALoreBuilder();
 		lore.addLore("&7Unlock &bguild upgrades &7(found in /guild menu)");
 
-		DummyItemStack itemStack = new DummyItemStack("CHEST");
+		DummyItemStack itemStack = new DummyItemStack("BEACON");
 		itemStack.setDisplayName(displayName);
 		itemStack.setLore(lore.getLore());
 		return itemStack;

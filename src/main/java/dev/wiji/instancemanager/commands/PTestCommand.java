@@ -12,10 +12,8 @@ public class PTestCommand extends Command {
 
 	@Override
 	public void execute(CommandSender sender, String[] args) {
-
 		if(!(sender instanceof ProxiedPlayer)) return;
 		ProxiedPlayer player = (ProxiedPlayer) sender;
 		if(!player.hasPermission("pitsim.admin")) return;
-
 	}
 }
