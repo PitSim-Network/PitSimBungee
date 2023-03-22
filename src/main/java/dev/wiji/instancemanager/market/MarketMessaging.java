@@ -47,6 +47,22 @@ public class MarketMessaging implements Listener {
 			listing.end();
 		}
 
+		if(strings.size() >= 2 && strings.get(0).equals("STAFF REMOVE LISTING")) {
+			UUID staff = UUID.fromString(strings.get(1));
+			UUID listingID = UUID.fromString(strings.get(2));
+
+			MarketListing listing = MarketManager.getListing(listingID);
+
+			System.out.println("Received staff remove listing");
+
+			if(listing == null) {
+				MarketManager.sendFailure(staff, listingID);
+				return;
+			}
+
+			listing.staffEnd(staff);
+		}
+
 		if(strings.size() >= 2 && strings.get(0).equals("PLACE MARKET BID")) {
 			UUID player = UUID.fromString(strings.get(1));
 			UUID listingID = UUID.fromString(strings.get(2));

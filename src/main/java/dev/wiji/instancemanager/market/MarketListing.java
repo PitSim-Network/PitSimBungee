@@ -163,7 +163,7 @@ public class MarketListing implements Serializable {
 				return;
 			}
 
-			stock-= amount;
+			stock -= amount;
 			MarketManager.sendSuccess(playerUUID, this);
 			stack.amount = stock;
 			itemData = CustomSerializer.serialize(stack);
@@ -176,8 +176,7 @@ public class MarketListing implements Serializable {
 			if(stock == 0) {
 				itemClaimed = true;
 				end();
-			}
-			else update();
+			} else update();
 
 		} else {
 			claimableSouls += binPrice;
@@ -273,7 +272,6 @@ public class MarketListing implements Serializable {
 				}
 			}
 
-
 			if(getHighestBidder() != null) {
 				String message = "&a&lMARKET &7You won " + item.displayName + " &7for &f" + getHighestBid() + " Souls&7!";
 				MarketManager.replaceAlerts(getHighestBidder(), marketUUID, message);
@@ -292,9 +290,37 @@ public class MarketListing implements Serializable {
 			MarketManager.replaceAlerts(ownerUUID, marketUUID, ownerMessage);
 		}
 
-
 		hasEnded = true;
 		update();
+	}
+
+	public void staffEnd(UUID staffUUID) {
+
+		CustomSerializer.LimitedItemStack stack = CustomSerializer.deserialize(itemData);
+		String alert = "&a&lMARKET &7Your " + stack.displayName + " &7listing has been forcibly ended. " +
+				"&cYou will not receive back the item or any souls. Make a ticket in our Discord if you believe this was an error.";
+		MarketManager.replaceAlerts(ownerUUID, marketUUID, alert);
+
+		if(startingBid != -1) {
+			bidMap.put(staffUUID, Integer.MAX_VALUE);
+			buyer = staffUUID;
+			claimableSouls = 0;
+			hasEnded = true;
+
+			for(Map.Entry<UUID, Integer> entry : bidMap.entrySet()) {
+				if(entry.getKey().equals(staffUUID)) continue;
+
+				String message = "&a&lMARKET &7Your have been refunded &f" + entry.getValue() + " Souls &7 since" +
+						" an auction has been forcibly ended. Visit the market to claim them!";
+				MarketManager.replaceAlerts(entry.getKey(), marketUUID, message);
+			}
+
+			update();
+			MarketManager.sendSuccess(staffUUID, this);
+		} else {
+			MarketManager.sendSuccess(staffUUID, this);
+			remove();
+		}
 	}
 
 	public void remove() {

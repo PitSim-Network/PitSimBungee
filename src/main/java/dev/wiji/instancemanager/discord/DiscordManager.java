@@ -6,6 +6,7 @@ import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.misc.AOutput;
+
 import dev.wiji.instancemanager.misc.PrivateInfo;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.dv8tion.jda.api.JDABuilder;
@@ -234,7 +235,7 @@ public class DiscordManager implements EventListener, Listener {
 	@EventHandler
 	public void onConnect(PostLoginEvent event) {
 		ProxiedPlayer proxiedPlayer = event.getPlayer();
-		DiscordUser discordUser = DiscordManager.getUser(proxiedPlayer.getUniqueId());
+		DiscordUser discordUser = getUser(proxiedPlayer.getUniqueId());
 		if(discordUser != null && discordUser.wasAuthenticatedRecently()) return;
 		((ProxyRunnable) () -> {
 			if(!proxiedPlayer.isConnected()) return;

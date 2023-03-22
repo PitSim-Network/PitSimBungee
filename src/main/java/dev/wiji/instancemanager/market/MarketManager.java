@@ -43,6 +43,7 @@ public class MarketManager implements Listener {
 
 	public static void init() {
 		File folder = new File(BungeeMain.INSTANCE.getDataFolder() + "/market/");
+		if(!folder.exists()) folder.mkdirs();
 		File[] fileArray = folder.listFiles();
 
 		assert fileArray != null;
