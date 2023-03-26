@@ -1,6 +1,8 @@
 package dev.wiji.instancemanager.guilds;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.commands.PlayCommand;
+import dev.wiji.instancemanager.guilds.commands.GuildChatCommand;
 import dev.wiji.instancemanager.guilds.commands.admin.GuildAdminCommand;
 import dev.wiji.instancemanager.guilds.commands.admin.ReputationCommand;
 import dev.wiji.instancemanager.guilds.commands.guildcommands.*;
@@ -44,6 +46,8 @@ public class ArcticGuilds {
 		List<AMultiCommand> guildCommands = new ArrayList<>();
 		guildCommands.add(new GuildCommand("guild"));
 		guildCommands.add(new GuildCommand("g"));
+
+		INSTANCE.getProxy().getPluginManager().registerCommand(INSTANCE, new GuildChatCommand("gc"));
 
 		for(AMultiCommand guildCommand : guildCommands) {
 			new HelpCommand(guildCommand, "help");

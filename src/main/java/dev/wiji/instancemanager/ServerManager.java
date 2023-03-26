@@ -3,6 +3,7 @@ package dev.wiji.instancemanager;
 import com.mattmalec.pterodactyl4j.UtilizationState;
 import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 import com.mattmalec.pterodactyl4j.client.entities.Utilization;
+import net.md_5.bungee.api.config.ServerInfo;
 
 import java.util.*;
 
@@ -47,5 +48,9 @@ public class ServerManager {
 	public static void runCommand(String identifier, String command) {
 		ClientServer server = BungeeMain.client.retrieveServerByIdentifier(identifier).execute();
 		BungeeMain.client.sendCommand(server, command).execute();
+	}
+
+	public static boolean isMainGamemodeServer(ServerInfo serverInfo) {
+		return pitSimServers.containsKey(serverInfo.getName()) || darkzoneServers.containsKey(serverInfo.getName());
 	}
 }
