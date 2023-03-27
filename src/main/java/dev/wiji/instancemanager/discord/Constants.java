@@ -12,4 +12,5 @@ public class Constants {
 	public static final long PRIVATE_GUILD_ROLE_ID = 915463500644614185L;
 	public static final long DUPE_CHANNEL = 933261330469756988L;
 	public static final long AUCTION_CHANNEL = 1072058878981845054L;
+	public static final long MARKET_CHANNEL = 1089843369775210597L;
 }

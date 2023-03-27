@@ -1,5 +1,7 @@
 package dev.wiji.instancemanager.market;
 
+import dev.wiji.instancemanager.alogging.LogType;
+import dev.wiji.instancemanager.discord.MarketLog;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.md_5.bungee.api.plugin.Listener;
@@ -29,6 +31,7 @@ public class MarketMessaging implements Listener {
 
 			MarketListing listing = new MarketListing(owner, item, startingBid, binPrice, isStackBIN, duration);
 			MarketManager.listings.add(listing);
+			MarketLog.log(listing, LogType.CREATE_LISTING, owner, new int[] {});
 			listing.update();
 		}
 
@@ -44,6 +47,7 @@ public class MarketMessaging implements Listener {
 			}
 
 			MarketManager.sendSuccess(owner, listing);
+			MarketLog.log(listing, LogType.MARKET_CANCEL, owner, new int[] {});
 			listing.end();
 		}
 

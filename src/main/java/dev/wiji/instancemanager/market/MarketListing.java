@@ -1,6 +1,9 @@
 package dev.wiji.instancemanager.market;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.alogging.LogType;
+import dev.wiji.instancemanager.discord.MarketLog;
+import dev.wiji.instancemanager.guilds.controllers.objects.DummyItemStack;
 import dev.wiji.instancemanager.misc.CustomSerializer;
 import dev.wiji.instancemanager.objects.DarkzoneServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
@@ -142,6 +145,7 @@ public class MarketListing implements Serializable {
 		}
 
 		MarketManager.sendSuccess(playerUUID, this);
+		MarketLog.log(this, LogType.MARKET_BID, playerUUID, new int[] {bidAmount});
 
 		buyer = playerUUID;
 		buyerDisplayName = getDisplayName(playerUUID);
@@ -176,6 +180,7 @@ public class MarketListing implements Serializable {
 
 			stock -= amount;
 			MarketManager.sendSuccess(playerUUID, this);
+			MarketLog.log(this, LogType.MARKET_BIN, playerUUID, new int[] {binPrice * amount, amount});
 			stack.amount = stock;
 			itemData = CustomSerializer.serialize(stack);
 			claimableSouls += (binPrice * amount);
@@ -200,6 +205,7 @@ public class MarketListing implements Serializable {
 			new MarketAlertManager.MarketAlert(ownerUUID, marketUUID, message);
 			//TODO: Alert to owner
 			MarketManager.sendSuccess(playerUUID, this);
+			MarketLog.log(this, LogType.MARKET_BIN, playerUUID, new int[] {binPrice * amount, amount});
 			end();
 		}
 	}
@@ -221,10 +227,12 @@ public class MarketListing implements Serializable {
 
 		if(getHighestBidder() != null && playerUUID.equals(getHighestBidder())) {
 			MarketManager.sendSuccess(playerUUID, this);
+			MarketLog.log(this, LogType.MARKET_CLAIM_ITEM, playerUUID, new int[] {});
 			itemClaimed = true;
 			update();
 		} else if(playerUUID.equals(ownerUUID) && hasEnded) {
 			MarketManager.sendSuccess(playerUUID, this);
+			MarketLog.log(this, LogType.MARKET_CLAIM_ITEM, playerUUID, new int[] {});
 			itemClaimed = true;
 			update();
 		}
@@ -247,6 +255,7 @@ public class MarketListing implements Serializable {
 		if(bidMap.containsKey(playerUUID)) {
 			bidMap.remove(playerUUID);
 			MarketManager.sendSuccess(playerUUID, this);
+			MarketLog.log(this, LogType.MARKET_CLAIM_SOULS, playerUUID, new int[] {});
 			update();
 			return;
 		}
@@ -257,6 +266,7 @@ public class MarketListing implements Serializable {
 		}
 
 		MarketManager.sendSuccess(playerUUID, this);
+		MarketLog.log(this, LogType.MARKET_CLAIM_SOULS, playerUUID, new int[] {});
 		claimableSouls = 0;
 
 		if(itemClaimed && bidMap.size() <= 1) remove();
@@ -299,6 +309,7 @@ public class MarketListing implements Serializable {
 		}
 
 		hasEnded = true;
+		MarketLog.log(this, LogType.MARKET_END, null, new int[] {});
 		update();
 	}
 
@@ -325,8 +336,10 @@ public class MarketListing implements Serializable {
 
 			update();
 			MarketManager.sendSuccess(staffUUID, this);
+			MarketLog.log(this, LogType.MARKET_STAFF_END, staffUUID, new int[] {});
 		} else {
 			MarketManager.sendSuccess(staffUUID, this);
+			MarketLog.log(this, LogType.SERVER_START, staffUUID, new int[] {binPrice});
 			remove();
 		}
 	}
@@ -400,6 +413,10 @@ public class MarketListing implements Serializable {
 		}
 	}
 
+	public CustomSerializer.LimitedItemStack getDeserializedData() {
+		return CustomSerializer.deserialize(itemData);
+	}
+
 	public boolean isExpired() {
 		return creationTime + listingLength <= System.currentTimeMillis();
 	}
@@ -446,6 +463,14 @@ public class MarketListing implements Serializable {
 
 	public String getItemData() {
 		return itemData;
+	}
+
+	public long getListingLength() {
+		return listingLength;
+	}
+
+	public UUID getBuyer() {
+		return buyer;
 	}
 
 	public int getOriginalStock() {

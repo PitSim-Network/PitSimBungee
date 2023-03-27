@@ -32,6 +32,16 @@ public enum LogType {
 	//	Server TODO: actually implement
 	SERVER_START,
 	SERVER_STOP,
+
+	//	Market
+	CREATE_LISTING(LogFile.MARKET, LogFile.MAJOR),
+	MARKET_BIN(LogFile.MARKET, LogFile.MAJOR),
+	MARKET_BID(LogFile.MARKET, LogFile.MAJOR),
+	MARKET_CANCEL(LogFile.MARKET, LogFile.MAJOR),
+	MARKET_END(LogFile.MARKET, LogFile.MAJOR),
+	MARKET_STAFF_END(LogFile.MARKET, LogFile.MAJOR),
+	MARKET_CLAIM_ITEM(LogFile.MARKET, LogFile.MAJOR),
+	MARKET_CLAIM_SOULS(LogFile.MARKET, LogFile.MAJOR),
 	;
 
 	public final List<LogFile> logFiles;
@@ -50,7 +60,8 @@ public enum LogType {
 		CHAT("/chat.log"),
 		CHAT_AND_COMMANDS("/command.log"),
 		COMBAT("/combat.log"),
-		GUILDS("/guilds.log");
+		GUILDS("/guilds.log"),
+		MARKET("/market.log");
 
 		private final String fileName;
 
