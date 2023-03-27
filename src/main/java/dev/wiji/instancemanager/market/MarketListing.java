@@ -112,6 +112,10 @@ public class MarketListing implements Serializable {
 
 	public void placeBid(UUID playerUUID, int bidAmount) {
 		if(startingBid == -1 || isExpired() || bidAmount < getMinimumBid() || stackBIN) {
+
+			System.out.println("bidAmount: " + bidAmount);
+			System.out.println("minBid: " + getMinimumBid());
+
 			MarketManager.sendFailure(playerUUID, this);
 			return;
 		}
@@ -124,7 +128,7 @@ public class MarketListing implements Serializable {
 		MarketManager.replaceAlerts(ownerUUID, marketUUID, message);
 
 
-		if(getTimeLeft() < 1000 * 60 * 2) setTime();
+		if(getTimeLeft() < (1000 * 60 * 2)) setTime();
 
 		bidMap.put(playerUUID, bidAmount);
 
@@ -149,6 +153,13 @@ public class MarketListing implements Serializable {
 	public void bin(UUID playerUUID, int amount, boolean holdItem) {
 
 		if(binPrice == -1) {
+			System.out.println("BIN PRICE IS -1");
+			MarketManager.sendFailure(playerUUID, this);
+			return;
+		}
+
+		if(buyer != null) {
+			System.out.println("BUYER IS NOT NULL");
 			MarketManager.sendFailure(playerUUID, this);
 			return;
 		}
@@ -278,9 +289,6 @@ public class MarketListing implements Serializable {
 
 				String ownerMessage = "&a&lMARKET " + getDisplayName(getHighestBidder()) + " &7 Bought your " + item.displayName + " &7for &f" + getHighestBid() + " Souls&7!";
 				MarketManager.replaceAlerts(ownerUUID, marketUUID, ownerMessage);
-			} else {
-				String ownerMessage = "&a&lMARKET &7Your " + item.displayName + " &7has expired with no bids!";
-				MarketManager.replaceAlerts(ownerUUID, marketUUID, ownerMessage);
 			}
 		} else if(stackBIN) {
 			String ownerMessage = "&a&lMARKET &7Your listing for " + item.displayName + " &7has expired with &a" + item.amount + " Items &7remaining!";
@@ -362,7 +370,7 @@ public class MarketListing implements Serializable {
 	}
 
 	public long getTimeLeft() {
-		return System.currentTimeMillis() - (creationTime + listingLength);
+		return (creationTime + listingLength) - System.currentTimeMillis();
 	}
 
 	public void setTime() {

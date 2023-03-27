@@ -78,7 +78,6 @@ public class MarketMessaging implements Listener {
 		}
 
 		if(strings.size() >= 3 && strings.get(0).equals("LISTING BIN")) {
-			System.out.println("Bin!");
 			UUID player = UUID.fromString(strings.get(1));
 			UUID listingID = UUID.fromString(strings.get(2));
 			int amount = ints.get(0);
