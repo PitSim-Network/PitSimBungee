@@ -3,7 +3,6 @@ package dev.wiji.instancemanager.market;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.alogging.LogType;
 import dev.wiji.instancemanager.discord.MarketLog;
-import dev.wiji.instancemanager.guilds.controllers.objects.DummyItemStack;
 import dev.wiji.instancemanager.misc.CustomSerializer;
 import dev.wiji.instancemanager.objects.DarkzoneServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
@@ -147,6 +146,7 @@ public class MarketListing implements Serializable {
 		MarketManager.sendSuccess(playerUUID, this);
 		MarketLog.log(this, LogType.MARKET_BID, playerUUID, new int[] {bidAmount});
 
+		//TODO: Make bidding not set buyer
 		buyer = playerUUID;
 		buyerDisplayName = getDisplayName(playerUUID);
 		claimableSouls = bidAmount;
