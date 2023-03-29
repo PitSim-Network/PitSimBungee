@@ -15,17 +15,14 @@ import java.util.UUID;
 public class MarketLog {
 
 	public static void log(MarketListing listing, LogType type, UUID uuid, int[] param) {
-
-		DarkzoneServer server = DarkzoneServerManager.serverList.get(0);
-		String serverString = (server == null ? null : server.getServerInfo().getName());
+		if(DiscordManager.JDA == null) return;
 
 		String message = getMessage(listing, type, uuid, param);
 
 		assert message != null;
-		LogManager.logMessage(type, serverString, "[" + type.name() + "] " + message.replaceAll("\n", ""), Misc.getCurrentDate());
+		LogManager.logProxyMessage(type, message.replaceAll("\n", ""));
 
 		message = "```" + message + "```";
-
 		TextChannel channel = Objects.requireNonNull(DiscordManager.JDA.getTextChannelById(Constants.MARKET_CHANNEL));
 		channel.sendMessage(message).queue();
 	}
