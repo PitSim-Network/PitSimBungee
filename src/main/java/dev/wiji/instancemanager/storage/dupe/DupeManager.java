@@ -5,6 +5,7 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.discord.Constants;
 import dev.wiji.instancemanager.discord.DiscordManager;
+import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.misc.CustomSerializer;
 import dev.wiji.instancemanager.misc.Misc;
 import dev.wiji.instancemanager.storage.StorageProfile;
@@ -65,14 +66,14 @@ public class DupeManager implements Listener {
 			} catch(MojangsonParseException ignored) {}
 
 			List<TrackedItem> trackedItems = new ArrayList<>();
-			System.out.println("Stage 1 initiated");
+			AOutput.log("Stage 1 initiated");
 
 			File folder = new File(BungeeMain.INSTANCE.getDataFolder() + "/itemstorage/");
 			File[] fileArray = folder.listFiles();
 
 			int fileCount = Objects.requireNonNull(fileArray).length;
 			for(int i = 0; i < fileCount; i++) {
-				if(i % 100 == 0) System.out.println("Stage 1: " + i + "/" + fileCount);
+				if(i % 100 == 0) AOutput.log("Stage 1: " + i + "/" + fileCount);
 				if(!fileArray[i].isFile()) continue;
 				StorageProfile storageProfile = loadPlayer(fileArray[i].getName());
 				if(storageProfile == null) continue;
@@ -109,9 +110,6 @@ public class DupeManager implements Listener {
 					trackMiscItem(playerUUID, itemStack);
 
 					if(!itemStack.nbtData.hasKey(NBTTag.ITEM_UUID.getRef())) continue;
-					if(!itemStack.nbtData.hasKey(NBTTag.ITEM_JEWEL_ENCHANT.getRef()) && itemStack.material != Material.CHAINMAIL_CHESTPLATE &&
-							itemStack.material != Material.LEATHER_CHESTPLATE && itemStack.material != Material.STONE_HOE &&
-							itemStack.material != Material.GOLD_HOE) continue;
 					trackedItems.add(new TrackedItem(playerUUID, itemStack, entry.getValue()));
 				}
 			}
@@ -123,11 +121,11 @@ public class DupeManager implements Listener {
 	public static void checkForDuplicates(List<TrackedItem> trackedItems, Set<UUID> exemptPlayers) {
 		List<UUID> playerUUIDs = new ArrayList<>();
 
-		System.out.println("Stage 2 initiated");
+		AOutput.log("Stage 2 initiated");
 
 		int count = 0;
 		for(TrackedItem trackedItem : trackedItems) {
-			if(count++ % 100 == 0) System.out.println("Stage 2: " + count + "/" + trackedItems.size());
+			if(count++ % 100 == 0) AOutput.log("Stage 2: " + count + "/" + trackedItems.size());
 			UUID trackedItemUUID = trackedItem.itemUUID;
 			for(TrackedItem checkItem : trackedItems) {
 				if(checkItem == trackedItem) continue;
@@ -141,11 +139,11 @@ public class DupeManager implements Listener {
 			}
 		}
 
-		System.out.println("Stage 3 initiated");
+		AOutput.log("Stage 3 initiated");
 
 		for(TrackedItem trackedItem : trackedItems) trackedItem.populate();
 
-		System.out.println("Check completed, posting results");
+		AOutput.log("Check completed, posting results");
 
 		TextChannel dupeChannel = DiscordManager.PRIVATE_GUILD.getTextChannelById(Constants.DUPE_CHANNEL);
 		assert dupeChannel != null;
@@ -222,7 +220,7 @@ public class DupeManager implements Listener {
 			}
 		}
 
-		System.out.println("Results posted/queued");
+		AOutput.log("Results posted/queued");
 	}
 
 	public static void setDescription(EmbedBuilder embedBuilder, int players, int timesFound) {
