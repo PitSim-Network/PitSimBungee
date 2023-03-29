@@ -41,6 +41,7 @@ public class MarketListing implements Serializable {
 	private boolean hasEnded = false;
 	private int originalStock;
 	private UUID buyer = null;
+	private boolean availableForPurchase = true;
 	private String buyerDisplayName = "&cNONE";
 
 	public MarketListing(UUID ownerUUID, String itemData, int startingBid, int binPrice, boolean stackBIN, long listingLength) {
@@ -146,7 +147,6 @@ public class MarketListing implements Serializable {
 		MarketManager.sendSuccess(playerUUID, this);
 		MarketLog.log(this, LogType.MARKET_BID, playerUUID, new int[] {bidAmount});
 
-		//TODO: Make bidding not set buyer
 		buyer = playerUUID;
 		buyerDisplayName = getDisplayName(playerUUID);
 		claimableSouls = bidAmount;
@@ -162,8 +162,7 @@ public class MarketListing implements Serializable {
 			return;
 		}
 
-		if(buyer != null) {
-			System.out.println("BUYER IS NOT NULL");
+		if(!availableForPurchase) {
 			MarketManager.sendFailure(playerUUID, this);
 			return;
 		}
@@ -187,7 +186,6 @@ public class MarketListing implements Serializable {
 
 			String message = "&a&lMARKET " + getDisplayName(playerUUID) + " &7has purchased &8" + amount + "x " + stack.displayName + " &7for &f" + (binPrice * amount) + " Souls&7!";
 			new MarketAlertManager.MarketAlert(ownerUUID, marketUUID, message);
-			//TODO: Alert to owner
 
 			if(stock == 0) {
 				itemClaimed = true;
@@ -198,12 +196,13 @@ public class MarketListing implements Serializable {
 			claimableSouls += binPrice;
 			if(!holdItem) itemClaimed = true;
 			buyer = playerUUID;
+			availableForPurchase = false;
 			buyerDisplayName = getDisplayName(playerUUID);
 
 
 			String message = "&a&lMARKET " + getDisplayName(playerUUID) + " &7has purchased " + stack.displayName + " &7for &f" + (binPrice) + " Souls&7!";
 			new MarketAlertManager.MarketAlert(ownerUUID, marketUUID, message);
-			//TODO: Alert to owner
+
 			MarketManager.sendSuccess(playerUUID, this);
 			MarketLog.log(this, LogType.MARKET_BIN, playerUUID, new int[] {binPrice * amount, amount});
 			end();
@@ -241,11 +240,17 @@ public class MarketListing implements Serializable {
 			remove();
 		}
 
-		if(!itemClaimed) MarketManager.sendFailure(playerUUID, this);
-		System.out.println("Failure 3");
+		if(!itemClaimed) {
+			MarketManager.sendFailure(playerUUID, this);
+			System.out.println("Failure 3");
+		}
 	}
 
 	public void claimSouls(UUID playerUUID) {
+		if(!hasEnded) {
+			MarketManager.sendFailure(playerUUID, this);
+			return;
+		}
 
 		if(playerUUID.equals(buyer)) {
 			MarketManager.sendFailure(playerUUID, this);
@@ -253,9 +258,9 @@ public class MarketListing implements Serializable {
 		}
 
 		if(bidMap.containsKey(playerUUID)) {
+			MarketLog.log(this, LogType.MARKET_CLAIM_SOULS, playerUUID, new int[] {bidMap.get(playerUUID)});
 			bidMap.remove(playerUUID);
 			MarketManager.sendSuccess(playerUUID, this);
-			MarketLog.log(this, LogType.MARKET_CLAIM_SOULS, playerUUID, new int[] {});
 			update();
 			return;
 		}
@@ -266,7 +271,7 @@ public class MarketListing implements Serializable {
 		}
 
 		MarketManager.sendSuccess(playerUUID, this);
-		MarketLog.log(this, LogType.MARKET_CLAIM_SOULS, playerUUID, new int[] {});
+		MarketLog.log(this, LogType.MARKET_CLAIM_SOULS, playerUUID, new int[] {claimableSouls});
 		claimableSouls = 0;
 
 		if(itemClaimed && bidMap.size() <= 1) remove();
@@ -288,8 +293,8 @@ public class MarketListing implements Serializable {
 					if(entry.getKey().equals(getHighestBidder()))
 						message = "&a&lMARKET &7You won " + item.displayName + " &7for &f" + getHighestBid() + " Souls&7!";
 					else
-						message = "&a&lMARKET &7The auction" + item.displayName + " &7for has ended. Visit the market to reclaim &f" + getHighestBid() + " Souls&7!";
-					MarketManager.replaceAlerts(ownerUUID, marketUUID, message);
+						message = "&a&lMARKET &7The auction for " + item.displayName + " &7has ended. Visit the market to reclaim &f" + getHighestBid() + " Souls&7!";
+					MarketManager.replaceAlerts(entry.getKey(), marketUUID, message);
 				}
 			}
 
@@ -387,7 +392,7 @@ public class MarketListing implements Serializable {
 	}
 
 	public void setTime() {
-		this.listingLength += (1000 * 60 * 2) + getTimeLeft();
+		this.listingLength += (1000 * 60 * 2) - getTimeLeft();
 	}
 
 	public UUID getHighestBidder() {
