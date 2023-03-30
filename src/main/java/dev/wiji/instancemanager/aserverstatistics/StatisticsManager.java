@@ -93,7 +93,11 @@ public class StatisticsManager implements Listener {
 			Statement stmt = connection.createStatement();
 			for(StatisticDataChunk.Record record : dataChunk.records) {
 				List<String> hits = new ArrayList<>();
-				for(Map.Entry<String, Integer> entry : record.getHitsWithEnchant().entrySet()) hits.add(entry.getValue() + "");
+				for (Map.Entry<String, Integer> entry : record.getHitsWithEnchant().entrySet()) {
+					int hitValue = entry.getValue();
+					String hitString = hitValue != 0 ? String.valueOf(hitValue) : "NULL";
+					hits.add(hitString);
+				}
 				String sql = "INSERT INTO " + TABLE_NAME + " (date, enchant, category, total_hits, " +
 						String.join(", ", sharedData.enchantInfoMap.keySet()) +
 						") VALUES (" +

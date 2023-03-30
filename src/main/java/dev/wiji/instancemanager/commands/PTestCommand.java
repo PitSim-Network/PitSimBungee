@@ -56,7 +56,8 @@ public class PTestCommand extends Command {
 						.collect(Collectors.toList());
 
 				String labels = sortedEntries.stream()
-						.map(entry -> "'" + StatisticsManager.sharedData.getEnchantName(entry.getKey()) + "'")
+						.map(entry -> "'" + StatisticsManager.sharedData.getEnchantName(entry.getKey())
+								.replaceAll("\"", "").replaceAll("'", "") + "'")
 						.collect(Collectors.joining(","));
 				String data = sortedEntries.stream()
 						.map(Map.Entry::getValue)
@@ -65,7 +66,7 @@ public class PTestCommand extends Command {
 
 				String url = "https://quickchart.io/chart?c={type:'bar',data:{labels:[" + labels +
 						"],datasets:[{label:'Enchant Usage Percent',data:[" + data + "]}]}}";
-				url = url.replaceAll("'", "%27").replaceAll(" ", "%20").replaceAll("\"", "%22");
+				url = url.replaceAll("'", "%27").replaceAll(" ", "%20");
 
 				System.out.println(url);
 				TextChannel textChannel = DiscordManager.MAIN_GUILD.getTextChannelById(Constants.STAFF_GENERAL_CHANNEL);

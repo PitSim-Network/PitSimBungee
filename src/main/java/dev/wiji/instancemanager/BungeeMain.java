@@ -62,8 +62,8 @@ public class BungeeMain extends Plugin {
 			e.printStackTrace();
 		}
 
-		DiscordPlugin.onEnable(this);
-//		if(!ConfigManager.isDev()) DiscordPlugin.onEnable(this);
+//		DiscordPlugin.onEnable(this);
+		if(!ConfigManager.isDev()) DiscordPlugin.onEnable(this);
 		MarketManager.init();
 
 		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
@@ -130,9 +130,7 @@ public class BungeeMain extends Plugin {
 		ConfigManager.save();
 		MarketManager.shutdown();
 
-		if(FirestoreManager.registration != null) {
-			FirestoreManager.registration.remove();
-		}
+		if(FirestoreManager.registration != null) FirestoreManager.registration.remove();
 
 		DiscordPlugin.onDisable();
 		ArcticGuilds.onDisable(this);
