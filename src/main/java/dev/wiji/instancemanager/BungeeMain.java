@@ -103,6 +103,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerCommand(this, new DevCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new AdminCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new PTestCommand(this));
+		getProxy().getPluginManager().registerCommand(this, new KyroCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new LobbiesCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new BroadcastCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new ServerJoinCommand(this));
