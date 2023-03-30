@@ -13,8 +13,6 @@ public class DiscordPlugin {
 	public static LuckPerms LUCKPERMS;
 
 	public static void onEnable(BungeeMain instance) {
-		if(ConfigManager.isDev()) return;
-
 		INSTANCE = instance;
 		LUCKPERMS = BungeeMain.LUCKPERMS;
 		BasicConfigurator.configure();

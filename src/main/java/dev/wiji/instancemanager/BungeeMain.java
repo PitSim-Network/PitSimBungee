@@ -6,6 +6,7 @@ import com.mattmalec.pterodactyl4j.application.entities.PteroApplication;
 import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
 import dev.wiji.instancemanager.alogging.ConnectionManager;
 import dev.wiji.instancemanager.alogging.LogManager;
+import dev.wiji.instancemanager.aserverstatistics.StatisticsManager;
 import dev.wiji.instancemanager.commands.*;
 import dev.wiji.instancemanager.discord.*;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
@@ -55,7 +56,14 @@ public class BungeeMain extends Plugin {
 		STARTUP_TIME = System.currentTimeMillis();
 		FirestoreManager.init();
 
-		if(!ConfigManager.isDev()) DiscordPlugin.onEnable(this);
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		DiscordPlugin.onEnable(this);
+//		if(!ConfigManager.isDev()) DiscordPlugin.onEnable(this);
 		MarketManager.init();
 
 		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
@@ -79,6 +87,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new AuctionAlerts());
 		getProxy().getPluginManager().registerListener(this, new CommandBlocker());
 		getProxy().getPluginManager().registerListener(this, new AuthenticationManager());
+		getProxy().getPluginManager().registerListener(this, new StatisticsManager());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new DupeManager());
 		ConfigManager.getMiniServerList();
 

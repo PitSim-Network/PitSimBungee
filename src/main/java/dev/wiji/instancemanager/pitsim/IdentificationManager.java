@@ -5,6 +5,7 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.alogging.ConnectionData;
 import dev.wiji.instancemanager.alogging.ConnectionManager;
 import dev.wiji.instancemanager.alogging.OldConnectionData;
+import dev.wiji.instancemanager.misc.PrivateInfo;
 import net.md_5.bungee.api.plugin.Listener;
 
 import java.io.*;
@@ -120,7 +121,7 @@ public class IdentificationManager implements Listener {
 			Class.forName("com.mysql.jdbc.Driver");
 			String dbUrl = "jdbc:mysql://sql.pitsim.net:3306/s9_PlayerData";
 			String username = "***REMOVED***";
-			String password = "***REMOVED***";
+			String password = PrivateInfo.PLAYER_DATA_SQL_PASSWORD;
 			return DriverManager.getConnection(dbUrl, username, password);
 		} catch(Exception ignored) {}
 		throw new RuntimeException();

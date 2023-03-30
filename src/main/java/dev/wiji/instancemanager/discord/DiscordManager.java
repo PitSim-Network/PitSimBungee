@@ -1,12 +1,10 @@
 package dev.wiji.instancemanager.discord;
 
-import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.misc.AOutput;
-
 import dev.wiji.instancemanager.misc.PrivateInfo;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.dv8tion.jda.api.JDABuilder;
@@ -114,13 +112,13 @@ public class DiscordManager implements EventListener, Listener {
 			Class.forName("com.mysql.jdbc.Driver");
 			String dbUrl = "jdbc:mysql://sql.pitsim.net:3306/s9_PlayerData";
 			String username = "***REMOVED***";
-			String password = "***REMOVED***";
+			String password = PrivateInfo.PLAYER_DATA_SQL_PASSWORD;
 			return DriverManager.getConnection(dbUrl, username, password);
 		} catch(Exception ignored) {}
 		return null;
 	}
 
-	public static void createTable(Connection connection) throws SQLException, ClassNotFoundException {
+	public static void createTable(Connection connection) throws SQLException {
 		Statement stmt = connection.createStatement();
 
 		// Create the table
