@@ -183,7 +183,7 @@ public class DupeManager implements Listener {
 		}
 		new Thread(() -> {
 			while(!dupeEmbeds.isEmpty()) {
-				dupeChannel.sendMessage(dupeEmbeds.remove(0)).queue();
+				dupeChannel.sendMessageEmbeds(dupeEmbeds.remove(0)).queue();
 				try {
 					Thread.sleep(1_000);
 				} catch(InterruptedException exception) {

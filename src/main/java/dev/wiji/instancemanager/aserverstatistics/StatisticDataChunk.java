@@ -2,6 +2,7 @@ package dev.wiji.instancemanager.aserverstatistics;
 
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.misc.AOutput;
+import dev.wiji.instancemanager.pitsim.PitEnchant;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -25,7 +26,7 @@ public class StatisticDataChunk {
 			StatisticCategory category = StatisticCategory.valueOf(strings.remove(0));
 			int totalHits = integers.remove(0);
 			LinkedHashMap<String, Integer> hitsWithEnchant = new LinkedHashMap<>();
-			for(String enchantRefName : StatisticsManager.sharedData.enchantInfoMap.keySet())
+			for(String enchantRefName : PitEnchant.getAllRefNames())
 				hitsWithEnchant.put(enchantRefName, integers.remove(0));
 
 			Record record = new Record(enchantName, category, totalHits, hitsWithEnchant);

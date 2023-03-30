@@ -29,7 +29,7 @@ dependencies {
     compileOnly 'com.squareup.okhttp3:okhttp:4.9.2'
 
     compileOnly group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
-    compileOnly ('net.dv8tion:JDA:4.2.1_262') {
+    compileOnly ('net.dv8tion:JDA:5.0.0-alpha.12') {
         exclude module: 'opus-java'
     }
 }

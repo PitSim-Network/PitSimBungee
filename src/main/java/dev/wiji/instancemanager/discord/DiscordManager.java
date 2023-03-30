@@ -1,20 +1,23 @@
 package dev.wiji.instancemanager.discord;
 
 import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
+import dev.wiji.instancemanager.discord.commands.GraphCommand;
+import dev.wiji.instancemanager.discord.commands.PingCommand;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.misc.PrivateInfo;
 import dev.wiji.instancemanager.objects.PluginMessage;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -26,17 +29,16 @@ import org.jetbrains.annotations.NotNull;
 import javax.security.auth.login.LoginException;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class DiscordManager implements EventListener, Listener {
-
 	public static JDABuilder BUILDER;
-	public static net.dv8tion.jda.api.JDA JDA;
+	public static JDA JDA;
 	public static List<DiscordCommand> commands = new ArrayList<>();
-	public static String prefix = ".";
+	public static boolean isEnabled;
 
 	public static Guild MAIN_GUILD;
 	public static Guild PRIVATE_GUILD;
@@ -45,12 +47,14 @@ public class DiscordManager implements EventListener, Listener {
 
 	public DiscordManager() {
 		AOutput.log("Discord bot loading");
+		isEnabled = true;
+
 		BUILDER = JDABuilder.createDefault(PrivateInfo.BOT_TOKEN);
 		try {
 			BUILDER.setMemberCachePolicy(MemberCachePolicy.ALL);
 			BUILDER.enableIntents(GatewayIntent.GUILD_MEMBERS);
 			BUILDER.addEventListeners(this);
-			if(!ConfigManager.isDev()) BUILDER.addEventListeners(new DeploymentManager());
+			BUILDER.addEventListeners(new DeploymentManager());
 			JDA = BUILDER.build();
 			JDA.awaitReady();
 		} catch(LoginException | InterruptedException e) {
@@ -59,15 +63,30 @@ public class DiscordManager implements EventListener, Listener {
 
 		MAIN_GUILD = JDA.getGuildById(Constants.MAIN_GUILD_ROLE_ID);
 		PRIVATE_GUILD = JDA.getGuildById(Constants.PRIVATE_GUILD_ROLE_ID);
+
+//		Random Things
+		new InGameNitro();
+
+		registerCommands();
+		setupSlashCommands();
+	}
+
+	public static void registerCommands() {
+		registerCommand(new PingCommand());
+		registerCommand(new GraphCommand());
+	}
+
+	public static void setupSlashCommands() {
+		for(DiscordCommand command : commands) MAIN_GUILD.upsertCommand(command.getCommandStructure()).queue();
+		for(DiscordCommand command : commands) PRIVATE_GUILD.upsertCommand(command.getCommandStructure()).queue();
 	}
 
 	public static void registerCommand(DiscordCommand command) {
-
 		commands.add(command);
 	}
 
 	public static void disable() {
-		if(ConfigManager.isDev()) return;
+		if(JDA == null) return;
 		JDA.shutdownNow();
 	}
 
@@ -80,31 +99,37 @@ public class DiscordManager implements EventListener, Listener {
 		return member.getRoles().contains(InGameNitro.nitroRole);
 	}
 
-	public static void onMessage(GuildMessageReceivedEvent event) {
-		Message message = event.getMessage();
-		if(!message.getContentRaw().startsWith(prefix)) return;
+	@Override
+	public void onEvent(@NotNull GenericEvent event) {
+		if(event instanceof ReadyEvent)
+			AOutput.log("Discord bot enabled");
 
-		String content = message.getContentRaw().replaceFirst(prefix, "");
-		List<String> args = new ArrayList<>(Arrays.asList(content.split(" ")));
-		String command = args.remove(0).toLowerCase();
+		if(event instanceof SlashCommandInteractionEvent)
+			onSlashCommand((SlashCommandInteractionEvent) event);
 
+		if(event instanceof CommandAutoCompleteInteractionEvent)
+			onAutoComplete((CommandAutoCompleteInteractionEvent) event);
+	}
+
+	public void onSlashCommand(SlashCommandInteractionEvent event) {
+		String command = event.getName();
 		for(DiscordCommand discordCommand : commands) {
-
-			if(!discordCommand.command.equals(command) && !discordCommand.aliases.contains(command)) continue;
-
-			discordCommand.execute(event, args);
+			if(!discordCommand.name.equals(command)) continue;
+			discordCommand.execute(event);
 			return;
 		}
 	}
 
-	@Override
-	public void onEvent(@NotNull GenericEvent event) {
-
-		if(event instanceof ReadyEvent)
-			AOutput.log("Discord bot enabled");
-
-		if(event instanceof GuildMessageReceivedEvent)
-			onMessage((GuildMessageReceivedEvent) event);
+	public void onAutoComplete(CommandAutoCompleteInteractionEvent event) {
+		String command = event.getName();
+		String currentOption = event.getFocusedOption().getName();
+		String currentValue = event.getFocusedOption().getValue();
+		for(DiscordCommand discordCommand : commands) {
+			if(!discordCommand.name.equals(command)) continue;
+			List<Command.Choice> choices = discordCommand.autoComplete(event, currentOption, currentValue);
+			event.replyChoices(choices.stream().limit(25).collect(Collectors.toList())).queue();
+			return;
+		}
 	}
 
 	public static Connection getConnection() {

@@ -36,8 +36,8 @@ public class InGameNitro {
 				if(playerUUID == null) continue;
 				memberIGNs.add(member.getEffectiveName());
 
-				//					User luckPermsUser = DiscordPlugin.LUCKPERMS.getUserManager().getUser(playerUUID);
-				UserManager userManager = DiscordPlugin.LUCKPERMS.getUserManager();
+//				User luckPermsUser = BungeeMain.LUCKPERMS.getUserManager().getUser(playerUUID);
+				UserManager userManager = BungeeMain.LUCKPERMS.getUserManager();
 				CompletableFuture<User> userFuture = userManager.loadUser(playerUUID);
 				UUID finalPlayerUUID = playerUUID;
 				userFuture.thenAccept(user -> {
@@ -52,13 +52,13 @@ public class InGameNitro {
 					for(Node playerNode : user.getNodes()) {
 						if(!playerNode.equals(node, NodeEqualityPredicate.ONLY_KEY)) continue;
 						try {
-							DiscordPlugin.LUCKPERMS.getUserManager().modifyUser(finalPlayerUUID, modifyUser -> modifyUser.data().remove(playerNode)).get();
+							BungeeMain.LUCKPERMS.getUserManager().modifyUser(finalPlayerUUID, modifyUser -> modifyUser.data().remove(playerNode)).get();
 						} catch(InterruptedException | ExecutionException e) {
 							e.printStackTrace();
 						}
 					}
 
-					DiscordPlugin.LUCKPERMS.getUserManager().modifyUser(finalPlayerUUID, modifyUser -> modifyUser.data().add(node));
+					BungeeMain.LUCKPERMS.getUserManager().modifyUser(finalPlayerUUID, modifyUser -> modifyUser.data().add(node));
 				});
 			}
 

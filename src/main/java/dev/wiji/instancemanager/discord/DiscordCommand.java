@@ -1,19 +1,24 @@
 package dev.wiji.instancemanager.discord;
 
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class DiscordCommand {
+	public String name;
 
-	public String command;
-	public List<String> aliases;
-
-	public DiscordCommand(String command, String... aliases) {
-		this.command = command;
-		this.aliases = Arrays.asList(aliases);
+	public DiscordCommand(String name) {
+		this.name = name;
 	}
 
-	public abstract void execute(GuildMessageReceivedEvent event, List<String> args);
+	public abstract SlashCommandData getCommandStructure();
+	public abstract void execute(SlashCommandInteractionEvent event);
+
+	public List<Command.Choice> autoComplete(CommandAutoCompleteInteractionEvent event, String currentOption, String currentValue) {
+		return new ArrayList<>();
+	}
 }

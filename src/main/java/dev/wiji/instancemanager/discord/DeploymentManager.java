@@ -5,8 +5,8 @@ import dev.wiji.instancemanager.ConfigManager;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -133,10 +133,10 @@ public class DeploymentManager extends ListenerAdapter {
 	}
 
 	@Override
-	public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
+	public void onMessageReceived(@NotNull MessageReceivedEvent event) {
 		Guild guild = event.getGuild();
 		if(guild.getIdLong() != Constants.PRIVATE_GUILD_ROLE_ID) return;
-		TextChannel textChannel = event.getChannel();
+		MessageChannel textChannel = event.getChannel();
 		if(textChannel.getIdLong() != Constants.AUTOMATIC_DEPLOYMENT_CHANNEL) return;
 		Member member = event.getMember();
 		if(member == null) return;

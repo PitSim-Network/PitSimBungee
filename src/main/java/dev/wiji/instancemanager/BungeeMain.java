@@ -62,10 +62,10 @@ public class BungeeMain extends Plugin {
 			e.printStackTrace();
 		}
 
-//		DiscordPlugin.onEnable(this);
-		if(!ConfigManager.isDev()) DiscordPlugin.onEnable(this);
 		MarketManager.init();
 
+		getProxy().getPluginManager().registerListener(BungeeMain.INSTANCE, new DiscordManager());
+//		if(!ConfigManager.isDev()) getProxy().getPluginManager().registerListener(BungeeMain.INSTANCE, new DiscordManager());
 		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
 		getProxy().getPluginManager().registerListener(this, new PluginMessageManager());
 		getProxy().getPluginManager().registerListener(this, new MessageListener());
@@ -133,7 +133,7 @@ public class BungeeMain extends Plugin {
 
 		if(FirestoreManager.registration != null) FirestoreManager.registration.remove();
 
-		DiscordPlugin.onDisable();
+		DiscordManager.disable();
 		ArcticGuilds.onDisable(this);
 	}
 

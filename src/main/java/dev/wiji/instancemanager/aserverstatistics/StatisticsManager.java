@@ -3,6 +3,7 @@ package dev.wiji.instancemanager.aserverstatistics;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.misc.PrivateInfo;
+import dev.wiji.instancemanager.pitsim.PitEnchant;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -13,9 +14,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class StatisticsManager implements Listener {
-	public static StatisticsSpigotToProxyDataShare sharedData;
 	public static final List<StatisticDataChunk> queuedChunks = new ArrayList<>();
-	public static boolean isInitialized;
 
 	public static final String URL = "jdbc:mysql://sql.pitsim.net:3306/s9_Statistics";
 	public static final String USERNAME = "***REMOVED***";
@@ -23,9 +22,7 @@ public class StatisticsManager implements Listener {
 	public static final String TABLE_NAME = "enchant_statistics";
 	public static final long MAX_TIME = 1000L * 60 * 60 * 24 * 30;
 
-	public static void init() {
-		if(isInitialized) return;
-		isInitialized = true;
+	public StatisticsManager() {
 		new Thread(() -> {
 			if(!tableExists(TABLE_NAME)) createTable();
 			deleteOldRows();
@@ -48,14 +45,8 @@ public class StatisticsManager implements Listener {
 		List<String> strings = event.getMessage().getStrings();
 		if(strings.isEmpty()) return;
 
-		if(strings.get(0).equals("STATISTICS_SPIGOT_TO_PROXY_DATA_SHARE")) {
-			AOutput.log("Received statistics data share");
-			strings.remove(0);
-			sharedData = new StatisticsSpigotToProxyDataShare(event);
-			init();
-		} else if(strings.get(0).equals("SERVER_STATISTICS")) {
+		if(strings.get(0).equals("SERVER_STATISTICS")) {
 			AOutput.log("Received statistics chunk from server: " + event.getMessage().originServer);
-			if(sharedData == null) throw new RuntimeException();
 			strings.remove(0);
 			StatisticDataChunk dataChunk = new StatisticDataChunk(event);
 			queuedChunks.add(dataChunk);
@@ -99,7 +90,7 @@ public class StatisticsManager implements Listener {
 					hits.add(hitString);
 				}
 				String sql = "INSERT INTO " + TABLE_NAME + " (date, enchant, category, total_hits, " +
-						String.join(", ", sharedData.enchantInfoMap.keySet()) +
+						String.join(", ", PitEnchant.getAllRefNames()) +
 						") VALUES (" +
 						dataChunk.getStartTime() + ", " +
 						"'" + record.getEnchantRefName() + "', " +
@@ -145,7 +136,7 @@ public class StatisticsManager implements Listener {
 		Connection connection = getConnection();
 		try {
 			List<String> enchantColumns = new ArrayList<>();
-			for(String enchantRefName : sharedData.enchantInfoMap.keySet()) enchantColumns.add(enchantRefName + " INT");
+			for(String enchantRefName : PitEnchant.getAllRefNames()) enchantColumns.add(enchantRefName + " INT");
 			Statement stmt = connection.createStatement();
 			String sql = "CREATE TABLE " + TABLE_NAME + " (" +
 					"date LONG, " +
