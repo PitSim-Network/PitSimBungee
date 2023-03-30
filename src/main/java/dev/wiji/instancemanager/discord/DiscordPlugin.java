@@ -9,10 +9,12 @@ import org.apache.log4j.Logger;
 
 public class DiscordPlugin {
 	public static BungeeMain INSTANCE;
-
 	public static LuckPerms LUCKPERMS;
 
+	public static boolean isEnabled;
+
 	public static void onEnable(BungeeMain instance) {
+		isEnabled = true;
 		INSTANCE = instance;
 		LUCKPERMS = BungeeMain.LUCKPERMS;
 		BasicConfigurator.configure();
