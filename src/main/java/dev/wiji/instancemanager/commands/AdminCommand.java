@@ -19,6 +19,7 @@ import io.mokulu.discord.oauth.DiscordAPI;
 import io.mokulu.discord.oauth.model.User;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -291,7 +292,15 @@ public class AdminCommand extends Command {
 
 			for(String arg : args) {
 				if(arg.equalsIgnoreCase("-r")) {
-					UUID uuid = UUID.fromString(args[1]);
+					String name = args[1];
+					ProxiedPlayer target = ProxyServer.getInstance().getPlayer(name);
+					if(target == null) {
+						AOutput.error(player, "&cThat player is not online!");
+						return;
+					}
+
+					UUID uuid = target.getUniqueId();
+
 					EditSession session = EditSessionManager.getSession(uuid);
 					if(session == null) {
 						AOutput.error(player, "&cThat player does not have an edit session!");
