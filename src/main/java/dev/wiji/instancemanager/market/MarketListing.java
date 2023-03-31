@@ -302,7 +302,7 @@ public class MarketListing implements Serializable {
 				String message = "&a&lMARKET &7You won " + item.displayName + " &7for &f" + getHighestBid() + " Souls&7!";
 				MarketManager.replaceAlerts(getHighestBidder(), marketUUID, message);
 
-				String ownerMessage = "&a&lMARKET " + getDisplayName(getHighestBidder()) + " &7 Bought your " + item.displayName + " &7for &f" + getHighestBid() + " Souls&7!";
+				String ownerMessage = "&a&lMARKET " + getDisplayName(getHighestBidder()) + " &7Bought your " + item.displayName + " &7for &f" + getHighestBid() + " Souls&7!";
 				MarketManager.replaceAlerts(ownerUUID, marketUUID, ownerMessage);
 			}
 		} else if(stackBIN) {
