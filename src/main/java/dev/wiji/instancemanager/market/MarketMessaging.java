@@ -23,6 +23,7 @@ public class MarketMessaging implements Listener {
 		if(strings.size() >= 3 && strings.get(0).equals("CREATE LISTING")) {
 
 			UUID owner = UUID.fromString(strings.get(1));
+			UUID responseID = UUID.fromString(strings.get(2));
 			String item = strings.get(2);
 			int startingBid = ints.get(0);
 			int binPrice = ints.get(1);
@@ -32,6 +33,8 @@ public class MarketMessaging implements Listener {
 			MarketListing listing = new MarketListing(owner, item, startingBid, binPrice, isStackBIN, duration);
 			MarketManager.listings.add(listing);
 			MarketLog.log(listing, LogType.CREATE_LISTING, owner, new int[] {});
+
+			MarketManager.sendSuccess(owner, responseID);
 			listing.update();
 		}
 

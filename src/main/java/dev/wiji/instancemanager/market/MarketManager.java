@@ -126,11 +126,15 @@ public class MarketManager implements Listener {
 	}
 
 	public static void sendSuccess(UUID playerUUID, MarketListing listing) {
+		sendSuccess(playerUUID, listing.getUUID());
+	}
+
+	public static void sendSuccess(UUID playerUUID, UUID listingID) {
 		ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(playerUUID);
 		if(player == null) return;
 
 		PluginMessage message = new PluginMessage().writeString("MARKET ASYNC").writeString(playerUUID.toString());
-		message.writeString(listing.getUUID().toString()).writeBoolean(true);
+		message.writeString(listingID.toString()).writeBoolean(true);
 		message.addServer(player.getServer().getInfo()).send();
 	}
 
