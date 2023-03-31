@@ -23,6 +23,7 @@ public class StatisticDataChunk {
 
 		for(int i = 0; i < recordCount; i++) {
 			String enchantName = strings.remove(0);
+			if(enchantName.isEmpty()) enchantName = null;
 			StatisticCategory category = StatisticCategory.valueOf(strings.remove(0));
 			int totalHits = integers.remove(0);
 			LinkedHashMap<String, Integer> hitsWithEnchant = new LinkedHashMap<>();

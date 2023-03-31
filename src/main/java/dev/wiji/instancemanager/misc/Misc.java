@@ -94,4 +94,8 @@ public class Misc {
 		long seconds = time / 1000;
 		return days + "d " + hours + "h " + minutes + "m " + seconds + "s";
 	}
+
+	public static String s(double value) {
+		return value == 1 ? "" : "s";
+	}
 }

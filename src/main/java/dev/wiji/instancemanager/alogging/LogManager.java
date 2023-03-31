@@ -4,6 +4,7 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.discord.Constants;
 import dev.wiji.instancemanager.discord.DiscordManager;
+import dev.wiji.instancemanager.enums.DiscordLogChannel;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.guilds.events.GuildChatEvent;
 import dev.wiji.instancemanager.guilds.events.GuildCreateEvent;
@@ -65,6 +66,13 @@ public class LogManager implements Listener {
 			String serverName = strings.get(2);
 			String logMessage = strings.get(3);
 			logMessage(logType, serverName, logMessage, Misc.getCurrentDate());
+		} else if(strings.get(0).equals("LOG_TO_DISCORD")) {
+			if(!DiscordManager.isEnabled) return;
+			DiscordLogChannel logChannelInfo = DiscordLogChannel.valueOf(strings.get(1));
+			String message = strings.get(2);
+			TextChannel logChannel = DiscordManager.JDA.getTextChannelById(logChannelInfo.getChannelID());
+			assert logChannel != null;
+			logChannel.sendMessage(message).queue();
 		}
 	}
 

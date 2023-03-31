@@ -89,11 +89,12 @@ public class StatisticsManager implements Listener {
 					String hitString = hitValue != 0 ? String.valueOf(hitValue) : "NULL";
 					hits.add(hitString);
 				}
+				String enchantRefName = record.getEnchantRefName() == null ? "NULL" : "'" + record.getEnchantRefName() + "'";
 				String sql = "INSERT INTO " + TABLE_NAME + " (date, enchant, category, total_hits, " +
 						String.join(", ", PitEnchant.getAllRefNames()) +
 						") VALUES (" +
 						dataChunk.getStartTime() + ", " +
-						"'" + record.getEnchantRefName() + "', " +
+						enchantRefName + ", " +
 						"'" + record.getCategory() + "', " +
 						record.getTotalHits() + ", " +
 						String.join(", ", hits) +
@@ -140,7 +141,7 @@ public class StatisticsManager implements Listener {
 			Statement stmt = connection.createStatement();
 			String sql = "CREATE TABLE " + TABLE_NAME + " (" +
 					"date LONG, " +
-					"enchant VARCHAR(50), " +
+					"enchant VARCHAR(50) NULL, " +
 					"category VARCHAR(50), " +
 					"total_hits INT, " +
 					String.join(", ", enchantColumns) +

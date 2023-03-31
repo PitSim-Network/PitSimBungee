@@ -115,6 +115,13 @@ public class DiscordManager implements EventListener, Listener {
 		String command = event.getName();
 		for(DiscordCommand discordCommand : commands) {
 			if(!discordCommand.name.equals(command)) continue;
+			if(discordCommand.requireVerification) {
+				DiscordUser discordUser = DiscordManager.getUser(event.getMember().getIdLong());
+				if(discordUser == null || !discordUser.wasAuthenticatedRecently()) {
+					event.reply("You must link your account on mc.pitsim.net with /link to use this command").setEphemeral(true).queue();
+					return;
+				}
+			}
 			discordCommand.execute(event);
 			return;
 		}

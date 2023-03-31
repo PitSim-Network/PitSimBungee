@@ -4,28 +4,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum PitEnchant {
-	COMBO_VENOM("&dRARE! &9Combo Venom", "Combo Venom", "venom", true, true, false),
-	SELFCHECKOUT("&dRARE! &9SelfCheckout", "SelfCheckout", "selfcheckout", true, true, false),
+	COMBO_VENOM("&dRARE! &9Combo: Venom", "Combo: Venom", "venom", true, true, false),
+	SELFCHECKOUT("&dRARE! &9Self-Checkout", "Self-Checkout", "selfcheckout", true, true, false),
 	BILLIONAIRE("&dRARE! &9Billionaire", "Billionaire", "bill", true, true, false),
-	COMBO_PERUNS_WRATH("&dRARE! &9Combo Perun's Wrath", "Combo Perun's Wrath", "perun", true, true, false),
+	COMBO_PERUNS_WRATH("&dRARE! &9Combo: Perun's Wrath", "Combo: Perun's Wrath", "perun", true, true, false),
 	EXECUTIONER("&dRARE! &9Executioner", "Executioner", "executioner", true, true, false),
 	GAMBLE("&dRARE! &9Gamble", "Gamble", "gamble", true, true, false),
-	COMBO_STUN("&dRARE! &9Combo Stun", "Combo Stun", "combostun", true, true, false),
+	COMBO_STUN("&dRARE! &9Combo: Stun", "Combo: Stun", "combostun", true, true, false),
 	SPEEDY_HIT("&dRARE! &9Speedy Hit", "Speedy Hit", "speedyhit", true, true, false),
 	HEALER("&dRARE! &9Healer", "Healer", "healer", true, true, false),
 	LIFESTEAL("&9Lifesteal", "Lifesteal", "ls", false, true, false),
-	COMBO_HEAL("&9Combo Heal", "Combo Heal", "comboheal", false, true, false),
+	COMBO_HEAL("&9Combo: Heal", "Combo: Heal", "comboheal", false, true, false),
 	SHARK("&9Shark", "Shark", "shark", false, false, false),
 	PAIN_FOCUS("&9Pain Focus", "Pain Focus", "painfocus", false, true, false),
 	DIAMOND_STOMP("&9Diamond Stomp", "Diamond Stomp", "diamondstomp", false, true, false),
-	COMBO_DAMAGE("&9Combo Damage", "Combo Damage", "combodamage", false, false, false),
+	COMBO_DAMAGE("&9Combo: Damage", "Combo: Damage", "combodamage", false, false, false),
 	BERSERKER("&9Berserker", "Berserker", "berserker", false, true, false),
 	KING_BUSTER("&9King Buster", "King Buster", "kb", false, false, false),
 	SHARP("&9Sharp", "Sharp", "sharp", false, false, false),
 	PUNISHER("&9Punisher", "Punisher", "pun", false, false, false),
 	BEAT_THE_SPAMMERS("&9Beat the Spammers", "Beat the Spammers", "bts", false, false, false),
 	GOLD_AND_BOOSTED("&9Gold and Boosted", "Gold and Boosted", "gab", false, false, false),
-	COMBO_SWIFT("&9Combo Swift", "Combo Swift", "comboswift", false, true, false),
+	COMBO_SWIFT("&9Combo: Swift", "Combo: Swift", "comboswift", false, true, false),
 	BULLET_TIME("&9Bullet Time", "Bullet Time", "bullettime", false, true, false),
 	GUTS("&9Guts", "Guts", "guts", false, false, false),
 	CRUSH("&9Crush", "Crush", "crush", false, true, false),
@@ -60,7 +60,7 @@ public enum PitEnchant {
 	PROTECTION("&9Protection", "Protection", "prot", false, false, false),
 	RING_ARMOR("&9Ring Armor", "Ring Armor", "ring", false, false, false),
 	PEROXIDE("&9Peroxide", "Peroxide", "pero", false, true, false),
-	BOOBOO("&9Booboo", "Booboo", "booboo", false, true, false),
+	BOOBOO("&9Boo-boo", "Boo-boo", "booboo", false, true, false),
 	REALLY_TOXIC("&9Really Toxic", "Really Toxic", "reallytoxic", false, true, false),
 	NEW_DEAL("&9New Deal", "New Deal", "newdeal", false, true, false),
 	HEIGHHO("&9HeighHo", "HeighHo", "heighho", false, true, false),
@@ -105,9 +105,9 @@ public enum PitEnchant {
 	DURABLE("&aUNC. &9Durable", "Durable", "durable", false, true, true),
 	ADRENALINE("&aUNC. &9Adrenaline", "Adrenaline", "adrenaline", false, true, true),
 	BARBARIC("&aUNC. &9Barbaric", "Barbaric", "barbaric", false, true, true),
-	COMBO_DEFENCE("&aUNC. &9Combo Defence", "Combo Defence", "combodefence", false, true, true),
-	COMBO_MANA("&aUNC. &9Combo Mana", "Combo Mana", "combomana", false, true, true),
-	COMBO_SLOW("&aUNC. &9Combo Slow", "Combo Slow", "comboeslow", false, true, true),
+	COMBO_DEFENCE("&aUNC. &9Combo: Defence", "Combo: Defence", "combodefence", false, true, true),
+	COMBO_MANA("&aUNC. &9Combo: Mana", "Combo: Mana", "combomana", false, true, true),
+	COMBO_SLOW("&aUNC. &9Combo: Slow", "Combo: Slow", "comboeslow", false, true, true),
 	DESPERATE("&aUNC. &9Desperate", "Desperate", "desperate", false, true, true),
 	EMBOLDENED("&aUNC. &9Emboldened", "Emboldened", "emboldened", false, true, true),
 	ETHEREAL("&aUNC. &9Ethereal", "Ethereal", "ethereal", false, true, true),
@@ -172,6 +172,11 @@ public enum PitEnchant {
 
 	public String getRawName() {
 		return rawName;
+	}
+
+	public String getShortenedRawName() {
+		return rawName.replaceAll("Combo: ", "")
+				.replaceAll("Faster than their shadow", "FTTS");
 	}
 
 //	Raw name with removed puncutation and stuff
