@@ -175,7 +175,8 @@ public enum PitEnchant {
 	}
 
 	public String getShortenedRawName() {
-		return rawName.replaceAll("Combo: ", "")
+		return rawName
+				.replaceAll("Combo: Perun", "Perun")
 				.replaceAll("Faster than their shadow", "FTTS");
 	}
 

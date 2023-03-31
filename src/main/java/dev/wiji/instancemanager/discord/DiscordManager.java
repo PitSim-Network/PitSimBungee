@@ -54,7 +54,7 @@ public class DiscordManager implements EventListener, Listener {
 			BUILDER.setMemberCachePolicy(MemberCachePolicy.ALL);
 			BUILDER.enableIntents(GatewayIntent.GUILD_MEMBERS);
 			BUILDER.addEventListeners(this);
-			BUILDER.addEventListeners(new DeploymentManager());
+//			BUILDER.addEventListeners(new DeploymentManager());
 			JDA = BUILDER.build();
 			JDA.awaitReady();
 		} catch(LoginException | InterruptedException e) {
