@@ -64,8 +64,8 @@ public class BungeeMain extends Plugin {
 
 		MarketManager.init();
 
-//		getProxy().getPluginManager().registerListener(BungeeMain.INSTANCE, new DiscordManager());
-		if(!ConfigManager.isDev()) getProxy().getPluginManager().registerListener(BungeeMain.INSTANCE, new DiscordManager());
+		getProxy().getPluginManager().registerListener(BungeeMain.INSTANCE, new DiscordManager());
+//		if(!ConfigManager.isDev()) getProxy().getPluginManager().registerListener(BungeeMain.INSTANCE, new DiscordManager());
 		getProxy().getPluginManager().registerListener(this, new SkywarsPluginListener());
 		getProxy().getPluginManager().registerListener(this, new PluginMessageManager());
 		getProxy().getPluginManager().registerListener(this, new MessageListener());

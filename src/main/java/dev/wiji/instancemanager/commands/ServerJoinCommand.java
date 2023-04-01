@@ -1,6 +1,7 @@
 package dev.wiji.instancemanager.commands;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.misc.Misc;
 import dev.wiji.instancemanager.objects.DarkzoneServer;
@@ -36,7 +37,7 @@ public class ServerJoinCommand extends Command {
 		if(!(sender instanceof ProxiedPlayer)) return;
 		ProxiedPlayer player = (ProxiedPlayer) sender;
 
-		if(!player.hasPermission("pitsim.join")) return;
+		if(!player.hasPermission("pitsim.join") && !ConfigManager.isDev()) return;
 
 		if(args.length < 1) {
 			sendServerList(player);
@@ -53,7 +54,7 @@ public class ServerJoinCommand extends Command {
 
 		ProxiedPlayer affectedPlayer = player;
 
-		if(args.length >= 2) {
+		if(args.length >= 2 && player.hasPermission("pitsim.join")) {
 			String playerString = args[1];
 			ProxiedPlayer targetPlayer = BungeeMain.INSTANCE.getProxy().getPlayer(playerString);
 			if(targetPlayer == null) {

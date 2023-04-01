@@ -90,14 +90,16 @@ public class GraphCommand extends DiscordCommand {
 							if(multiplier == 0) continue;
 
 							String enchantRefName = resultSet.getString("enchant");
-							if(enchantRefName == null) continue;
 							int enchantHits;
 							try {
 								enchantHits = resultSet.getInt("total_hits");
 								enchantHits *= multiplier;
-								totalHits += enchantHits;
 							} catch (SQLException e) {
 								break;
+							}
+							if(enchantRefName == null) {
+								totalHits += enchantHits;
+								continue;
 							}
 							usageMap.put(enchantRefName, usageMap.getOrDefault(enchantRefName, 0.0) + enchantHits);
 						}
@@ -108,10 +110,11 @@ public class GraphCommand extends DiscordCommand {
 							if(multiplier == 0) continue;
 
 							String enchantRefName = resultSet.getString("enchant");
-							if(enchantRefName == null) continue;
+							if(enchantRefName == null) {
+								totalHits += resultSet.getInt("total_hits") * multiplier;
+								continue;
+							}
 							if(!enchantRefName.equals(finalFirstEnchant.getRefName())) continue;
-
-							totalHits += resultSet.getInt("total_hits") * multiplier;
 
 							for(PitEnchant pitEnchant : PitEnchant.values()) {
 								if(pitEnchant == finalFirstEnchant) continue;
