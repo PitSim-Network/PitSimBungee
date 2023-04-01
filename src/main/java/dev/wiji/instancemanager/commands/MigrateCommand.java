@@ -33,10 +33,10 @@ public class MigrateCommand extends Command {
 		List<File> files = new ArrayList<>(Arrays.asList(directory.listFiles()));
 		new Thread(() -> {
 			while(!files.isEmpty()) {
-				if(!readyForNextPlayer) {
-					sleep(1);
-					continue;
-				}
+//				if(!readyForNextPlayer) {
+//					sleep(1);
+//					continue;
+//				}
 				File saveFile = files.remove(0);
 				UUID playerUUID = UUID.fromString(saveFile.getName().split("\\.")[0]);
 
