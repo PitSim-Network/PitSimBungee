@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum PitEnchant {
-	COMBO_VENOM("&dRARE! &9Combo: Venom", "Combo: Venom", "venom", true, true, false),
+//	COMBO_VENOM("&dRARE! &9Combo: Venom", "Combo: Venom", "venom", true, true, false),
 	SELFCHECKOUT("&dRARE! &9Self-Checkout", "Self-Checkout", "selfcheckout", true, true, false),
 	BILLIONAIRE("&dRARE! &9Billionaire", "Billionaire", "bill", true, true, false),
 	COMBO_PERUNS_WRATH("&dRARE! &9Combo: Perun's Wrath", "Combo: Perun's Wrath", "perun", true, true, false),
