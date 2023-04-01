@@ -11,6 +11,8 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Command;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 public class MigrateCommand extends Command {
@@ -24,7 +26,9 @@ public class MigrateCommand extends Command {
 		String serverName = ConfigManager.isDev() ? "pitsimdev-1" : "pitsim-1";
 		ServerInfo server = BungeeMain.INSTANCE.getProxy().getServerInfo(serverName);
 
-		for(File saveFile : directory.listFiles()) {
+		List<File> files = Arrays.asList(directory.listFiles());
+		for(int i = 0; i < files.size(); i++) {
+			File saveFile = files.get(i);
 			UUID playerUUID = UUID.fromString(saveFile.getName().split("\\.")[0]);
 
 			StorageProfile profile = StorageManager.getStorage(playerUUID);
@@ -32,7 +36,9 @@ public class MigrateCommand extends Command {
 			profile.sendToServer(server, false);
 			PluginMessage message = new PluginMessage().writeString("MIGRATE ITEMS").writeString(playerUUID.toString());
 			message.addServer(server).send();
-			AOutput.log("Requesting migration for " + playerUUID + " from server " + serverName);
+//			AOutput.log("Requesting migration for " + playerUUID + " from server " + serverName);
+			if(i % 100 == 0) AOutput.log("Migration Progress: " + (i + 1) + "/" + files.size());
 		}
+		AOutput.log("Migration Complete");
 	}
 }
