@@ -108,4 +108,11 @@ public class EditSessionManager implements Listener {
 		}
 	}
 
+	public static EditSession getSession(UUID uuid) {
+		for(EditSession session : editSessions) {
+			if(session.getStaffUUID().equals(uuid)) return session;
+		}
+		return null;
+	}
+
 }

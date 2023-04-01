@@ -97,8 +97,7 @@ public class MarketListing implements Serializable {
 
 			j++;
 		}
-		System.out.println(builder.toString());
-		System.out.println("------------------");
+
 		message.writeString(builder.toString());
 		message.writeInt(originalStock);
 
@@ -115,10 +114,6 @@ public class MarketListing implements Serializable {
 
 	public void placeBid(UUID playerUUID, int bidAmount) {
 		if(startingBid == -1 || isExpired() || bidAmount < getMinimumBid() || stackBIN) {
-
-			System.out.println("bidAmount: " + bidAmount);
-			System.out.println("minBid: " + getMinimumBid());
-
 			MarketManager.sendFailure(playerUUID, this);
 			return;
 		}
@@ -157,7 +152,6 @@ public class MarketListing implements Serializable {
 	public void bin(UUID playerUUID, int amount, boolean holdItem) {
 
 		if(binPrice == -1) {
-			System.out.println("BIN PRICE IS -1");
 			MarketManager.sendFailure(playerUUID, this);
 			return;
 		}
@@ -212,14 +206,12 @@ public class MarketListing implements Serializable {
 	public void claimItem(UUID playerUUID) {
 		if(itemClaimed) {
 			MarketManager.sendFailure(playerUUID, this);
-			System.out.println("Failure 1");
 			return;
 		}
 
 		if(!playerUUID.equals(ownerUUID)) {
 			if(startingBid == -1 || !hasEnded) {
 				MarketManager.sendFailure(playerUUID, this);
-				System.out.println("Failure 2");
 				return;
 			}
 		}
@@ -242,7 +234,6 @@ public class MarketListing implements Serializable {
 
 		if(!itemClaimed) {
 			MarketManager.sendFailure(playerUUID, this);
-			System.out.println("Failure 3");
 		}
 	}
 

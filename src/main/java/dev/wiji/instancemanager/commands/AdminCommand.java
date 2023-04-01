@@ -12,11 +12,14 @@ import dev.wiji.instancemanager.misc.Misc;
 import dev.wiji.instancemanager.objects.*;
 import dev.wiji.instancemanager.pitsim.DarkzoneServerManager;
 import dev.wiji.instancemanager.pitsim.OverworldServerManager;
+import dev.wiji.instancemanager.storage.EditSession;
 import dev.wiji.instancemanager.storage.EditSessionManager;
+import dev.wiji.instancemanager.storage.StorageManager;
 import io.mokulu.discord.oauth.DiscordAPI;
 import io.mokulu.discord.oauth.model.User;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -53,7 +56,7 @@ public class AdminCommand extends Command {
 					"&4 * &c/admin killnetwork &7(shuts down the network immediately)",
 					"&4 * &c/admin gui &7(displays all players and servers in a menu)",
 					"&4 * &c/admin suspend [server-name] [kick-players?] &7(maintenance mode)",
-					"&4 * &c/admin edit &7(editing playerdata)",
+					"&4 * &c/admin edit &7(editing playerdata) (-r to reset)",
 					"&4 * &c/admin connections &7(first connection stats by host)",
 					"&4&m--------------------&4<&c&lADMIN&4>&m--------------------"
 			).send(player);
@@ -287,6 +290,26 @@ public class AdminCommand extends Command {
 				return;
 			}
 
+			for(String arg : args) {
+				if(arg.equalsIgnoreCase("-r")) {
+					String name = args[1];
+					ProxiedPlayer target = ProxyServer.getInstance().getPlayer(name);
+					if(target == null) {
+						AOutput.error(player, "&cThat player is not online!");
+						return;
+					}
+
+					UUID uuid = target.getUniqueId();
+
+					EditSession session = EditSessionManager.getSession(uuid);
+					if(session == null) {
+						AOutput.error(player, "&cThat player does not have an edit session!");
+						return;
+					}
+
+					session.endSession();
+				}
+			}
 			EditSessionManager.createSession(player.getUniqueId(), args[1]);
 		}
 
