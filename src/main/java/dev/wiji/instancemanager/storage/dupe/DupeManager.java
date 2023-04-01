@@ -110,6 +110,9 @@ public class DupeManager implements Listener {
 					trackMiscItem(playerUUID, itemStack);
 
 					if(!itemStack.nbtData.hasKey(NBTTag.ITEM_UUID.getRef())) continue;
+					if(!itemStack.nbtData.hasKey(NBTTag.ITEM_JEWEL_ENCHANT.getRef()) && itemStack.material != Material.CHAINMAIL_CHESTPLATE &&
+							itemStack.material != Material.LEATHER_CHESTPLATE && itemStack.material != Material.STONE_HOE &&
+							itemStack.material != Material.GOLD_HOE) continue;
 					trackedItems.add(new TrackedItem(playerUUID, itemStack, entry.getValue()));
 				}
 			}
