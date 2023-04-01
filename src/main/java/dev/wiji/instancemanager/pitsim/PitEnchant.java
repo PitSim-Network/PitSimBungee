@@ -48,7 +48,7 @@ public enum PitEnchant {
 	SNIPER("&9Sniper", "Sniper", "sniper", false, false, false),
 	SPAMMER_AND_PROUD("&9Spammer and Proud", "Spammer and Proud", "spammerandproud", false, false, false),
 	JUMPSPAMMER("&9Jumpspammer", "Jumpspammer", "jumpspammer", false, false, false),
-	RETROGRAVITY_MICROCOSM("&dRARE! &9RetroGravity Microcosm", "RetroGravity Microcosm", "rgm", true, true, false),
+	RETROGRAVITY_MICROCOSM("&dRARE! &9Retro-Gravity Microcosm", "Retro-Gravity Microcosm", "rgm", true, true, false),
 	REGULARITY("&dRARE! &9Regularity", "Regularity", "regularity", true, true, false),
 	SOLITUDE("&dRARE! &9Solitude", "Solitude", "solitude", true, true, false),
 	SINGULARITY("&dRARE! &9Singularity", "Singularity", "singularity", true, true, false),
@@ -177,7 +177,8 @@ public enum PitEnchant {
 	public String getShortenedRawName() {
 		return rawName
 				.replaceAll("Combo: Perun", "Perun")
-				.replaceAll("Faster than their shadow", "FTTS");
+				.replaceAll("Faster than their shadow", "FTTS")
+				.replaceAll("Retro-Gravity Microcosm", "RGM");
 	}
 
 //	Raw name with removed puncutation and stuff
