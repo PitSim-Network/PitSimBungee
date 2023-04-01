@@ -2,6 +2,7 @@ package dev.wiji.instancemanager.storage;
 
 import com.google.gson.Gson;
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.commands.MigrateCommand;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -66,6 +67,7 @@ public class StorageManager implements Listener {
 		if(strings.size() < 2) return;
 
 		if(strings.get(0).equals("ITEM DATA SAVE")) {
+			MigrateCommand.readyForNextPlayer = true;
 			UUID uuid = UUID.fromString(strings.get(1));
 
 			StorageProfile profile = getStorage(uuid);
