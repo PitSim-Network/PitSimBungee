@@ -1,20 +1,26 @@
 package dev.wiji.instancemanager.aserverstatistics;
 
 public enum StatisticCategory {
-	OVERWORLD_PVP("Overworld PvP"),
-	OVERWORLD_STREAKING("Overworld Streaking"),
-	DARKZONE_VS_PLAYER("Darkzone Player vs Player"),
-	DARKZONE_VS_MOB("Darkzone Player vs Mob"),
-	DARKZONE_VS_BOSS("Darkzone Player vs Boss"),
+	OVERWORLD_PVP("Overworld PvP", "PvP"),
+	OVERWORLD_STREAKING("Overworld Streaking", "Streaking"),
+	DARKZONE_VS_PLAYER("Darkzone Player vs Player", "DZ PvP"),
+	DARKZONE_VS_MOB("Darkzone Player vs Mob", "DZ PvM"),
+	DARKZONE_VS_BOSS("Darkzone Player vs Boss", "DZ PvB"),
 	;
 
 	private final String displayName;
+	private final String shorthandDisplay;
 
-	StatisticCategory(String displayName) {
+	StatisticCategory(String displayName, String shorthandDisplay) {
 		this.displayName = displayName;
+		this.shorthandDisplay = shorthandDisplay;
 	}
 
 	public String getDisplayName() {
 		return displayName;
+	}
+
+	public String getShorthandDisplay() {
+		return shorthandDisplay;
 	}
 }

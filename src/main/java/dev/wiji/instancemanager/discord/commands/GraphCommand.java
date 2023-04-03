@@ -147,7 +147,7 @@ public class GraphCommand extends DiscordCommand {
 
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yy");
 					String formattedDate = LocalDate.now(ZoneId.of("America/New_York")).format(formatter);
-					String title = "Popular Enchants";
+					String title = "Top Enchants (" + category.getShorthandDisplay() + ")";
 					if(finalFirstEnchant != null) title += " w/" + finalFirstEnchant.getShortenedRawName();
 					title += " - PitSim " + formattedDate;
 
@@ -203,7 +203,7 @@ public class GraphCommand extends DiscordCommand {
 					String formattedDate = LocalDate.now(ZoneId.of("America/New_York")).format(formatter);
 					String title = finalFirstEnchant.getShortenedRawName();
 					if(finalSecondEnchant != null) title += " & " + finalSecondEnchant.getShortenedRawName();
-					title += " vs Time - PitSim " + formattedDate;
+					title += " vs Time (" + category.getShorthandDisplay() + ") - PitSim " + formattedDate;
 
 					String chart = createChart(title, "Time (" + timeFrame.getPluralDisplayName() + ")",
 							"Usage (%)", labels, data, true);
