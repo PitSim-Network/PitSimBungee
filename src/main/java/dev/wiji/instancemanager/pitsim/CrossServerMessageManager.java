@@ -23,7 +23,7 @@ public class CrossServerMessageManager implements Listener {
 		List<Boolean> booleans = message.getBooleans();
 		if(strings.isEmpty()) return;
 
-		if(strings.get(0).equals("ITEMSHOW") || strings.get(0).equals("FINDJEWEL") || strings.get(0).equals("UBERDROP")) {
+		if(strings.get(0).equals("ITEMSHOW") || strings.get(0).equals("FINDJEWEL") || strings.get(0).equals("UBERDROP") || strings.get(0).equals("TAINTEDENCHANT")) {
 			String serverName = strings.get(1);
 			String displayName = strings.get(2);
 			String itemStack = strings.get(3);

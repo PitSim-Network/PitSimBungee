@@ -50,7 +50,13 @@ public abstract class MainGamemodeServer {
 	}
 
 	public void shutDown(boolean restart) {
-		new PluginMessage().writeString("SHUTDOWN").writeBoolean(restart).addServer(getServerInfo()).send();
+		shutDown(restart, -1);
+	}
+
+	public void shutDown(boolean restart, int minutes) {
+		PluginMessage message = new PluginMessage().writeString("SHUTDOWN").writeBoolean(restart).addServer(getServerInfo());
+		if(minutes > 0) message.writeInt(minutes);
+		message.send();
 		if(restart) status = ServerStatus.RESTARTING_INITIAL;
 		else status = ServerStatus.SHUTTING_DOWN_INITIAL;
 	}

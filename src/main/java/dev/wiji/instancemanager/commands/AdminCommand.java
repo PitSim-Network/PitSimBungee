@@ -104,6 +104,21 @@ public class AdminCommand extends Command {
 
 		if(args[0].equalsIgnoreCase("stopnetwork")) {
 
+			int minutes = -1;
+			if(args.length > 1) {
+				try {
+					minutes = Integer.parseInt(args[1]);
+				} catch(Exception e) {
+					player.sendMessage((new ComponentBuilder("Invalid arguments! /admin stopnetwork [minutes]").color(ChatColor.RED).create()));
+					return;
+				}
+
+				if(minutes < 0) {
+					player.sendMessage((new ComponentBuilder("Invalid arguments! /admin stopnetwork [minutes]").color(ChatColor.RED).create()));
+					return;
+				}
+			}
+
 			if(OverworldServerManager.networkIsShuttingDown || DarkzoneServerManager.networkIsShuttingDown) {
 				player.sendMessage((new ComponentBuilder("Network is already shutting down!").color(ChatColor.RED).create()));
 				return;
@@ -122,7 +137,7 @@ public class AdminCommand extends Command {
 			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
 				if(overworldServer.isSuspended()) continue;
 				if(overworldServer.status == ServerStatus.RUNNING) {
-					overworldServer.shutDown(false);
+					overworldServer.shutDown(false, minutes);
 				}
 				if(overworldServer.status == ServerStatus.STARTING) {
 					overworldServer.hardShutDown();
@@ -132,7 +147,7 @@ public class AdminCommand extends Command {
 			for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
 				if(darkzoneServer.isSuspended()) continue;
 				if(darkzoneServer.status == ServerStatus.RUNNING) {
-					darkzoneServer.shutDown(false);
+					darkzoneServer.shutDown(false, minutes);
 				}
 				if(darkzoneServer.status == ServerStatus.STARTING) {
 					darkzoneServer.hardShutDown();
