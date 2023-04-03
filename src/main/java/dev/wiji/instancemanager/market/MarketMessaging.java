@@ -32,10 +32,11 @@ public class MarketMessaging implements Listener {
 
 			MarketListing listing = new MarketListing(owner, item, startingBid, binPrice, isStackBIN, duration);
 			MarketManager.listings.add(listing);
-			MarketLog.log(listing, LogType.CREATE_LISTING, owner, new int[] {});
 
 			MarketManager.sendSuccess(owner, responseID);
 			listing.update();
+
+			MarketLog.log(listing, LogType.CREATE_LISTING, owner, new int[] {});
 		}
 
 		if(strings.size() >= 2 && strings.get(0).equals("REMOVE LISTING")) {
