@@ -24,7 +24,7 @@ public class MarketMessaging implements Listener {
 
 			UUID owner = UUID.fromString(strings.get(1));
 			UUID responseID = UUID.fromString(strings.get(2));
-			String item = strings.get(2);
+			String item = strings.get(3);
 			int startingBid = ints.get(0);
 			int binPrice = ints.get(1);
 			boolean isStackBIN = booleans.get(0);
