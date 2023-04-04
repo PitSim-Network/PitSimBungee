@@ -43,6 +43,12 @@ public class UnlinkCommand extends Command {
 			return;
 		}
 
+//		Because people are abusing /unlink
+		if(!isAdmin) {
+			AOutput.error(proxiedPlayer, "&c&lERROR!&7 Create a support ticket in the discord to unlink your account");
+			return;
+		}
+
 		long nextVerifyTime = discordUser.lastLink + 1000 * 60 * 60 * 24 * 7;
 		long currentTime = System.currentTimeMillis();
 		if(!isAdmin && nextVerifyTime > currentTime) {
