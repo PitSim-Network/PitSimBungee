@@ -110,11 +110,8 @@ public class GraphCommand extends DiscordCommand {
 							if(multiplier == 0) continue;
 
 							String enchantRefName = resultSet.getString("enchant");
-							if(enchantRefName == null) {
-								totalHits += resultSet.getInt("total_hits") * multiplier;
-								continue;
-							}
-							if(!enchantRefName.equals(finalFirstEnchant.getRefName())) continue;
+							if(enchantRefName == null || !enchantRefName.equals(finalFirstEnchant.getRefName())) continue;
+							totalHits += resultSet.getInt("total_hits") * multiplier;
 
 							for(PitEnchant pitEnchant : PitEnchant.values()) {
 								if(pitEnchant == finalFirstEnchant) continue;
