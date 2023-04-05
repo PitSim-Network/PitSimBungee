@@ -39,6 +39,7 @@ public class DiscordManager implements EventListener, Listener {
 	public static JDA JDA;
 	public static List<DiscordCommand> commands = new ArrayList<>();
 	public static boolean isEnabled;
+	public static boolean commandsEnabled = true;
 
 	public static Guild MAIN_GUILD;
 	public static Guild PRIVATE_GUILD;
@@ -112,6 +113,7 @@ public class DiscordManager implements EventListener, Listener {
 	}
 
 	public void onSlashCommand(SlashCommandInteractionEvent event) {
+		if(!commandsEnabled) return;
 		String command = event.getName();
 		for(DiscordCommand discordCommand : commands) {
 			if(!discordCommand.name.equals(command)) continue;
@@ -128,6 +130,7 @@ public class DiscordManager implements EventListener, Listener {
 	}
 
 	public void onAutoComplete(CommandAutoCompleteInteractionEvent event) {
+		if(!commandsEnabled) return;
 		String command = event.getName();
 		String currentOption = event.getFocusedOption().getName();
 		String currentValue = event.getFocusedOption().getValue();

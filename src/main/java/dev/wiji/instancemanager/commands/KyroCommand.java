@@ -21,7 +21,7 @@ public class KyroCommand extends Command {
 		if(!Misc.isKyro(player.getUniqueId())) return;
 
 		if(args.length == 0) {
-			AOutput.error(player, "&c&lERROR!&7 Usage: <discord|graph>");
+			AOutput.error(player, "&c&lERROR!&7 Usage: <discord|togglecommands|graph>");
 			return;
 		}
 
@@ -33,59 +33,13 @@ public class KyroCommand extends Command {
 			}
 			BungeeMain.INSTANCE.getProxy().getPluginManager().registerListener(BungeeMain.INSTANCE, new DiscordManager());
 			AOutput.color(player, "&9&lDISCORD!&7 Enabling discord bot");
-		} else if(command.equals("graph") || command.equals("chart")) {
-//			StatisticsManager.queryByCategory(StatisticCategory.OVERWORLD_STREAKING, resultSet -> {
-//				try {
-//					int totalHits = 0;
-//					Map<String, Double> enchantUsageMap = new HashMap<>();
-//					while(resultSet.next()) {
-//						String enchantRefName = resultSet.getString("enchant");
-//						int enchantHits;
-//						try {
-//							enchantHits = resultSet.getInt("total_hits");
-//							totalHits += enchantHits;
-//						} catch (SQLException e) {
-//							break;
-//						}
-//						enchantUsageMap.put(enchantRefName, enchantUsageMap.getOrDefault(enchantRefName, 0.0) + enchantHits);
-//					}
-//
-//					int finalTotalHits = totalHits;
-//					enchantUsageMap = enchantUsageMap.entrySet().stream()
-//							.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-//							.collect(Collectors.toMap(
-//									Map.Entry::getKey,
-//									entry -> entry.getValue() * 100.0 / finalTotalHits,
-//									(oldValue, newValue) -> oldValue, LinkedHashMap::new));
-//
-//					List<Map.Entry<String, Double>> sortedEntries = enchantUsageMap.entrySet().stream()
-//							.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-//							.limit(10)
-//							.collect(Collectors.toList());
-//
-//					String labels = sortedEntries.stream()
-//							.map(entry -> "'" + PitEnchant.getEnchant(entry.getKey()).getRawName()
-//									.replaceAll("\"", "DOUBLEQUOTE").replaceAll("'", "SINGLEQUOTE") + "'")
-//							.collect(Collectors.joining(","));
-//					String data = sortedEntries.stream()
-//							.map(Map.Entry::getValue)
-//							.map(Object::toString)
-//							.collect(Collectors.joining(","));
-//
-//					String url = "https://quickchart.io/chart?c={type:'bar',data:{labels:[" + labels +
-//							"],datasets:[{label:'Enchant Usage Percent',data:[" + data + "]}]}}";
-//					url = url.replaceAll("'", "%27").replaceAll(" ", "%20")
-//							.replaceAll("DOUBLEQUOTE", "\"").replaceAll("SINGLEQUOTE", "\\\\'");
-//
-//					System.out.println(url);
-//					TextChannel textChannel = DiscordManager.MAIN_GUILD.getTextChannelById(Constants.STAFF_GENERAL_CHANNEL);
-//					assert textChannel != null;
-//					textChannel.sendMessage(url).queue();
-//					AOutput.color(player, "&6&lCHART!&7 Sent chart to discord");
-//				} catch(SQLException e) {
-//					throw new RuntimeException(e);
-//				}
-//			});
+		} else if(command.equals("togglecommands")) {
+			if(DiscordManager.commandsEnabled) {
+				AOutput.color(player, "&9&lDISCORD!&7 Disabling discord commands");
+			} else {
+				AOutput.color(player, "&9&lDISCORD!&7 Enabling discord commands");
+			}
+			DiscordManager.commandsEnabled = !DiscordManager.commandsEnabled;
 		}
 	}
 }
