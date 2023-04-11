@@ -5,6 +5,7 @@ import dev.wiji.instancemanager.aserverstatistics.StatisticsManager;
 import dev.wiji.instancemanager.discord.DiscordCommand;
 import dev.wiji.instancemanager.misc.Misc;
 import dev.wiji.instancemanager.pitsim.PitEnchant;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -36,7 +37,9 @@ public class GraphCommand extends DiscordCommand {
 				new SubcommandData("popularity", "graph popular enchants or enchant combinations")
 						.addOptions(
 								categoryOption,
-								new OptionData(OptionType.STRING, "enchant", "the enchant to look up", false, true)
+								new OptionData(OptionType.STRING, "enchant", "the enchant to look up", false, true),
+								new OptionData(OptionType.INTEGER, "start", "(ADMIN ONLY) the index to start at (0 by default)", false),
+								new OptionData(OptionType.BOOLEAN, "reverse", "(ADMIN ONLY) sort in reverse order", false)
 						),
 				new SubcommandData("time", "graph an enchant or enchant combination against time")
 						.addOptions(
@@ -52,6 +55,8 @@ public class GraphCommand extends DiscordCommand {
 
 	@Override
 	public void execute(SlashCommandInteractionEvent event) {
+		boolean isAdmin = event.getMember().hasPermission(Permission.ADMINISTRATOR);
+
 		String subCommand = event.getSubcommandName();
 		if(subCommand == null) {
 			event.reply("Please run a sub command").setEphemeral(true).queue();
@@ -129,8 +134,12 @@ public class GraphCommand extends DiscordCommand {
 									entry -> entry.getValue() * 100.0 / finalTotalHits,
 									(oldValue, newValue) -> oldValue, LinkedHashMap::new));
 
+					int startingIndex = event.getOption("start") != null && isAdmin ?
+							Math.max(event.getOption("start").getAsInt(), 0) : 0;
+					boolean reverseOrder = event.getOption("reverse") != null && isAdmin && event.getOption("reverse").getAsBoolean();
 					List<Map.Entry<String, Double>> sortedEntries = usageMap.entrySet().stream()
-							.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+							.sorted(reverseOrder ? Map.Entry.comparingByValue() : Collections.reverseOrder(Map.Entry.comparingByValue()))
+							.skip(startingIndex)
 							.limit(15)
 							.collect(Collectors.toList());
 
@@ -144,9 +153,18 @@ public class GraphCommand extends DiscordCommand {
 
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yy");
 					String formattedDate = LocalDate.now(ZoneId.of("America/New_York")).format(formatter);
-					String title = "Top Enchants";
-					if(finalFirstEnchant != null) title += " w/" + finalFirstEnchant.getShortenedRawName();
-					title += " (" + category.getShorthandDisplay() + ") - PitSim " + formattedDate;
+					String title = "";
+					if(startingIndex != 0 || reverseOrder) {
+						List<String> titleSegments = new ArrayList<>();
+						if(startingIndex != 0) titleSegments.add("Index " + startingIndex);
+						if(reverseOrder) titleSegments.add("Reversed");
+						title += "Dev Chart (" + String.join(", ", titleSegments) + ")";
+					} else {
+						title += "Top Enchants";
+						if(finalFirstEnchant != null) title += " w/" + finalFirstEnchant.getShortenedRawName();
+						title += " (" + category.getShorthandDisplay() + ")";
+					}
+					title += " - PitSim " + formattedDate;
 
 					String chart = createChart(title, null, "Usage (%)", labels, data, true);
 					event.reply(chart).queue();
