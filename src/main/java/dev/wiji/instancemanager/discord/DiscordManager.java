@@ -2,8 +2,10 @@ package dev.wiji.instancemanager.discord;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ProxyRunnable;
+import dev.wiji.instancemanager.discord.commands.CleanCommand;
 import dev.wiji.instancemanager.discord.commands.GraphCommand;
 import dev.wiji.instancemanager.discord.commands.PingCommand;
+import dev.wiji.instancemanager.discord.commands.SpamWijiCommand;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.misc.PrivateInfo;
@@ -43,6 +45,7 @@ public class DiscordManager implements EventListener, Listener {
 
 	public static Guild MAIN_GUILD;
 	public static Guild PRIVATE_GUILD;
+	public static Guild CONTRIVANCE_GUILD;
 
 	public static final String DISCORD_TABLE = "DiscordAuthentication";
 
@@ -63,7 +66,8 @@ public class DiscordManager implements EventListener, Listener {
 		}
 
 		MAIN_GUILD = JDA.getGuildById(Constants.MAIN_GUILD_ROLE_ID);
-		PRIVATE_GUILD = JDA.getGuildById(Constants.PRIVATE_GUILD_ROLE_ID);
+		PRIVATE_GUILD = JDA.getGuildById(Constants.PRIVATE_GUILD_ID);
+		CONTRIVANCE_GUILD = JDA.getGuildById(Constants.CONTRIVANCE_GUILD_ID);
 
 //		Random Things
 		new InGameNitro();
@@ -74,6 +78,8 @@ public class DiscordManager implements EventListener, Listener {
 
 	public static void registerCommands() {
 		registerCommand(new PingCommand());
+		registerCommand(new SpamWijiCommand());
+		registerCommand(new CleanCommand());
 		registerCommand(new GraphCommand());
 	}
 
