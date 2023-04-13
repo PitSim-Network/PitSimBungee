@@ -79,7 +79,7 @@ public class DiscordManager implements EventListener, Listener {
 			for(DiscordCommand discordCommand : commands) {
 				if(discordCommand.enabled) continue;
 				for(Command command : currentCommands) {
-					if(!discordCommand.name.equals(command.getName())) continue;
+					if(command.getApplicationIdLong() != Constants.BOT_ID || !discordCommand.name.equals(command.getName())) continue;
 					MAIN_GUILD.deleteCommandById(command.getId()).queue();
 					AOutput.log("Deleted Command: " + command.getName());
 				}
