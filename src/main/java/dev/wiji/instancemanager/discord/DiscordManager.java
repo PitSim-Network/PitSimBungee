@@ -74,6 +74,17 @@ public class DiscordManager implements EventListener, Listener {
 
 		registerCommands();
 		setupSlashCommands();
+
+		MAIN_GUILD.retrieveCommands().queue(currentCommands -> {
+			for(DiscordCommand discordCommand : commands) {
+				if(discordCommand.enabled) continue;
+				for(Command command : currentCommands) {
+					if(!discordCommand.name.equals(command.getName())) continue;
+					MAIN_GUILD.deleteCommandById(command.getId()).queue();
+					AOutput.log("Deleted Command: " + command.getName());
+				}
+			}
+		});
 	}
 
 	public static void registerCommands() {

@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 public class CleanCommand extends DiscordCommand {
 	public CleanCommand() {
 		super("clean");
+		enabled = false;
 	}
 
 	@Override

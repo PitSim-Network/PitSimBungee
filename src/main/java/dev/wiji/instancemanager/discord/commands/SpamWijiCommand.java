@@ -19,6 +19,7 @@ import java.io.IOException;
 public class SpamWijiCommand extends DiscordCommand {
 	public SpamWijiCommand() {
 		super("spam");
+		enabled = false;
 	}
 
 	@Override
