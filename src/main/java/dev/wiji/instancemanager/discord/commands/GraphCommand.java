@@ -45,7 +45,7 @@ public class GraphCommand extends DiscordCommand {
 						.addOptions(
 								categoryOption,
 								new OptionData(OptionType.STRING, "timeframe", "the time frame to query from", true)
-										.addChoice("last week", "days")
+										.addChoice("last 2 weeks", "days")
 										.addChoice("last month", "weeks"),
 								new OptionData(OptionType.STRING, "enchant", "the enchant to look up", true, true),
 								new OptionData(OptionType.STRING, "second-enchant", "combination with the first enchant", false, true)
@@ -300,7 +300,7 @@ public class GraphCommand extends DiscordCommand {
 	}
 
 	public enum TimeFrame {
-		DAYS("Day", "days", 7, 1000L * 60 * 60 * 24),
+		DAYS("Day", "days", 14, 1000L * 60 * 60 * 24),
 		WEEKS("Week", "weeks", 4, 1000L * 60 * 60 * 24 * 7);
 
 		private final String displayName;

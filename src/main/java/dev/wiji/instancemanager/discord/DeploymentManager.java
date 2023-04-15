@@ -135,7 +135,7 @@ public class DeploymentManager extends ListenerAdapter {
 	@Override
 	public void onMessageReceived(@NotNull MessageReceivedEvent event) {
 		Guild guild = event.getGuild();
-		if(guild.getIdLong() != Constants.PRIVATE_GUILD_ROLE_ID) return;
+		if(guild.getIdLong() != Constants.PRIVATE_GUILD_ID) return;
 		MessageChannel textChannel = event.getChannel();
 		if(textChannel.getIdLong() != Constants.AUTOMATIC_DEPLOYMENT_CHANNEL) return;
 		Member member = event.getMember();

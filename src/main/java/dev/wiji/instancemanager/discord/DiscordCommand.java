@@ -11,6 +11,7 @@ import java.util.List;
 public abstract class DiscordCommand {
 	public String name;
 	public boolean requireVerification;
+	public boolean enabled = true;
 
 	public DiscordCommand(String name) {
 		this.name = name;
