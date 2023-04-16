@@ -297,10 +297,21 @@ public class MarketListing implements Serializable {
 				MarketManager.replaceAlerts(ownerUUID, marketUUID, ownerMessage);
 			}
 		} else if(stackBIN) {
-			String ownerMessage = "&a&lMARKET &7Your listing for " + item.displayName + " &7has expired with &a" + item.amount + " Items &7remaining!";
+			String ownerMessage;
+			if(isExpired()) {
+				ownerMessage = "&a&lMARKET &7Your listing for " + item.displayName + " &7has expired";
+			} else {
+				ownerMessage = "&a&lMARKET &7Your listing for " + item.displayName + " &7has ended";
+			}
+			ownerMessage += item.amount == 0 ? "!" : " with &a" + item.amount + " Items &7remaining!";
 			new MarketAlertManager.MarketAlert(ownerUUID, marketUUID, ownerMessage);
 		} else {
-			String ownerMessage = "&a&lMARKET &7Your listing for " + item.displayName + " &7has expired!";
+			String ownerMessage;
+			if(isExpired()) {
+				ownerMessage = "&a&lMARKET &7Your listing for " + item.displayName + " &7has expired!";
+			} else {
+				ownerMessage = "&a&lMARKET &7Your listing for " + item.displayName + " &7has ended!";
+			}
 			MarketManager.replaceAlerts(ownerUUID, marketUUID, ownerMessage);
 		}
 
