@@ -309,11 +309,6 @@ public class AdminCommand extends Command {
 				if(arg.equalsIgnoreCase("-r")) {
 					String name = args[1];
 					ProxiedPlayer target = ProxyServer.getInstance().getPlayer(name);
-					if(target == null) {
-						AOutput.error(player, "&cThat player is not online!");
-						return;
-					}
-
 					UUID uuid = target.getUniqueId();
 
 					EditSession session = EditSessionManager.getSession(uuid);
