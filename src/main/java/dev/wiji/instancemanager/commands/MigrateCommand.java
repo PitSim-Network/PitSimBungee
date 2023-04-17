@@ -1,24 +1,9 @@
 package dev.wiji.instancemanager.commands;
 
-import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.ConfigManager;
-import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.misc.Misc;
-import dev.wiji.instancemanager.objects.PluginMessage;
-import dev.wiji.instancemanager.storage.StorageManager;
-import dev.wiji.instancemanager.storage.StorageProfile;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Command;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
 public class MigrateCommand extends Command {
-	public static boolean readyForNextPlayer = true;
 
 	public MigrateCommand() {
 		super("migrate");
