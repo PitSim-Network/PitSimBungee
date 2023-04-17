@@ -73,7 +73,7 @@ public class EditSession {
 				public void run() {
 					MainGamemodeServer server = MainGamemodeServer.getLoadedServer(editProfile);
 					if(server == null) {
-						StorageManager.getStorage(playerUUID).sendToServer(getStaffServer(), true);
+						StorageManager.getStorage(playerUUID).sendToServer(getStaffServer());
 						sendTask.cancel();
 					}
 				}

@@ -59,7 +59,7 @@ public class PluginMessage {
 	}
 
 	public PluginMessage writeString(String string) {
-		strings.add(string);
+		strings.add(string == null ? "" : string);
 		return this;
 	}
 

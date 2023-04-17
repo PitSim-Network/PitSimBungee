@@ -21,9 +21,11 @@ public class StorageProfile {
 	private transient File saveFile;
 	private final String[] inventory = new String[36];
 	private final String[] armor = new String[4];
-	private final EnderchestPage[] enderchestPages = new EnderchestPage[18];
+	private final EnderchestPage[] enderchestPages = new EnderchestPage[StorageManager.MAX_ENDERCHEST_PAGES];
 
-	public StorageProfile() {}
+	public StorageProfile() {
+		for(int i = 0; i < enderchestPages.length; i++) enderchestPages[i] = new EnderchestPage(i);
+	}
 
 	public void init(UUID player) {
 		this.uuid = player;
@@ -68,11 +70,10 @@ public class StorageProfile {
 		}
 	}
 
-	public void sendToServer(ServerInfo server, boolean wait) {
+	public void sendToServer(ServerInfo server) {
 		PluginMessage message = new PluginMessage()
 				.writeString("PLAYER DATA")
 				.writeString(uuid.toString())
-				.writeInt(inventory.length + armor.length)
 				.addServer(server);
 
 		for(String itemString : inventory) message.writeString(itemString);

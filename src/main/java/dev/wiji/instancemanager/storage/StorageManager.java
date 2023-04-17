@@ -24,6 +24,7 @@ public class StorageManager implements Listener {
 
 	protected static File getStorageFile(UUID uuid) {
 		File file = new File(BungeeMain.INSTANCE.getDataFolder() + "/itemstorage/" + uuid + ".json");
+		file.getParentFile().mkdirs();
 		if(!file.exists()) {
 			try {
 				file.createNewFile();
