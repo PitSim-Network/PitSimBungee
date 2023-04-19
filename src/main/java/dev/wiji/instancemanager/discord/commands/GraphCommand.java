@@ -218,7 +218,7 @@ public class GraphCommand extends DiscordCommand {
 					String formattedDate = LocalDate.now(ZoneId.of("America/New_York")).format(formatter);
 					String title = finalFirstEnchant.getShortenedRawName();
 					if(finalSecondEnchant != null) title += " & " + finalSecondEnchant.getShortenedRawName();
-					title += " vs Time (" + category.getShorthandDisplay() + " Ago) - PitSim " + formattedDate;
+					title += " vs Time (" + category.getShorthandDisplay() + ") - PitSim " + formattedDate;
 
 					String chart = createChart(title, "Time (" + timeFrame.getPluralDisplayName() + ")",
 							"Usage (%)", labels, data, true);
