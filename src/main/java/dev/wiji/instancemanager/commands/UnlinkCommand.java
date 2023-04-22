@@ -30,6 +30,7 @@ public class UnlinkCommand extends Command {
 				targetUUID = UUID.fromString(args[0]);
 			} catch(Exception ignored) {
 				AOutput.color(proxiedPlayer, "&c&lERROR!&7 Not a valid player");
+				return;
 			}
 		}
 
