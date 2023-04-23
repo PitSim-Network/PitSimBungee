@@ -121,4 +121,32 @@ public class StorageProfile {
 				.addServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server))
 				.send();
 	}
+
+	public UUID getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(UUID uuid) {
+		this.uuid = uuid;
+	}
+
+	public File getSaveFile() {
+		return saveFile;
+	}
+
+	public void setSaveFile(File saveFile) {
+		this.saveFile = saveFile;
+	}
+
+	public int getDefaultOverworldSet() {
+		return defaultOverworldSet;
+	}
+
+	public int getDefaultDarkzoneSet() {
+		return defaultDarkzoneSet;
+	}
+
+	public Outfit[] getOutfits() {
+		return outfits;
+	}
 }
