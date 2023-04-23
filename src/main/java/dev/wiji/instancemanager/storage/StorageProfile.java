@@ -23,8 +23,13 @@ public class StorageProfile {
 	private final String[] armor = new String[4];
 	private final EnderchestPage[] enderchestPages = new EnderchestPage[StorageManager.MAX_ENDERCHEST_PAGES];
 
+	private int defaultOverworldSet = -1;
+	private int defaultDarkzoneSet = -1;
+	private final Outfit[] outfits = new Outfit[9];
+
 	public StorageProfile() {
 		for(int i = 0; i < enderchestPages.length; i++) enderchestPages[i] = new EnderchestPage(i);
+		for(int i = 0; i < outfits.length; i++) outfits[i] = new Outfit(i);
 	}
 
 	public void init(UUID player) {
@@ -79,6 +84,7 @@ public class StorageProfile {
 		for(String itemString : inventory) message.writeString(itemString);
 		for(String armorString : armor) message.writeString(armorString);
 		for(EnderchestPage enderchestPage : enderchestPages) enderchestPage.writeData(message);
+		for(Outfit outfit : outfits) outfit.writeData(message);
 
 		message.send();
 		Objects.requireNonNull(MainGamemodeServer.getServer(server)).addProfile(this);
@@ -98,6 +104,7 @@ public class StorageProfile {
 		for(int i = 0; i < 36; i++) inventory[i] = message.getStrings().remove(0);
 		for(int i = 0; i < 4; i++) armor[i] = message.getStrings().remove(0);
 		for(EnderchestPage enderchestPage : enderchestPages) enderchestPage.updateData(message);
+		for(Outfit outfit : outfits) outfit.updateData(message);
 
 		save();
 		new PluginMessage()

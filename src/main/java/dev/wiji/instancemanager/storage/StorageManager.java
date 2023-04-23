@@ -17,7 +17,8 @@ import java.util.UUID;
 
 public class StorageManager implements Listener {
 	public static final int MAX_ENDERCHEST_PAGES = 18;
-	public static final int ENDERCHEST_PAGE_SLOTS = 36;
+	public static final int ENDERCHEST_ITEM_SLOTS = 36;
+	public static final int OUTFITS = 9;
 
 	public static List<StorageProfile> profiles = new ArrayList<>();
 	public static Gson gson = new Gson();
