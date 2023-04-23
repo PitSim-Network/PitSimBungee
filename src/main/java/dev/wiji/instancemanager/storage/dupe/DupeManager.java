@@ -97,7 +97,7 @@ public class DupeManager implements Listener {
 				}
 				for(EnderchestPage enderchestPage : profile.getEnderchestPages()) {
 					for(int j = 0; j < enderchestPage.getItemStrings().length; j++) {
-						String itemString = enderchestPage.getItemStrings()[i];
+						String itemString = enderchestPage.getItemStrings()[j];
 						if(itemString == null || itemString.isEmpty()) continue;
 						CustomSerializer.LimitedItemStack itemStack = CustomSerializer.deserialize(itemString);
 						if(itemStack.nbtData == null) continue;
