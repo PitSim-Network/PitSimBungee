@@ -28,18 +28,24 @@ public class MigrateCommand extends Command {
 		File directory = new File(BungeeMain.INSTANCE.getDataFolder() + "/itemstorage/");
 		List<File> files = new ArrayList<>(Arrays.asList(directory.listFiles()));
 		int count = 0;
+		List<File> invalidFiles = new ArrayList<>();
 		for(File file : files) {
 			OldStorageProfile oldStorageProfile;
 			try {
 				Reader reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()));
 				oldStorageProfile = new Gson().fromJson(reader, OldStorageProfile.class);
+				oldStorageProfile.saveFile = file;
+				oldStorageProfile.save();
+				System.out.println(++count + "/" + files.size());
 			} catch(Exception exception) {
 				exception.printStackTrace();
-				return;
+				invalidFiles.add(file);
 			}
-			oldStorageProfile.saveFile = file;
-			oldStorageProfile.save();
-			System.out.println(++count + "/" + files.size());
+		}
+
+		for(File invalidFile : invalidFiles) {
+			System.out.println("Removing file: " + invalidFile.getAbsolutePath());
+			invalidFile.delete();
 		}
 
 //		File directory = new File(BungeeMain.INSTANCE.getDataFolder() + "/itemstorage/");
