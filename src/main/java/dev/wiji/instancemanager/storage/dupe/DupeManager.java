@@ -8,6 +8,7 @@ import dev.wiji.instancemanager.discord.DiscordManager;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.misc.CustomSerializer;
 import dev.wiji.instancemanager.misc.Misc;
+import dev.wiji.instancemanager.storage.EnderchestPage;
 import dev.wiji.instancemanager.storage.StorageProfile;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -75,32 +76,32 @@ public class DupeManager implements Listener {
 			for(int i = 0; i < fileCount; i++) {
 				if(i % 100 == 0) AOutput.log("Stage 1: " + i + "/" + fileCount);
 				if(!fileArray[i].isFile()) continue;
-				StorageProfile storageProfile = loadPlayer(fileArray[i].getName());
-				if(storageProfile == null) continue;
+				StorageProfile profile = loadPlayer(fileArray[i].getName());
+				if(profile == null) continue;
 				UUID playerUUID = UUID.fromString(fileArray[i].getName().split("\\.")[0]);
 
 				Map<CustomSerializer.LimitedItemStack, ItemLocation> playerItemMap = new HashMap<>();
-				for(int j = 0; j < storageProfile.getInventoryStrings().length; j++) {
-					String itemString = storageProfile.getInventoryStrings()[j];
+				for(int j = 0; j < profile.getInventory().length; j++) {
+					String itemString = profile.getInventory()[j];
 					if(itemString == null || itemString.isEmpty()) continue;
 					CustomSerializer.LimitedItemStack itemStack = CustomSerializer.deserialize(itemString);
 					if(itemStack.nbtData == null) continue;
 					playerItemMap.put(itemStack, new ItemLocation.InventoryLocation(j + 1));
 				}
-				for(int j = 0; j < storageProfile.getArmor().length; j++) {
-					String itemString = storageProfile.getArmor()[j];
+				for(int j = 0; j < profile.getArmor().length; j++) {
+					String itemString = profile.getArmor()[j];
 					if(itemString == null || itemString.isEmpty()) continue;
 					CustomSerializer.LimitedItemStack itemStack = CustomSerializer.deserialize(itemString);
 					if(itemStack.nbtData == null) continue;
 					playerItemMap.put(itemStack, new ItemLocation.ArmorLocation(j));
 				}
-				for(int j = 0; j < storageProfile.getEnderchest().length; j++) {
-					for(int k = 0; k < storageProfile.getEnderchest()[j].length; k++) {
-						String itemString = storageProfile.getEnderchest()[j][k];
+				for(EnderchestPage enderchestPage : profile.getEnderchestPages()) {
+					for(int j = 0; j < enderchestPage.getItemStrings().length; j++) {
+						String itemString = enderchestPage.getItemStrings()[i];
 						if(itemString == null || itemString.isEmpty()) continue;
 						CustomSerializer.LimitedItemStack itemStack = CustomSerializer.deserialize(itemString);
 						if(itemStack.nbtData == null) continue;
-						playerItemMap.put(itemStack, new ItemLocation.EnderchestLocation(j + 1, k + 1));
+						playerItemMap.put(itemStack, new ItemLocation.EnderchestLocation(enderchestPage.getIndex() + 1, j + 1));
 					}
 				}
 

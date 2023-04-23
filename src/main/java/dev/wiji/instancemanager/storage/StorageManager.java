@@ -2,7 +2,6 @@ package dev.wiji.instancemanager.storage;
 
 import com.google.gson.Gson;
 import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.commands.MigrateCommand;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -17,12 +16,16 @@ import java.util.List;
 import java.util.UUID;
 
 public class StorageManager implements Listener {
+	public static final int MAX_ENDERCHEST_PAGES = 18;
+	public static final int ENDERCHEST_ITEM_SLOTS = 36;
+	public static final int OUTFITS = 9;
 
 	public static List<StorageProfile> profiles = new ArrayList<>();
 	public static Gson gson = new Gson();
 
 	protected static File getStorageFile(UUID uuid) {
 		File file = new File(BungeeMain.INSTANCE.getDataFolder() + "/itemstorage/" + uuid + ".json");
+		file.getParentFile().mkdirs();
 		if(!file.exists()) {
 			try {
 				file.createNewFile();
@@ -73,25 +76,17 @@ public class StorageManager implements Listener {
 		if(strings.size() < 2) return;
 
 		if(strings.get(0).equals("ITEM DATA SAVE")) {
-			MigrateCommand.readyForNextPlayer = true;
-			UUID uuid = UUID.fromString(strings.get(1));
+			strings.remove(0);
+			String serverName = strings.remove(0);
+			UUID uuid = UUID.fromString(strings.remove(0));
+			boolean isLogout = message.getBooleans().remove(0);
 
 			StorageProfile profile = getStorage(uuid);
-			String server = strings.get(2);
+			profile.updateData(message, serverName, isLogout);
 
-			strings.remove(0);
-			strings.remove(0);
-			strings.remove(0);
-			boolean logout = message.getBooleans().get(0);
-
-			profile.updateData(message, server, logout);
-
-			if(logout) {
-				ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(uuid);
-				if(player == null) {
-					profiles.remove(profile);
-				}
-			}
+			if(!isLogout) return;
+			ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(uuid);
+			if(player == null) profiles.remove(profile);
 		}
 	}
 
