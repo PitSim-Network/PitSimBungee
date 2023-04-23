@@ -13,6 +13,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -79,6 +80,8 @@ public class StorageProfile {
 		PluginMessage message = new PluginMessage()
 				.writeString("PLAYER DATA")
 				.writeString(uuid.toString())
+				.writeInt(defaultOverworldSet)
+				.writeInt(defaultDarkzoneSet)
 				.addServer(server);
 
 		for(String itemString : inventory) message.writeString(itemString);
@@ -91,6 +94,9 @@ public class StorageProfile {
 	}
 
 	public void updateData(PluginMessage message, String server, boolean logout) {
+		List<String> strings = message.getStrings();
+		List<Integer> integers = message.getIntegers();
+
 		if(logout) {
 			MainGamemodeServer mainGamemodeServer = MainGamemodeServer.getServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
 			if(mainGamemodeServer == null) {
@@ -101,8 +107,10 @@ public class StorageProfile {
 			mainGamemodeServer.removeProfile(this);
 		}
 
-		for(int i = 0; i < 36; i++) inventory[i] = message.getStrings().remove(0);
-		for(int i = 0; i < 4; i++) armor[i] = message.getStrings().remove(0);
+		defaultOverworldSet = integers.remove(0);
+		defaultDarkzoneSet = integers.remove(0);
+		for(int i = 0; i < 36; i++) inventory[i] = strings.remove(0);
+		for(int i = 0; i < 4; i++) armor[i] = strings.remove(0);
 		for(EnderchestPage enderchestPage : enderchestPages) enderchestPage.updateData(message);
 		for(Outfit outfit : outfits) outfit.updateData(message);
 
