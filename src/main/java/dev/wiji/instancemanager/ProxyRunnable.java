@@ -19,7 +19,7 @@ public interface ProxyRunnable extends Runnable {
 		return ProxyServer.getInstance().getScheduler().schedule(BungeeMain.INSTANCE, this, delay, repeat, unit);
 	}
 
-	default void cancel(ProxyRunnable task) {
+	static void cancel(ProxyRunnable task) {
 		ProxyServer.getInstance().getScheduler().cancel((ScheduledTask) task);
 	}
 }

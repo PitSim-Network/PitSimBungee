@@ -11,22 +11,25 @@ import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
 import net.luckperms.api.node.Node;
 import net.luckperms.api.node.NodeEqualityPredicate;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.scheduler.ScheduledTask;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class InGameNitro {
 	public static final Role nitroRole = DiscordManager.MAIN_GUILD.getRoleById(Constants.NITRO_ROLE_ID);
+	public boolean hasCalculatedSkins = false;
 
 	public InGameNitro() {
 		((ProxyRunnable) () -> {
 			List<Member> members = DiscordManager.MAIN_GUILD.findMembers(member -> member.getRoles().contains(nitroRole)).get();
-			List<String> memberIGNs = new ArrayList<>();
+			Map<UUID, String> memberInfo = new HashMap<>();
 
 			for(Member member : members) {
 
@@ -34,7 +37,7 @@ public class InGameNitro {
 				String effectiveName = member.getEffectiveName().toLowerCase();
 				playerUUID = BungeeMain.getUUID(effectiveName, false);
 				if(playerUUID == null) continue;
-				memberIGNs.add(member.getEffectiveName());
+				memberInfo.put(playerUUID, member.getEffectiveName());
 
 //				User luckPermsUser = BungeeMain.LUCKPERMS.getUserManager().getUser(playerUUID);
 				UserManager userManager = BungeeMain.LUCKPERMS.getUserManager();
@@ -63,23 +66,99 @@ public class InGameNitro {
 			}
 
 			try {
-				sendNitroMessages(memberIGNs);
+				if(!hasCalculatedSkins) {
+					sendSkinData(memberInfo);
+					hasCalculatedSkins = true;
+				}
 			} catch(Exception ignored) {}
 		}).runAfterEvery(0L, 3 * 10, TimeUnit.SECONDS);
 	}
 
-	public void sendNitroMessages(List<String> memberIGNs) {
-		PluginMessage message = new PluginMessage().writeString("NITRO PLAYERS");
-		for(String memberIGN : memberIGNs) {
-			message.writeString(memberIGN);
+	public void sendSkinData(Map<UUID, String> memberInfo) {
+		List<SkinData> skinDataList = new ArrayList<>();
+
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				if(memberInfo.isEmpty()) {
+					cancel();
+					return;
+				}
+				UUID uuid = memberInfo.keySet().iterator().next();
+				String memberIGN = memberInfo.get(uuid);
+
+				try {
+					SkinData skinData = fetchSkinData(uuid, memberIGN);
+					if(skinData != null) {
+						skinDataList.add(skinData);
+					}
+
+				} catch(Exception e) {
+					throw new RuntimeException(e + "\nFailed to fetch skin data for " + memberIGN);
+				}
+
+				memberInfo.remove(uuid);
+			}
+		}, 0, 1000 * 5);
+
+
+		((ProxyRunnable) () -> {
+			PluginMessage message = new PluginMessage().writeString("NITRO PLAYERS");
+			for(SkinData skinData : skinDataList) {
+				String stringData = skinData.name + "," + skinData.textureValue + "," + skinData.textureSignature;
+				message.writeString(stringData);
+			}
+
+			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+				if(!overworldServer.status.isOnline()) continue;
+
+				message.addServer(overworldServer.getServerInfo());
+			}
+
+			message.send();
+		}).runAfterEvery(1, 1, TimeUnit.MINUTES);
+	}
+
+	private static final String TEXTURE_ENDPOINT = "https://sessionserver.mojang.com/session/minecraft/profile/";
+	private static SkinData fetchSkinData(UUID uuid, String name) throws Exception {
+		URL url = new URL(TEXTURE_ENDPOINT + uuid.toString() + "?unsigned=false");
+		String response = sendRequest(url);
+		if(response == null) return null;
+		String textureValue = response.split("\"value\" : \"")[1].split("\"")[0];
+		String textureSignature = response.split("\"signature\" : \"")[1].split("\"")[0];
+		return new SkinData(uuid, name, textureValue, textureSignature);
+	}
+
+	public static String sendRequest(URL url) throws Exception {
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setRequestMethod("GET");
+		connection.setConnectTimeout(5000);
+		connection.setReadTimeout(5000);
+
+		int responseCode = connection.getResponseCode();
+		if (responseCode == HttpURLConnection.HTTP_OK) {
+			Scanner scanner = new Scanner(connection.getInputStream());
+			String response = scanner.useDelimiter("\\A").next();
+			scanner.close();
+			return response;
+		} else {
+			System.out.println("Error: " + responseCode + "for URL: " + url);
 		}
+		return null;
+	}
 
-		for(OverworldServer overworldServer : OverworldServerManager.serverList) {
-			if(!overworldServer.status.isOnline()) continue;
+	private static class SkinData {
+		public UUID uuid;
+		public String name;
+		public String textureValue;
+		public String textureSignature;
 
-			message.addServer(overworldServer.getServerInfo());
+		public SkinData(UUID uuid, String name, String textureValue, String textureSignature) {
+			this.uuid = uuid;
+			this.name = name;
+			this.textureValue = textureValue;
+			this.textureSignature = textureSignature;
 		}
-
-		message.send();
 	}
 }
