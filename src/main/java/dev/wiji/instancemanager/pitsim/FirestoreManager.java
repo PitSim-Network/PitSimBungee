@@ -89,7 +89,7 @@ public class FirestoreManager {
 						});
 
 
-		//run the leaderboard calc init after 5 secondsc
+		//run the leaderboard calc init after 5 seconds, then every 30 minutes
 		((ProxyRunnable) LeaderboardCalc::init).runAfterEvery(30, 60 * 30, TimeUnit.SECONDS);
 	}
 
@@ -97,7 +97,7 @@ public class FirestoreManager {
 	private static final String FIRESTORE_API_ENDPOINT = "https://firestore.googleapis.com/v1/projects/" + FIRESTORE_PROJECT_ID + "/databases/(default):";
 	private static final String BUCKET_PATH = "gs://pitsim-backups";
 
-	public static void takeFirestoreBackup() throws IOException {
+	public static void takeBackup() throws IOException {
 		GoogleCredentials updatedCredentials = credentials.createScoped(StorageScopes.DEVSTORAGE_FULL_CONTROL, StorageScopes.CLOUD_PLATFORM);
 		accessToken = updatedCredentials.refreshAccessToken().getTokenValue();
 
