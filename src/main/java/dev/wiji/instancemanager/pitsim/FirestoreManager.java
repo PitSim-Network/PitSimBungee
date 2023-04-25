@@ -1,6 +1,13 @@
 package dev.wiji.instancemanager.pitsim;
 
+import com.google.api.client.http.ByteArrayContent;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestFactory;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.core.ApiFuture;
+import com.google.api.services.storage.StorageScopes;
+import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.*;
 import com.google.firebase.FirebaseApp;
@@ -8,9 +15,10 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
+import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.misc.FileResourcesUtils;
 import dev.wiji.instancemanager.objects.PlayerData;
-import dev.wiji.instancemanager.ProxyRunnable;
+import org.apache.http.HttpHeaders;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +31,8 @@ public class FirestoreManager {
 	public static Firestore FIRESTORE;
 
 	public static ListenerRegistration registration;
+	private static GoogleCredentials credentials;
+	private static String accessToken;
 
 	public static final String PLAYERDATA_COLLECTION = ConfigManager.isDev() ? "dev-playerdata" : "pitsim-playerdata";
 
@@ -31,7 +41,8 @@ public class FirestoreManager {
 		try {
 			System.out.println("Loading PitSim database");
 			InputStream serviceAccount = new FileResourcesUtils().getFileFromResourceAsStream("google-key.json");
-			GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccount);
+			credentials = GoogleCredentials.fromStream(serviceAccount);
+
 			FirebaseOptions options = new FirebaseOptions.Builder()
 					.setCredentials(credentials)
 					.build();
@@ -81,4 +92,47 @@ public class FirestoreManager {
 		//run the leaderboard calc init after 5 secondsc
 		((ProxyRunnable) LeaderboardCalc::init).runAfterEvery(30, 60 * 30, TimeUnit.SECONDS);
 	}
+
+	private static final String FIRESTORE_PROJECT_ID = "pitsim-network";
+	private static final String FIRESTORE_API_ENDPOINT = "https://firestore.googleapis.com/v1/projects/" + FIRESTORE_PROJECT_ID + "/databases/(default):";
+	private static final String BUCKET_PATH = "gs://pitsim-backups";
+
+	public static void takeFirestoreBackup() throws IOException {
+		GoogleCredentials updatedCredentials = credentials.createScoped(StorageScopes.DEVSTORAGE_FULL_CONTROL, StorageScopes.CLOUD_PLATFORM);
+		accessToken = updatedCredentials.refreshAccessToken().getTokenValue();
+
+		String exportUri = FIRESTORE_API_ENDPOINT + "exportDocuments?name=projects/pitsim-network/databases/(default)";
+		String requestBody = "{\n" +
+				"  \"collectionIds\": [\n" +
+				"    \"" + PLAYERDATA_COLLECTION + "\"\n" +
+				"  ],\n" +
+				"  \"outputUriPrefix\": \"" + BUCKET_PATH + "\"\n" +
+				"}";
+		String exportName = sendPostRequest(exportUri, requestBody);
+
+		System.out.println("FIRESTORE BACKUP TAKEN");
+		System.out.println("----------------------------------");
+		System.out.println(exportName);
+		System.out.println("----------------------------------");
+	}
+
+	private static String sendPostRequest(String uri, String requestBody) throws IOException {
+
+		HttpCredentialsAdapter adapter = new HttpCredentialsAdapter(credentials);
+		HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory(adapter);
+		HttpRequest httpRequest = requestFactory.buildPostRequest(new GenericUrl(uri), ByteArrayContent.fromString("application/json", requestBody));
+
+		com.google.api.client.http.HttpHeaders headers = new com.google.api.client.http.HttpHeaders();
+		headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+		headers.set(HttpHeaders.CONTENT_TYPE, "application/json");
+		httpRequest.setHeaders(headers);
+
+		com.google.api.client.http.HttpResponse httpResponse = httpRequest.execute();
+
+		return httpResponse.parseAsString();
+	}
 }
+
+
+
+
