@@ -16,6 +16,7 @@ import com.google.firebase.cloud.FirestoreClient;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
+import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.misc.FileResourcesUtils;
 import dev.wiji.instancemanager.objects.PlayerData;
 import org.apache.http.HttpHeaders;
@@ -95,13 +96,13 @@ public class FirestoreManager {
 
 	private static final String FIRESTORE_PROJECT_ID = "pitsim-network";
 	private static final String FIRESTORE_API_ENDPOINT = "https://firestore.googleapis.com/v1/projects/" + FIRESTORE_PROJECT_ID + "/databases/(default):";
-	private static final String BUCKET_PATH = "gs://pitsim-backups";
+	private static final String BUCKET_PATH = "gs://pitsim-automatic-backups";
 
 	public static void takeBackup() throws IOException {
 		GoogleCredentials updatedCredentials = credentials.createScoped(StorageScopes.DEVSTORAGE_FULL_CONTROL, StorageScopes.CLOUD_PLATFORM);
 		accessToken = updatedCredentials.refreshAccessToken().getTokenValue();
 
-		String exportUri = FIRESTORE_API_ENDPOINT + "exportDocuments?name=projects/pitsim-network/databases/(default)";
+		String exportUri = FIRESTORE_API_ENDPOINT + "exportDocuments?name=projects/" + FIRESTORE_PROJECT_ID + "/databases/(default)";
 		String requestBody = "{\n" +
 				"  \"collectionIds\": [\n" +
 				"    \"" + PLAYERDATA_COLLECTION + "\"\n" +
@@ -110,10 +111,10 @@ public class FirestoreManager {
 				"}";
 		String exportName = sendPostRequest(exportUri, requestBody);
 
-		System.out.println("FIRESTORE BACKUP TAKEN");
-		System.out.println("----------------------------------");
-		System.out.println(exportName);
-		System.out.println("----------------------------------");
+		AOutput.log("FIRESTORE BACKUP TAKEN");
+		AOutput.log("----------------------------------");
+		AOutput.log(exportName);
+		AOutput.log("----------------------------------");
 	}
 
 	private static String sendPostRequest(String uri, String requestBody) throws IOException {

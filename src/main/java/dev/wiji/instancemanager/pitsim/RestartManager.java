@@ -12,6 +12,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,6 +22,9 @@ public class RestartManager {
 	public static long RESTART_BUFFER = 1000 * 60 * 30;
 
 	public static long PROXY_RESTART_TIME = 1000 * 60 * 60 * 24 * 7;
+	public static long BACKUP_THRESHOLD = 1000 * 60 * 60 * 24;
+
+	public static long lastBackup = 0;
 
 	static {
 		((ProxyRunnable) () -> {
@@ -44,6 +48,15 @@ public class RestartManager {
 
 					activeServer.shutDown(true);
 				}
+			}
+
+			if(lastBackup + BACKUP_THRESHOLD < System.currentTimeMillis()) {
+				if(ConfigManager.isDev()) return;
+
+				lastBackup = System.currentTimeMillis();
+				try {
+					FirestoreManager.takeBackup();
+				} catch(IOException e) { throw new RuntimeException(e); }
 			}
 
 
