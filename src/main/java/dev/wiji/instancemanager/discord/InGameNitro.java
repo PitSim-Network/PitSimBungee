@@ -11,8 +11,6 @@ import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
 import net.luckperms.api.node.Node;
 import net.luckperms.api.node.NodeEqualityPredicate;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.scheduler.ScheduledTask;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -90,8 +88,10 @@ public class InGameNitro {
 
 				try {
 					SkinData skinData = fetchSkinData(uuid, memberIGN);
-					if(skinData != null) {
+					if(skinData != null && skinData.textureSignature != null && skinData.textureValue != null) {
 						skinDataList.add(skinData);
+					} else {
+						System.out.println("Failed to fetch skin data for " + memberIGN);
 					}
 
 				} catch(Exception e) {
