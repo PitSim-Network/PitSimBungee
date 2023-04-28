@@ -4,9 +4,10 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.alogging.LogType;
 import dev.wiji.instancemanager.discord.MarketLog;
 import dev.wiji.instancemanager.misc.CustomSerializer;
-import dev.wiji.instancemanager.objects.DarkzoneServer;
+import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
-import dev.wiji.instancemanager.pitsim.DarkzoneServerManager;
+import dev.wiji.instancemanager.objects.ServerType;
+import dev.wiji.instancemanager.pitsim.MainGamemodeServerManager;
 import net.luckperms.api.model.user.User;
 
 import java.io.FileWriter;
@@ -101,15 +102,20 @@ public class MarketListing implements Serializable {
 		message.writeString(builder.toString());
 		message.writeInt(originalStock);
 
+		sendMessage(message);
 
-		for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
+		save();
+	}
+
+	private void sendMessage(PluginMessage message) {
+		MainGamemodeServerManager manager = MainGamemodeServerManager.getManager(ServerType.DARKZONE);
+		assert manager != null;
+		for(MainGamemodeServer darkzoneServer : manager.serverList) {
 			if(!darkzoneServer.status.isOnline()) continue;
 			message.addServer(darkzoneServer.getServerInfo());
 		}
 
 		message.send();
-
-		save();
 	}
 
 	public void placeBid(UUID playerUUID, int bidAmount) {
@@ -353,11 +359,7 @@ public class MarketListing implements Serializable {
 
 	public void remove() {
 		PluginMessage message = new PluginMessage().writeString("MARKET REMOVAL").writeString(marketUUID.toString());
-		for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
-			if(!darkzoneServer.status.isOnline()) continue;
-			message.addServer(darkzoneServer.getServerInfo());
-		}
-		message.send();
+		sendMessage(message);
 
 
 		MarketManager.listings.remove(this);

@@ -10,6 +10,7 @@ import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.Leaderboard;
 import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.PlayerData;
+import dev.wiji.instancemanager.objects.ServerType;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -125,7 +126,9 @@ public class LockdownManager implements Listener {
 		captchaPlayers.add(player);
 		AOutput.color(player, "&a&lSUCCESS! &7Captcha Passed!");
 
-		OverworldServerManager.queue(player, 0, false);
+		MainGamemodeServerManager overworld = MainGamemodeServerManager.getManager(ServerType.OVERWORLD);
+		assert overworld != null;
+		overworld.queue(player, 0, false);
 	}
 
 	public static double getPlaytime(ProxiedPlayer player) {
@@ -153,7 +156,7 @@ public class LockdownManager implements Listener {
 	}
 
 	public static void purgeLobbies() {
-		for(MainGamemodeServer mainGamemodeServer : MainGamemodeServer.serverList) {
+		for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
 			for(ProxiedPlayer player : mainGamemodeServer.getPlayers()) {
 				if(!canJoin(player)) player.connect(BungeeMain.INSTANCE.getProxy().getServerInfo(ConfigManager.getLobbyServer()));
 			}

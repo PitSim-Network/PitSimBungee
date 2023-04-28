@@ -2,17 +2,15 @@ package dev.wiji.instancemanager.discord;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ProxyRunnable;
-import dev.wiji.instancemanager.objects.OverworldServer;
+import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
-import dev.wiji.instancemanager.pitsim.OverworldServerManager;
+import dev.wiji.instancemanager.pitsim.MainGamemodeServerManager;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
 import net.luckperms.api.node.Node;
 import net.luckperms.api.node.NodeEqualityPredicate;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.scheduler.ScheduledTask;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -110,10 +108,10 @@ public class InGameNitro {
 				message.writeString(stringData);
 			}
 
-			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
-				if(!overworldServer.status.isOnline()) continue;
+			for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
+				if(!mainGamemodeServer.status.isOnline()) continue;
 
-				message.addServer(overworldServer.getServerInfo());
+				message.addServer(mainGamemodeServer.getServerInfo());
 			}
 
 			message.send();

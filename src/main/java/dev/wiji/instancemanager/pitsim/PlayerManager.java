@@ -34,8 +34,8 @@ public class PlayerManager implements Listener {
 
 		if(BungeeVanishAPI.isInvisible(player)) return;
 
-		for(MainGamemodeServer server : MainGamemodeServer.serverList) if(server.getServerInfo().equals(previousServer)) return;
-		for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+		for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) if(server.getServerInfo().equals(previousServer)) return;
+		for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
 			if(!server.getServerInfo().equals(targetServer)) continue;
 			sendJoinMessage(player);
 			return;
@@ -50,7 +50,7 @@ public class PlayerManager implements Listener {
 
 		if(BungeeVanishAPI.isInvisible(player)) return;
 
-		for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+		for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
 			if(!server.getServerInfo().equals(previousServer)) continue;
 			sendLeaveMessage(player);
 			return;
@@ -66,8 +66,8 @@ public class PlayerManager implements Listener {
 		if(BungeeVanishAPI.isInvisible(player)) return;
 
 		if(previousServer == targetServer) return;
-		for(MainGamemodeServer server : MainGamemodeServer.serverList) if(server.getServerInfo().equals(targetServer)) return;
-		for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+		for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) if(server.getServerInfo().equals(targetServer)) return;
+		for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
 			if(!server.getServerInfo().equals(previousServer)) continue;
 			sendLeaveMessage(player);
 			return;
@@ -78,7 +78,7 @@ public class PlayerManager implements Listener {
 	public void onVanish(BungeePlayerShowEvent event) {
 		ProxiedPlayer player = event.getPlayer();
 		ServerInfo currentServer = event.getPlayer().getServer().getInfo();
-		for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+		for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
 			if(!server.getServerInfo().equals(currentServer)) continue;
 			sendJoinMessage(player);
 			return;
@@ -89,7 +89,7 @@ public class PlayerManager implements Listener {
 	public void onVanish(BungeePlayerHideEvent event) {
 		ProxiedPlayer player = event.getPlayer();
 		ServerInfo currentServer = event.getPlayer().getServer().getInfo();
-		for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+		for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
 			if(!server.getServerInfo().equals(currentServer)) continue;
 			sendLeaveMessage(player);
 			return;
@@ -97,7 +97,7 @@ public class PlayerManager implements Listener {
 	}
 
 	public void sendJoinMessage(ProxiedPlayer player) {
-		for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+		for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
 			for(ProxiedPlayer serverPlayer : server.getPlayers()) {
 				if(serverPlayer == player) continue;
 				AOutput.color(serverPlayer, "&8[&a+&8] &6" + player.getName() + " &ehas joined");
@@ -106,7 +106,7 @@ public class PlayerManager implements Listener {
 	}
 
 	public void sendLeaveMessage(ProxiedPlayer player) {
-		for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+		for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
 			for(ProxiedPlayer serverPlayer : server.getPlayers()) {
 				if(serverPlayer == player) continue;
 				AOutput.color(serverPlayer, "&8[&c-&8] &6" + player.getName() + " &ehas left");

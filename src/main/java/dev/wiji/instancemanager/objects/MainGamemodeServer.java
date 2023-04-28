@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class MainGamemodeServer {
 
-	public static List<MainGamemodeServer> serverList = new ArrayList<>();
+	protected static final List<MainGamemodeServer> serverList = new ArrayList<>();
 	public static Map<UUID, Long> cooldownPlayers = new HashMap<>();
 
 	public static Map<UUID, Long> guildCooldown = new HashMap<>();
@@ -126,7 +126,7 @@ public abstract class MainGamemodeServer {
 
 	public static MainGamemodeServer getServer(int index, boolean darkzone) {
 		for(MainGamemodeServer mainGamemodeServer : serverList) {
-			if(mainGamemodeServer.serverIndex == index && mainGamemodeServer.serverType == (darkzone ? ServerType.DARKZONE : ServerType.PITSIM)) return mainGamemodeServer;
+			if(mainGamemodeServer.serverIndex == index && mainGamemodeServer.serverType == (darkzone ? ServerType.DARKZONE : ServerType.OVERWORLD)) return mainGamemodeServer;
 		}
 		return null;
 	}
@@ -145,7 +145,3 @@ public abstract class MainGamemodeServer {
 	}
 }
 
-enum ServerType {
-	PITSIM,
-	DARKZONE;
-}

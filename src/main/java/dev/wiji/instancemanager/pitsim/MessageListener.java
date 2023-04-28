@@ -29,9 +29,9 @@ public class MessageListener implements Listener {
 
 		if(strings.size() >= 2 && strings.get(0).equals("INITIATE STARTUP")) {
 			String serverName = strings.get(1);
-			for(OverworldServer server : OverworldServerManager.serverList) {
+			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
-					if(OverworldServerManager.networkIsShuttingDown || server.status.isShuttingDown()) {
+					if(MainGamemodeServerManager.networkIsShuttingDown || server.status.isShuttingDown()) {
 						server.hardShutDown();
 					} else {
 						System.out.println("Server " + serverName + " is now running!");
@@ -45,30 +45,16 @@ public class MessageListener implements Listener {
 
 						if(server.status != ServerStatus.SUSPENDED) server.status = ServerStatus.RUNNING;
 						server.setStartTime(System.currentTimeMillis());
+						if(server.serverType == ServerType.DARKZONE) MarketManager.updateAll();
 						break;
 					}
 				}
 			}
-
-			for(DarkzoneServer server : DarkzoneServerManager.serverList) {
-				if(server.getServerInfo().getName().equals(serverName)) {
-					if(DarkzoneServerManager.networkIsShuttingDown || server.status.isShuttingDown()) {
-						server.hardShutDown();
-					} else {
-						System.out.println("Server " + serverName + " is now running!");
-						server.status = ServerStatus.RUNNING;
-						server.setStartTime(System.currentTimeMillis());
-						MarketManager.updateAll();
-						break;
-					}
-				}
-			}
-
 		}
 
 		if(strings.size() >= 2 && strings.get(0).equals("INITIATE FINAL SHUTDOWN")) {
 			String serverName = strings.get(1);
-			for(OverworldServer server : OverworldServerManager.serverList) {
+			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
 					server.serverData = null;
 					server.status = ServerStatus.SHUTTING_DOWN_FINAL;
@@ -76,59 +62,33 @@ public class MessageListener implements Listener {
 					server.beginStartCooldown();
 				}
 			}
-
-			for(DarkzoneServer server : DarkzoneServerManager.serverList) {
-				if(server.getServerInfo().getName().equals(serverName)) {
-					server.serverData = null;
-					server.status = ServerStatus.SHUTTING_DOWN_FINAL;
-					server.staffOverride = false;
-					server.beginStartCooldown();
-				}
-			}
-
 		}
 
 		if(strings.size() >= 2 && strings.get(0).equals("INITIATE FINAL RESTART")) {
 			String serverName = strings.get(1);
-			for(OverworldServer server : OverworldServerManager.serverList) {
+			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
 					server.serverData = null;
 					server.status = ServerStatus.RESTARTING_FINAL;
 					server.beginStartCooldown();
 				}
 			}
-
-			for(DarkzoneServer server : DarkzoneServerManager.serverList) {
-				if(server.getServerInfo().getName().equals(serverName)) {
-					server.serverData = null;
-					server.status = ServerStatus.RESTARTING_FINAL;
-					server.beginStartCooldown();
-				}
-			}
-
 		}
 
 		if(strings.size() >= 3 && strings.get(0).equals("STATUS REPORT")) {
 			String serverName = strings.get(1);
 			String status = strings.get(2);
-			for(OverworldServer server : OverworldServerManager.serverList) {
+			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
 					server.status = ServerStatus.valueOf(status);
 					break;
 				}
 			}
-
-			for(DarkzoneServer server : DarkzoneServerManager.serverList) {
-				if(server.getServerInfo().getName().equals(serverName)) {
-					server.status = ServerStatus.valueOf(status);
-					break;
-				}
-			}
-
 		}
 
 
-		if(strings.size() >= 2 && strings.get(0).equals("QUEUE")) {
+		if(strings.size() >= 2 && strings.get(0).startsWith("QUEUE")) {
+			ServerType serverType = strings.get(0).contains("DARKZONE") ? ServerType.DARKZONE : ServerType.OVERWORLD;
 
 			String playerString = strings.get(1);
 			ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(playerString);
@@ -144,21 +104,9 @@ public class MessageListener implements Listener {
 				fromDarkzone = booleans.get(0);
 			}
 
-			OverworldServerManager.queueFallback(player, requested, fromDarkzone);
-		}
-
-		if(strings.size() >= 2 && strings.get(0).equals("QUEUE DARKZONE")) {
-
-			String playerString = strings.get(1);
-			ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(playerString);
-			if(player == null) return;
-
-			int requested = 0;
-			if(integers.size() >= 1) {
-				requested = integers.get(0);
-			}
-
-			DarkzoneServerManager.queueFallback(player, requested);
+			MainGamemodeServerManager manager = MainGamemodeServerManager.getManager(serverType);
+			assert manager != null;
+			manager.queueFallback(player, requested, fromDarkzone);
 		}
 
 		if(strings.size() >= 3 && strings.get(0).equals("BOOSTER USE")) {
@@ -173,7 +121,7 @@ public class MessageListener implements Listener {
 					.writeString(announcement)
 					.writeString(activatorUUID)
 					.writeInt(time);
-			for(MainGamemodeServer pitSimServer : MainGamemodeServer.serverList) {
+			for(MainGamemodeServer pitSimServer : MainGamemodeServerManager.mixedServerList) {
 				if(pitSimServer.status.isOnline()) message.addServer(pitSimServer.getServerInfo());
 			}
 
@@ -193,7 +141,7 @@ public class MessageListener implements Listener {
 					.writeString(boosterName)
 					.writeString(activatorUUID.toString())
 					.writeInt(amount);
-			for(MainGamemodeServer pitSimServer : MainGamemodeServer.serverList) {
+			for(MainGamemodeServer pitSimServer : MainGamemodeServerManager.mixedServerList) {
 				if(!pitSimServer.status.isOnline() || !pitSimServer.getPlayers().contains(proxiedPlayer)) continue;
 				message.addServer(pitSimServer.getServerInfo());
 				break;
@@ -233,20 +181,11 @@ public class MessageListener implements Listener {
 
 			boolean isOnline = false;
 
-			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
-				for(ProxiedPlayer pitSimServerPlayer : overworldServer.getPlayers()) {
+			for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
+				for(ProxiedPlayer pitSimServerPlayer : mainGamemodeServer.getPlayers()) {
 					pitSimServerPlayer.sendMessage(components);
 				}
-				if(overworldServer.getPlayers().contains(player)) {
-					isOnline = true;
-				}
-			}
-
-			for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
-				for(ProxiedPlayer darkzoneServerPlayer : darkzoneServer.getPlayers()) {
-					darkzoneServerPlayer.sendMessage(components);
-				}
-				if(darkzoneServer.getPlayers().contains(player)) {
+				if(mainGamemodeServer.getPlayers().contains(player)) {
 					isOnline = true;
 				}
 			}

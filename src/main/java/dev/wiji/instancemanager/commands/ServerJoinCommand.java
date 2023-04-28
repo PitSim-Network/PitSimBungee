@@ -4,11 +4,10 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.misc.Misc;
-import dev.wiji.instancemanager.objects.DarkzoneServer;
-import dev.wiji.instancemanager.objects.OverworldServer;
+import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
-import dev.wiji.instancemanager.pitsim.DarkzoneServerManager;
-import dev.wiji.instancemanager.pitsim.OverworldServerManager;
+import dev.wiji.instancemanager.objects.ServerType;
+import dev.wiji.instancemanager.pitsim.MainGamemodeServerManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -73,31 +72,23 @@ public class ServerJoinCommand extends Command {
 			return;
 		}
 
-		for(OverworldServer overworldServer : OverworldServerManager.serverList) {
-			if(overworldServer.getServerInfo() == requestedServer) {
+		for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
+			ServerType type = mainGamemodeServer.serverType;
+
+			if(mainGamemodeServer.getServerInfo() == requestedServer) {
 				if(previousServer.getName().contains("darkzone") || previousServer.getName().contains("pitsim")) {
-					new PluginMessage().writeString("REQUEST SWITCH").writeString(affectedPlayer.getUniqueId().toString())
-							.writeInt(overworldServer.getServerIndex()).addServer(previousServer).send();
+					new PluginMessage().writeString("REQUEST " + (type == ServerType.DARKZONE ? "DARKZONE " : "") + "SWITCH").writeString(affectedPlayer.getUniqueId().toString())
+							.writeInt(mainGamemodeServer.getServerIndex()).addServer(previousServer).send();
 					return;
 				}
 
-				OverworldServerManager.queueFallback(affectedPlayer, overworldServer.getServerIndex(), false);
+				MainGamemodeServerManager manager = MainGamemodeServerManager.getManager(type);
+				assert manager != null;
+				manager.queueFallback(affectedPlayer, mainGamemodeServer.getServerIndex(), previousServer.getName().contains("darkzone"));
 				return;
 			}
 		}
 
-		for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
-			if(darkzoneServer.getServerInfo() == requestedServer) {
-				if(previousServer.getName().contains("darkzone") || previousServer.getName().contains("pitsim")) {
-					new PluginMessage().writeString("REQUEST DARKZONE SWITCH").writeString(affectedPlayer.getUniqueId().toString())
-							.writeInt(darkzoneServer.getServerIndex()).addServer(previousServer).send();
-					return;
-				}
-
-				DarkzoneServerManager.queueFallback(affectedPlayer, darkzoneServer.getServerIndex());
-				return;
-			}
-		}
 
 		if(player == affectedPlayer) AOutput.color(player, "&2&lSERVERS &aSent you to " + requestedServer.getName());
 		else AOutput.color(player, "&2&lSERVERS &aSent " + affectedPlayer.getName() + " to " + requestedServer.getName());

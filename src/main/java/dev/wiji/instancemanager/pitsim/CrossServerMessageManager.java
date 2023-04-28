@@ -3,10 +3,7 @@ package dev.wiji.instancemanager.pitsim;
 import dev.wiji.instancemanager.commands.BroadcastCommand;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.objects.DarkzoneServer;
-import dev.wiji.instancemanager.objects.MainGamemodeServer;
-import dev.wiji.instancemanager.objects.OverworldServer;
-import dev.wiji.instancemanager.objects.PluginMessage;
+import dev.wiji.instancemanager.objects.*;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -31,7 +28,7 @@ public class CrossServerMessageManager implements Listener {
 					.writeString(strings.get(0))
 					.writeString(displayName)
 					.writeString(itemStack);
-			for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
 				if(!server.status.isOnline() || server.getServerInfo().getName().equals(serverName)) continue;
 				pluginMessage.addServer(server.getServerInfo());
 			}
@@ -44,7 +41,7 @@ public class CrossServerMessageManager implements Listener {
 					.writeString(strings.get(0))
 					.writeString(displayName)
 					.writeInt(prestige);
-			for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
 				if(!server.status.isOnline() || server.getServerInfo().getName().equals(serverName)) continue;
 				pluginMessage.addServer(server.getServerInfo());
 			}
@@ -55,7 +52,7 @@ public class CrossServerMessageManager implements Listener {
 			PluginMessage pluginMessage = new PluginMessage()
 					.writeString(strings.get(0))
 					.writeString(playerUUID);
-			for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
 				if(!server.status.isOnline() || server.getServerInfo().getName().equals(serverName)) continue;
 				pluginMessage.addServer(server.getServerInfo());
 			}
@@ -67,7 +64,10 @@ public class CrossServerMessageManager implements Listener {
 			PluginMessage forwardMessage = new PluginMessage()
 					.writeString(strings.get(0))
 					.writeString(serverName);
-			for(DarkzoneServer server : DarkzoneServerManager.serverList) {
+
+			MainGamemodeServerManager darkzoneManager = MainGamemodeServerManager.getManager(ServerType.DARKZONE);
+			assert darkzoneManager != null;
+			for(MainGamemodeServer server : darkzoneManager.serverList) {
 				if(!server.status.isOnline()) continue;
 				forwardMessage.addServer(server.getServerInfo());
 				AOutput.log("Received request for darkzone data. forwarding to " + server.getServerInfo().getName());
@@ -86,7 +86,9 @@ public class CrossServerMessageManager implements Listener {
 			for(String string : strings) forwardMessage.writeString(string);
 			for(int integer : integers) forwardMessage.writeInt(integer);
 
-			for(OverworldServer server : OverworldServerManager.serverList) {
+			MainGamemodeServerManager overworldManager = MainGamemodeServerManager.getManager(ServerType.OVERWORLD);
+			assert overworldManager != null;
+			for(MainGamemodeServer server : overworldManager.serverList) {
 				if(!server.status.isOnline()) continue;
 				if(!serverName.isEmpty() && !server.getServerInfo().getName().equals(serverName)) continue;
 				forwardMessage.addServer(server.getServerInfo());

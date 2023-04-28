@@ -12,6 +12,7 @@ import dev.wiji.instancemanager.discord.*;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
 import dev.wiji.instancemanager.market.MarketManager;
 import dev.wiji.instancemanager.market.MarketMessaging;
+import dev.wiji.instancemanager.objects.ServerType;
 import dev.wiji.instancemanager.pitsim.*;
 import dev.wiji.instancemanager.skywars.PitsimQuestManager;
 import dev.wiji.instancemanager.skywars.PluginMessageSender;
@@ -73,7 +74,6 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new ServerChangeListener());
 		getProxy().getPluginManager().registerListener(this, new LogManager());
 		getProxy().getPluginManager().registerListener(this, new ConnectionManager());
-		getProxy().getPluginManager().registerListener(this, new OverworldServerManager());
 		getProxy().getPluginManager().registerListener(this, new StorageManager());
 		getProxy().getPluginManager().registerListener(this, new EditSessionManager());
 		getProxy().getPluginManager().registerListener(this, new CommandListener());
@@ -117,8 +117,10 @@ public class BungeeMain extends Plugin {
 
 		ConfigManager.getPitSimServerList();
 		ConfigManager.getDarkzoneServerList();
-		OverworldServerManager.init();
-		DarkzoneServerManager.init();
+
+		new MainGamemodeServerManager(ServerType.OVERWORLD, 8 ,4);
+		new MainGamemodeServerManager(ServerType.DARKZONE, 8 ,4);
+
 		RestartManager.init();
 
 		ArcticGuilds.onEnable(this);

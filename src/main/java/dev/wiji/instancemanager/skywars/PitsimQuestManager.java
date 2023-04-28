@@ -4,10 +4,10 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
+import dev.wiji.instancemanager.pitsim.MainGamemodeServerManager;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
-import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -27,7 +27,7 @@ public class PitsimQuestManager implements Listener {
 			return;
 		}
 
-		for(MainGamemodeServer mainGamemodeServer : MainGamemodeServer.serverList) {
+		for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
 			if(mainGamemodeServer.getServerInfo() == player.getServer().getInfo()) {
 				PluginMessage message = new PluginMessage().writeString("SKYWARS PASS QUEST").writeString(uuid.toString());
 				message.writeInt(1).addServer(mainGamemodeServer.getServerInfo()).send();
@@ -45,7 +45,7 @@ public class PitsimQuestManager implements Listener {
 		if(!gameMap.containsKey(player.getUniqueId())) return;
 
 		ServerInfo serverInfo = event.getServer().getInfo();
-		for(MainGamemodeServer mainGamemodeServer : MainGamemodeServer.serverList) {
+		for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
 			if(mainGamemodeServer.getServerInfo() == serverInfo) {
 				((ProxyRunnable) () -> {
 					PluginMessage message = new PluginMessage().writeString("SKYWARS PASS QUEST").writeString(player.getUniqueId().toString())

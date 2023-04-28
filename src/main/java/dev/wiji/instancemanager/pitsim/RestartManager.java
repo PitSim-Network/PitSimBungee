@@ -4,8 +4,7 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
-import dev.wiji.instancemanager.objects.DarkzoneServer;
-import dev.wiji.instancemanager.objects.OverworldServer;
+import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.ServerStatus;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -34,12 +33,12 @@ public class RestartManager {
 			}
 
 
-			for(OverworldServer activeServer : OverworldServerManager.serverList) {
+			for(MainGamemodeServer activeServer : MainGamemodeServerManager.mixedServerList) {
 				if(activeServer.status != ServerStatus.RUNNING) continue;
 
 				if(activeServer.getStartTime() + RESTART_TIME < System.currentTimeMillis()) {
 
-					for(OverworldServer server : OverworldServerManager.serverList) {
+					for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
 						if(activeServer == server || server.status != ServerStatus.RUNNING) continue;
 						if((server.getStartTime() + RESTART_TIME) < RESTART_BUFFER + System.currentTimeMillis()) {
 							server.setStartTime(server.getStartTime() + RESTART_BUFFER);
@@ -57,23 +56,6 @@ public class RestartManager {
 				try {
 					FirestoreManager.takeBackup();
 				} catch(IOException e) { throw new RuntimeException(e); }
-			}
-
-
-			for(DarkzoneServer activeServer : DarkzoneServerManager.serverList) {
-				if(activeServer.status != ServerStatus.RUNNING) continue;
-
-				if(activeServer.getStartTime() + RESTART_TIME < System.currentTimeMillis()) {
-
-					for(DarkzoneServer server : DarkzoneServerManager.serverList) {
-						if(activeServer == server || server.status != ServerStatus.RUNNING) continue;
-						if((server.getStartTime() + RESTART_TIME) < RESTART_BUFFER + System.currentTimeMillis()) {
-							server.setStartTime(server.getStartTime() + RESTART_BUFFER);
-						}
-					}
-
-					activeServer.shutDown(true);
-				}
 			}
 
 		}).runAfterEvery(1, 1, TimeUnit.MINUTES);

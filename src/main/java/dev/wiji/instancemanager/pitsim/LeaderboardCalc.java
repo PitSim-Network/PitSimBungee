@@ -1,10 +1,7 @@
 package dev.wiji.instancemanager.pitsim;
 
 import dev.wiji.instancemanager.ProxyRunnable;
-import dev.wiji.instancemanager.objects.Leaderboard;
-import dev.wiji.instancemanager.objects.OverworldServer;
-import dev.wiji.instancemanager.objects.PlayerData;
-import dev.wiji.instancemanager.objects.PluginMessage;
+import dev.wiji.instancemanager.objects.*;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -12,11 +9,16 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class LeaderboardCalc {
+
+	public static MainGamemodeServerManager overworldManager = MainGamemodeServerManager.getManager(ServerType.OVERWORLD);
+
 	public static Map<Leaderboard, List<PlayerData>> leaderboardPositions = new HashMap<>();
 
 	static {
+		assert overworldManager != null;
+
 		((ProxyRunnable) () -> {
-			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+			for(MainGamemodeServer overworldServer : overworldManager.serverList) {
 				if(!overworldServer.status.isOnline()) continue;
 				sendLeaderboardData(overworldServer);
 			}
@@ -55,7 +57,7 @@ public class LeaderboardCalc {
 		System.out.println("Completed calculations in " + decimalFormat.format(totalSeconds) + "ms");
 	}
 
-	public static void sendLeaderboardData(OverworldServer server) {
+	public static void sendLeaderboardData(MainGamemodeServer server) {
 		PluginMessage message = new PluginMessage();
 		message.writeString("LEADERBOARD DATA");
 		for(Leaderboard leaderboard : Leaderboard.values()) {
@@ -82,7 +84,7 @@ public class LeaderboardCalc {
 		for(Leaderboard value : Leaderboard.values()) {
 			message.writeInt(getPosition(uuid, value));
 		}
-		for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+		for(MainGamemodeServer overworldServer : overworldManager.serverList) {
 			if(!overworldServer.status.isOnline()) continue;
 			message.addServer(overworldServer.getServerInfo());
 		}

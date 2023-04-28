@@ -5,8 +5,7 @@ import dev.wiji.instancemanager.alogging.LogType;
 import dev.wiji.instancemanager.market.MarketListing;
 import dev.wiji.instancemanager.misc.CustomSerializer;
 import dev.wiji.instancemanager.misc.Misc;
-import dev.wiji.instancemanager.objects.DarkzoneServer;
-import dev.wiji.instancemanager.pitsim.DarkzoneServerManager;
+
 import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.util.Objects;

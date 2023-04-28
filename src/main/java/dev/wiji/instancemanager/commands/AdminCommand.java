@@ -9,12 +9,13 @@ import dev.wiji.instancemanager.discord.DiscordManager;
 import dev.wiji.instancemanager.discord.DiscordUser;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.misc.Misc;
-import dev.wiji.instancemanager.objects.*;
-import dev.wiji.instancemanager.pitsim.DarkzoneServerManager;
-import dev.wiji.instancemanager.pitsim.OverworldServerManager;
+import dev.wiji.instancemanager.objects.MainGamemodeServer;
+import dev.wiji.instancemanager.objects.PluginMessage;
+import dev.wiji.instancemanager.objects.ServerStatus;
+import dev.wiji.instancemanager.objects.ServerType;
+import dev.wiji.instancemanager.pitsim.MainGamemodeServerManager;
 import dev.wiji.instancemanager.storage.EditSession;
 import dev.wiji.instancemanager.storage.EditSessionManager;
-import dev.wiji.instancemanager.storage.StorageManager;
 import io.mokulu.discord.oauth.DiscordAPI;
 import io.mokulu.discord.oauth.model.User;
 import net.md_5.bungee.api.ChatColor;
@@ -85,19 +86,11 @@ public class AdminCommand extends Command {
 			}
 
 			Server server = player.getServer();
-			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+			for(MainGamemodeServer overworldServer : MainGamemodeServerManager.mixedServerList) {
 				if(server.getInfo() == overworldServer.getServerInfo()) {
 					overworldServer.status = ServerStatus.SHUTTING_DOWN_INITIAL;
 					overworldServer.staffOverride = true;
 					new PluginMessage().writeString("SHUTDOWN").writeBoolean(false).writeInt(minutes).addServer(overworldServer.getServerInfo()).send();
-				}
-			}
-
-			for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
-				if(server.getInfo() == darkzoneServer.getServerInfo()) {
-					darkzoneServer.status = ServerStatus.SHUTTING_DOWN_INITIAL;
-					darkzoneServer.staffOverride = true;
-					new PluginMessage().writeString("SHUTDOWN").writeBoolean(false).writeInt(minutes).addServer(darkzoneServer.getServerInfo()).send();
 				}
 			}
 		}
@@ -119,22 +112,21 @@ public class AdminCommand extends Command {
 				}
 			}
 
-			if(OverworldServerManager.networkIsShuttingDown || DarkzoneServerManager.networkIsShuttingDown) {
+			if(MainGamemodeServerManager.networkIsShuttingDown) {
 				player.sendMessage((new ComponentBuilder("Network is already shutting down!").color(ChatColor.RED).create()));
 				return;
 			}
 
-			OverworldServerManager.networkIsShuttingDown = true;
-			DarkzoneServerManager.networkIsShuttingDown = true;
+			MainGamemodeServerManager.networkIsShuttingDown = true;
 
 			player.sendMessage((new ComponentBuilder("Initiated network shutdown!").color(ChatColor.GREEN).create()));
-			for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
 				for(ProxiedPlayer serverPlayer : server.getPlayers()) {
 					AOutput.color(serverPlayer, "&c&lTURNING OFF ALL PITSIM SERVERS");
 				}
 			}
 
-			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+			for(MainGamemodeServer overworldServer : MainGamemodeServerManager.mixedServerList) {
 				if(overworldServer.isSuspended()) continue;
 				if(overworldServer.status == ServerStatus.RUNNING) {
 					overworldServer.shutDown(false, minutes);
@@ -143,25 +135,15 @@ public class AdminCommand extends Command {
 					overworldServer.hardShutDown();
 				}
 			}
-
-			for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
-				if(darkzoneServer.isSuspended()) continue;
-				if(darkzoneServer.status == ServerStatus.RUNNING) {
-					darkzoneServer.shutDown(false, minutes);
-				}
-				if(darkzoneServer.status == ServerStatus.STARTING) {
-					darkzoneServer.hardShutDown();
-				}
-			}
 		}
 
 		if(args[0].equalsIgnoreCase("killnetwork")) {
 
-			OverworldServerManager.networkIsShuttingDown = true;
-			DarkzoneServerManager.networkIsShuttingDown = true;
+			MainGamemodeServerManager.networkIsShuttingDown = true;
 
-			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+			for(MainGamemodeServer overworldServer : MainGamemodeServerManager.mixedServerList) {
 				if(overworldServer.isSuspended()) continue;
+
 				for(ProxiedPlayer pitSimServerPlayer : overworldServer.getPlayers()) {
 					pitSimServerPlayer.connect(BungeeMain.INSTANCE.getProxy().getServerInfo(ConfigManager.getLobbyServer()));
 				}
@@ -169,27 +151,17 @@ public class AdminCommand extends Command {
 				overworldServer.hardShutDown();
 			}
 
-			for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
-				if(darkzoneServer.isSuspended()) continue;
-				for(ProxiedPlayer darkzoneServerPlayer : darkzoneServer.getPlayers()) {
-					darkzoneServerPlayer.connect(BungeeMain.INSTANCE.getProxy().getServerInfo(ConfigManager.getLobbyServer()));
-				}
-
-				darkzoneServer.hardShutDown();
-			}
-
 			player.sendMessage((new ComponentBuilder("Initiated immediate network shutdown!").color(ChatColor.GREEN).create()));
 		}
 
 		if(args[0].equalsIgnoreCase("startnetwork")) {
 
-			if(!OverworldServerManager.networkIsShuttingDown || !DarkzoneServerManager.networkIsShuttingDown) {
+			if(!MainGamemodeServerManager.networkIsShuttingDown) {
 				player.sendMessage((new ComponentBuilder("The network isn't shut down!").color(ChatColor.RED).create()));
 				return;
 			}
 
-			OverworldServerManager.networkIsShuttingDown = false;
-			DarkzoneServerManager.networkIsShuttingDown = false;
+			MainGamemodeServerManager.networkIsShuttingDown = false;
 
 			player.sendMessage((new ComponentBuilder("Resumed network processes!").color(ChatColor.GREEN).create()));
 		}
@@ -198,18 +170,10 @@ public class AdminCommand extends Command {
 
 			player.sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&8&m-----------------------------------------")));
 
-			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+			for(MainGamemodeServer overworldServer : MainGamemodeServerManager.mixedServerList) {
 				BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
 						"&7[" + overworldServer.getServerInfo().getName() + "] &e(" + overworldServer.getPlayers().size() + ") " +
 								overworldServer.status.color + overworldServer.status));
-
-				player.sendMessage(components);
-			}
-
-			for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
-				BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
-						"&7[" + darkzoneServer.getServerInfo().getName() + "] &e(" + darkzoneServer.getPlayers().size() + ") " +
-								darkzoneServer.status.color + darkzoneServer.status));
 
 				player.sendMessage(components);
 			}
@@ -223,7 +187,7 @@ public class AdminCommand extends Command {
 			ServerInfo serverInfo = player.getServer().getInfo();
 			if(args.length >= 2) {
 				boolean foundServer = false;
-				for(MainGamemodeServer mainGamemodeServer : MainGamemodeServer.serverList) {
+				for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
 					if(!mainGamemodeServer.getServerInfo().getName().equalsIgnoreCase(args[1])) continue;
 					foundServer = true;
 					serverInfo = mainGamemodeServer.getServerInfo();
@@ -240,61 +204,41 @@ public class AdminCommand extends Command {
 				kickPlayers = Boolean.parseBoolean(args[2]);
 			} catch(Exception ignored) {}
 
+			ServerType serverType = null;
+
 			boolean suspend = false;
-			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
-				if(serverInfo == overworldServer.getServerInfo()) {
-					if(overworldServer.status != ServerStatus.SUSPENDED) {
+			for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
+				if(serverInfo == mainGamemodeServer.getServerInfo()) {
+					serverType = mainGamemodeServer.serverType;
+					if(mainGamemodeServer.status != ServerStatus.SUSPENDED) {
 						suspend = true;
-						overworldServer.suspendedStatus = overworldServer.status;
-						overworldServer.status = ServerStatus.SUSPENDED;
+						mainGamemodeServer.suspendedStatus = mainGamemodeServer.status;
+						mainGamemodeServer.status = ServerStatus.SUSPENDED;
 						AOutput.color(player, "&aServer has been suspended!");
 					} else {
-						if(overworldServer.suspendedStatus != null) {
-							if(overworldServer.suspendedStatus == ServerStatus.RESTARTING_FINAL)
-								overworldServer.status = ServerStatus.OFFLINE;
-							else if(overworldServer.suspendedStatus == ServerStatus.SHUTTING_DOWN_FINAL)
-								overworldServer.status = ServerStatus.OFFLINE;
-							else overworldServer.status = overworldServer.suspendedStatus;
-							overworldServer.suspendedStatus = null;
+						if(mainGamemodeServer.suspendedStatus != null) {
+							if(mainGamemodeServer.suspendedStatus == ServerStatus.RESTARTING_FINAL)
+								mainGamemodeServer.status = ServerStatus.OFFLINE;
+							else if(mainGamemodeServer.suspendedStatus == ServerStatus.SHUTTING_DOWN_FINAL)
+								mainGamemodeServer.status = ServerStatus.OFFLINE;
+							else mainGamemodeServer.status = mainGamemodeServer.suspendedStatus;
+							mainGamemodeServer.suspendedStatus = null;
 						} else {
-							overworldServer.status = ServerStatus.RUNNING;
+							mainGamemodeServer.status = ServerStatus.RUNNING;
 						}
-						AOutput.color(player, "&aServer has been un-suspended: " + overworldServer.status.color + overworldServer.status);
+						AOutput.color(player, "&aServer has been un-suspended: " + mainGamemodeServer.status.color + mainGamemodeServer.status);
 					}
 				}
 			}
 
-			boolean darkzone = false;
-
-			for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
-				if(serverInfo == darkzoneServer.getServerInfo()) {
-					darkzone = true;
-					if(darkzoneServer.status != ServerStatus.SUSPENDED) {
-						suspend = true;
-						darkzoneServer.suspendedStatus = darkzoneServer.status;
-						darkzoneServer.status = ServerStatus.SUSPENDED;
-						AOutput.color(player, "&aServer has been suspended!");
-					} else {
-						if(darkzoneServer.suspendedStatus != null) {
-							if(darkzoneServer.suspendedStatus == ServerStatus.RESTARTING_FINAL)
-								darkzoneServer.status = ServerStatus.OFFLINE;
-							else if(darkzoneServer.suspendedStatus == ServerStatus.SHUTTING_DOWN_FINAL)
-								darkzoneServer.status = ServerStatus.OFFLINE;
-							else darkzoneServer.status = darkzoneServer.suspendedStatus;
-							darkzoneServer.suspendedStatus = null;
-						} else {
-							darkzoneServer.status = ServerStatus.RUNNING;
-						}
-						AOutput.color(player, "&aServer has been un-suspended: " + darkzoneServer.status.color + darkzoneServer.status);
-					}
-				}
-			}
 
 			if(kickPlayers && suspend) {
 				for(ProxiedPlayer proxiedPlayer : serverInfo.getPlayers()) {
-					if(proxiedPlayer == player) continue;
-					OverworldServerManager.queueFallback(proxiedPlayer, 0, darkzone);
-					//TODO: Change to move to other darkzone servers if more are added
+					if(proxiedPlayer == player || serverType == null) continue;
+
+					MainGamemodeServerManager manager = MainGamemodeServerManager.getManager(serverType);
+					assert manager != null;
+					manager.queueFallback(proxiedPlayer, 0, serverType == ServerType.DARKZONE);
 				}
 			}
 		}

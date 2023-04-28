@@ -23,15 +23,7 @@ public class ServerDataManager implements Listener {
 		if(strings.size() >= 2 && strings.get(0).equals("SERVER DATA")) {
 
 			String serverName = strings.get(1);
-			for(OverworldServer server : OverworldServerManager.serverList) {
-				if(server.getServerInfo().getName().equals(serverName)) {
-					strings.remove(0);
-					strings.remove(0);
-					server.serverData = new ServerData(strings);
-				}
-			}
-
-			for(DarkzoneServer server : DarkzoneServerManager.serverList) {
+			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
 					strings.remove(0);
 					strings.remove(0);
@@ -42,13 +34,15 @@ public class ServerDataManager implements Listener {
 	}
 
 	public static void sendServerData() {
-		for(MainGamemodeServer overworldServer : MainGamemodeServer.serverList) {
-			if(!overworldServer.status.isOnline()) continue;
+		for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
+			if(!mainGamemodeServer.status.isOnline()) continue;
+
+			ServerType type = mainGamemodeServer.serverType;
 
 			PluginMessage message = new PluginMessage();
-			message.writeString("SERVER DATA");
+			message.writeString((type == ServerType.DARKZONE ? "DARKZONE " : "") + "SERVER DATA");
 
-			for(OverworldServer activeServer : OverworldServerManager.serverList) {
+			for(MainGamemodeServer activeServer : MainGamemodeServerManager.mixedServerList) {
 				message.writeInt(activeServer.serverData == null ? 0 : activeServer.serverData.getPlayerStrings().size());
 				message.writeBoolean(activeServer.status == ServerStatus.RUNNING);
 
@@ -60,24 +54,7 @@ public class ServerDataManager implements Listener {
 
 			}
 
-			message.addServer(overworldServer.getServerInfo().getName()).send();
-
-			PluginMessage dzMessage = new PluginMessage();
-			dzMessage.writeString("DARKZONE SERVER DATA");
-
-			for(DarkzoneServer activeServer : DarkzoneServerManager.serverList) {
-				dzMessage.writeInt(activeServer.serverData == null ? 0 : activeServer.serverData.getPlayerStrings().size());
-				dzMessage.writeBoolean(activeServer.status == ServerStatus.RUNNING);
-
-				if(activeServer.serverData != null) {
-					for(String playerString : activeServer.serverData.getPlayerStrings()) {
-						dzMessage.writeString(playerString);
-					}
-				}
-
-			}
-
-			dzMessage.addServer(overworldServer.getServerInfo().getName()).send();
+			message.addServer(mainGamemodeServer.getServerInfo().getName()).send();
 		}
 	}
 }

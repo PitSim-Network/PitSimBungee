@@ -6,6 +6,7 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.objects.MainGamemodeServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
+import dev.wiji.instancemanager.pitsim.MainGamemodeServerManager;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -169,7 +170,7 @@ public class MarketManager implements Listener {
 	public void onJoin(ServerConnectedEvent event) {
 		((ProxyRunnable) () -> {
 			if(event.getPlayer() == null || !event.getPlayer().isConnected()) return;
-			for(MainGamemodeServer mainGamemodeServer : MainGamemodeServer.serverList) {
+			for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
 				if(mainGamemodeServer.getServerInfo().equals(event.getServer().getInfo())) {
 
 					List<MarketAlertManager.MarketAlert> remove = new ArrayList<>();

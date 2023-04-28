@@ -8,12 +8,8 @@ import dev.wiji.instancemanager.guilds.controllers.objects.DummyItemStack;
 import dev.wiji.instancemanager.guilds.controllers.objects.Guild;
 import dev.wiji.instancemanager.guilds.events.InventoryClickEvent;
 import dev.wiji.instancemanager.guilds.events.InventoryCloseEvent;
-import dev.wiji.instancemanager.objects.DarkzoneServer;
-import dev.wiji.instancemanager.objects.MainGamemodeServer;
-import dev.wiji.instancemanager.objects.OverworldServer;
-import dev.wiji.instancemanager.objects.PluginMessage;
-import dev.wiji.instancemanager.pitsim.DarkzoneServerManager;
-import dev.wiji.instancemanager.pitsim.OverworldServerManager;
+import dev.wiji.instancemanager.objects.*;
+import dev.wiji.instancemanager.pitsim.MainGamemodeServerManager;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -26,17 +22,20 @@ import java.util.concurrent.TimeUnit;
 
 public class GuildMessaging implements Listener {
 
+	public static MainGamemodeServerManager overworldManager = MainGamemodeServerManager.getManager(ServerType.OVERWORLD);
+
 	public static Map<ProxiedPlayer, Callback> waitingForBalance = new HashMap<>();
 	public static Map<ProxiedPlayer, Callback> waitingForWithdraw = new HashMap<>();
 
 	static {
 		((ProxyRunnable) () -> {
-			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+
+			for(MainGamemodeServer overworldServer : overworldManager.serverList) {
 				if(!overworldServer.status.isOnline()) continue;
 				sendGuildLeaderboardData();
 			}
 
-			for(MainGamemodeServer server : MainGamemodeServer.serverList) {
+			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
 				for(ProxiedPlayer player : server.getPlayers()) {
 					GuildMessaging.sendGuildData(player, server);
 				}
@@ -116,7 +115,7 @@ public class GuildMessaging implements Listener {
 			message.writeString(guild.getColor().name());
 		}
 
-		for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+		for(MainGamemodeServer overworldServer : overworldManager.serverList) {
 			if(!overworldServer.status.isOnline()) continue;
 			message.addServer(overworldServer.getServerInfo());
 		}
@@ -162,13 +161,10 @@ public class GuildMessaging implements Listener {
 			message.writeInt(value);
 		}
 
-		for(OverworldServer overworldServer : OverworldServerManager.serverList) {
-			if(overworldServer.status.isOnline()) message.addServer(overworldServer.getServerInfo());
+		for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
+			if(mainGamemodeServer.status.isOnline()) message.addServer(mainGamemodeServer.getServerInfo());
 		}
 
-		for(DarkzoneServer darkzoneServer : DarkzoneServerManager.serverList) {
-			if(darkzoneServer.status.isOnline()) message.addServer(darkzoneServer.getServerInfo());
-		}
 		message.send();
 	}
 
