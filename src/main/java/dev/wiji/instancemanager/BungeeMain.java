@@ -111,6 +111,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerCommand(this, new CaptchaCommand());
 		getProxy().getPluginManager().registerCommand(this, new SeenCommand());
 		getProxy().getPluginManager().registerCommand(this, new DupeCheckCommand());
+		getProxy().getPluginManager().registerCommand(this, new BackupCommand());
 		getProxy().getPluginManager().registerCommand(this, new LinkCommand());
 		getProxy().getPluginManager().registerCommand(this, new UnlinkCommand());
 //		getProxy().getPluginManager().registerCommand(this, new MigrateCommand());
