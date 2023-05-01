@@ -96,9 +96,10 @@ public class FirestoreManager {
 
 	private static final String FIRESTORE_PROJECT_ID = "pitsim-network";
 	private static final String FIRESTORE_API_ENDPOINT = "https://firestore.googleapis.com/v1/projects/" + FIRESTORE_PROJECT_ID + "/databases/(default):";
-	private static final String BUCKET_PATH = "gs://pitsim-automatic-backups";
+	private static final String AUTOMATIC_BUCKET_PATH = "gs://pitsim-automatic-backups";
+	private static final String MANUAL_BUCKET_PATH = "gs://pitsim-backups";
 
-	public static void takeBackup() throws IOException {
+	public static void takeBackup(boolean manual) throws IOException {
 		GoogleCredentials updatedCredentials = credentials.createScoped(StorageScopes.DEVSTORAGE_FULL_CONTROL, StorageScopes.CLOUD_PLATFORM);
 		accessToken = updatedCredentials.refreshAccessToken().getTokenValue();
 
@@ -107,7 +108,7 @@ public class FirestoreManager {
 				"  \"collectionIds\": [\n" +
 				"    \"" + PLAYERDATA_COLLECTION + "\"\n" +
 				"  ],\n" +
-				"  \"outputUriPrefix\": \"" + BUCKET_PATH + "\"\n" +
+				"  \"outputUriPrefix\": \"" + (manual ? MANUAL_BUCKET_PATH : AUTOMATIC_BUCKET_PATH) + "\"\n" +
 				"}";
 		String exportName = sendPostRequest(exportUri, requestBody);
 
