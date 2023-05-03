@@ -9,21 +9,21 @@ public enum ServerType {
 	OVERWORLD(OverworldServer.class, OverworldServer.serverList, ServerManager.pitSimServers),
 	DARKZONE(DarkzoneServer.class, DarkzoneServer.serverList, ServerManager.darkzoneServers);
 
-	private final Class<? extends MainGamemodeServer> serverClass;
-	private final List<MainGamemodeServer> serverList;
+	private final Class<? extends PitSimServer> serverClass;
+	private final List<PitSimServer> serverList;
 	private final Map<String, String> serverStrings;
 
-	ServerType(Class<? extends MainGamemodeServer> serverClass, List<MainGamemodeServer> serverList, Map<String, String> serverStrings) {
+	ServerType(Class<? extends PitSimServer> serverClass, List<PitSimServer> serverList, Map<String, String> serverStrings) {
 		this.serverClass = serverClass;
 		this.serverList = serverList;
 		this.serverStrings = serverStrings;
 	}
 
-	public Class<? extends MainGamemodeServer> getServerClass() {
+	public Class<? extends PitSimServer> getServerClass() {
 		return serverClass;
 	}
 
-	public List<MainGamemodeServer> getServerList() {
+	public List<PitSimServer> getServerList() {
 		return serverList;
 	}
 

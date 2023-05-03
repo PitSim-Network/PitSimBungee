@@ -24,7 +24,7 @@ public class ServerDataManager implements Listener {
 		if(strings.size() >= 2 && strings.get(0).equals("SERVER DATA")) {
 
 			String serverName = strings.get(1);
-			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
+			for(PitSimServer server : PitSimServerManager.mixedServerList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
 					strings.remove(0);
 					strings.remove(0);
@@ -36,20 +36,20 @@ public class ServerDataManager implements Listener {
 
 	public static void sendServerData() {
 
-		List<MainGamemodeServerManager> managers = new ArrayList<>();
-		managers.add(MainGamemodeServerManager.getManager(ServerType.OVERWORLD));
-		managers.add(MainGamemodeServerManager.getManager(ServerType.DARKZONE));
+		List<PitSimServerManager> managers = new ArrayList<>();
+		managers.add(PitSimServerManager.getManager(ServerType.OVERWORLD));
+		managers.add(PitSimServerManager.getManager(ServerType.DARKZONE));
 
-		for(MainGamemodeServerManager manager : managers) {
-			for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
-				if(!mainGamemodeServer.status.isOnline()) continue;
+		for(PitSimServerManager manager : managers) {
+			for(PitSimServer pitSimServer : PitSimServerManager.mixedServerList) {
+				if(!pitSimServer.status.isOnline()) continue;
 
 				ServerType type = manager.serverType;
 
 				PluginMessage message = new PluginMessage();
 				message.writeString((type == ServerType.DARKZONE ? "DARKZONE " : "") + "SERVER DATA");
 
-				for(MainGamemodeServer activeServer : manager.serverList) {
+				for(PitSimServer activeServer : manager.serverList) {
 					message.writeInt(activeServer.serverData == null ? 0 : activeServer.serverData.getPlayerStrings().size());
 					message.writeBoolean(activeServer.status == ServerStatus.RUNNING);
 
@@ -61,7 +61,7 @@ public class ServerDataManager implements Listener {
 
 				}
 
-				message.addServer(mainGamemodeServer.getServerInfo().getName()).send();
+				message.addServer(pitSimServer.getServerInfo().getName()).send();
 			}
 		}
 	}

@@ -22,22 +22,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class MainGamemodeServerManager {
+public class PitSimServerManager {
 
-	public static List<MainGamemodeServerManager> managers = new ArrayList<>();
+	public static List<PitSimServerManager> managers = new ArrayList<>();
 	public static boolean networkIsShuttingDown = false;
-	public static List<MainGamemodeServer> mixedServerList = new ArrayList<>();
+	public static List<PitSimServer> mixedServerList = new ArrayList<>();
 
 	public ServerType serverType;
-	public List<MainGamemodeServer> serverList;
+	public List<PitSimServer> serverList;
 
 	//	The next server turns on when the player count reaches a multiple of this number
 	public final int NEW_SERVER_THRESHOLD;
 	//	When the player count drops this many below a multiple of the number above, that server enabled by hitting
-//	that threshold is no longer needed and gets shut down
+	//	that threshold is no longer needed and gets shut down
 	public final int REQUIRED_DROP_FOR_SHUTDOWN;
 
-	public MainGamemodeServerManager(ServerType serverType, int newServerThreshold, int requiredDropForShutdown) {
+	public PitSimServerManager(ServerType serverType, int newServerThreshold, int requiredDropForShutdown) {
 		this.serverType = serverType;
 		this.serverList = new ArrayList<>();
 
@@ -48,7 +48,7 @@ public class MainGamemodeServerManager {
 
 		((ProxyRunnable) () -> {
 			PluginMessage playerMessage = new PluginMessage().writeString("PLAYER COUNT").writeInt(getTotalPlayersUnvanished());
-			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
+			for(PitSimServer server : PitSimServerManager.mixedServerList) {
 				if(!server.status.isOnline()) continue;
 				playerMessage.addServer(server.getServerInfo());
 			}
@@ -59,12 +59,12 @@ public class MainGamemodeServerManager {
 
 			if(networkIsShuttingDown) return;
 
-			for(MainGamemodeServer mainGamemodeServer : serverList) {
-				if(mainGamemodeServer.status == ServerStatus.STARTING) return;
+			for(PitSimServer pitSimServer : serverList) {
+				if(pitSimServer.status == ServerStatus.STARTING) return;
 			}
 
 			for(int i = 0; i < Math.min(players / NEW_SERVER_THRESHOLD + 1, serverList.size()); i++) {
-				MainGamemodeServer server = serverList.get(i);
+				PitSimServer server = serverList.get(i);
 
 				if(server.staffOverride) continue;
 
@@ -84,7 +84,7 @@ public class MainGamemodeServerManager {
 			}
 
 			for(int i = 1 + (players + REQUIRED_DROP_FOR_SHUTDOWN - 1) / NEW_SERVER_THRESHOLD; i < serverList.size(); i++) {
-				MainGamemodeServer server = serverList.get(i);
+				PitSimServer server = serverList.get(i);
 				if(server.status.isShuttingDown() || server.status == ServerStatus.OFFLINE || server.status == ServerStatus.SUSPENDED)
 					continue;
 				if(server.status == ServerStatus.RESTARTING_INITIAL) {
@@ -104,10 +104,10 @@ public class MainGamemodeServerManager {
 
 	public void registerServers() {
 		for(String value : serverType.getServerStrings().values()) {
-			Class<? extends MainGamemodeServer> clazz = serverType.getServerClass();
+			Class<? extends PitSimServer> clazz = serverType.getServerClass();
 
 			try {
-				MainGamemodeServer server = clazz.getConstructor(String.class).newInstance(value);
+				PitSimServer server = clazz.getConstructor(String.class).newInstance(value);
 				serverList.add(server);
 				System.out.println("Registered server: " + value + " (" + serverType.name() + ")");
 				mixedServerList.add(server);
@@ -116,7 +116,7 @@ public class MainGamemodeServerManager {
 			}
 		}
 
-		for(MainGamemodeServer server : serverList) {
+		for(PitSimServer server : serverList) {
 			if(serverList.get(0) == server) {
 
 				if(ConfigManager.isDev()) {
@@ -152,18 +152,18 @@ public class MainGamemodeServerManager {
 			return false;
 		}
 
-		if(MainGamemodeServer.cooldownPlayers.containsKey(player.getUniqueId())) {
-			long time = MainGamemodeServer.cooldownPlayers.get(player.getUniqueId());
+		if(PitSimServer.cooldownPlayers.containsKey(player.getUniqueId())) {
+			long time = PitSimServer.cooldownPlayers.get(player.getUniqueId());
 
 			if(time + CommandListener.COOLDOWN_SECONDS * 1000 < System.currentTimeMillis()) {
-				MainGamemodeServer.cooldownPlayers.remove(player.getUniqueId());
+				PitSimServer.cooldownPlayers.remove(player.getUniqueId());
 			} else {
 				player.sendMessage((new ComponentBuilder("Please wait a moment before Queuing again").color(ChatColor.RED).create()));
 				return false;
 			}
 		}
 
-		MainGamemodeServer.cooldownPlayers.put(player.getUniqueId(), System.currentTimeMillis());
+		PitSimServer.cooldownPlayers.put(player.getUniqueId(), System.currentTimeMillis());
 
 		if(EditSessionManager.isBeingEdited(player.getUniqueId())) {
 			player.sendMessage(new ComponentBuilder("Your player-data is being modified. Please try again in a moment.").color(ChatColor.RED).create());
@@ -181,8 +181,8 @@ public class MainGamemodeServerManager {
 
 		GuildMessaging.sendGuildData(player);
 
-		MainGamemodeServer previousServer = null;
-		for(MainGamemodeServer server : serverList) {
+		PitSimServer previousServer = null;
+		for(PitSimServer server : serverList) {
 			if(server.getServerInfo() == player.getServer().getInfo()) {
 				previousServer = server;
 				break;
@@ -199,7 +199,7 @@ public class MainGamemodeServerManager {
 
 		ServerDataManager.sendServerData();
 
-		MainGamemodeServer targetServer = null;
+		PitSimServer targetServer = null;
 
 		if(requestedServer != 0) {
 			targetServer = serverList.get(requestedServer - 1);
@@ -226,7 +226,7 @@ public class MainGamemodeServerManager {
 
 		if(targetServer == null) {
 			ServerInfo current = player.getServer().getInfo();
-			for(MainGamemodeServer activeServer : serverList) {
+			for(PitSimServer activeServer : serverList) {
 				if(activeServer.status != ServerStatus.RUNNING) continue;
 				if(activeServer.getServerInfo() == current) continue;
 				if(activeServer.getPlayers().size() > players / getTotalServersOnline()) continue;
@@ -238,9 +238,9 @@ public class MainGamemodeServerManager {
 		if(targetServer == null) {
 			ServerInfo current = player.getServer().getInfo();
 
-			for(MainGamemodeServer mainGamemodeServer : serverList) {
-				if(mainGamemodeServer.status == ServerStatus.RUNNING && current != mainGamemodeServer.getServerInfo()) {
-					targetServer = mainGamemodeServer;
+			for(PitSimServer pitSimServer : serverList) {
+				if(pitSimServer.status == ServerStatus.RUNNING && current != pitSimServer.getServerInfo()) {
+					targetServer = pitSimServer;
 					break;
 				}
 			}
@@ -267,7 +267,7 @@ public class MainGamemodeServerManager {
 		if(fromDarkzone && serverType != ServerType.DARKZONE)
 			new PluginMessage().writeString("DARKZONE JOIN").writeString(player.getUniqueId().toString()).writeBoolean(true).addServer(targetServer.getServerInfo().getName()).send();
 
-		MainGamemodeServer finalTargetServer = targetServer;
+		PitSimServer finalTargetServer = targetServer;
 		((ProxyRunnable) () -> player.connect(finalTargetServer.getServerInfo())).runAfter(1, TimeUnit.SECONDS);
 
 		if(AuthenticationManager.rewardVerificationList.contains(player.getUniqueId())) {
@@ -284,7 +284,7 @@ public class MainGamemodeServerManager {
 	public int getTotalPlayers() {
 		if(LobbiesCommand.overridePlayers) return 50;
 		int total = 0;
-		for(MainGamemodeServer server : serverList) {
+		for(PitSimServer server : serverList) {
 			total += server.getPlayers().size();
 		}
 		return total;
@@ -292,7 +292,7 @@ public class MainGamemodeServerManager {
 
 	public static int getTotalPlayersUnvanished() {
 		int total = 0;
-		for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
+		for(PitSimServer server : PitSimServerManager.mixedServerList) {
 			for(ProxiedPlayer player : server.getPlayers()) {
 				if(!BungeeVanishAPI.isInvisible(player)) total++;
 			}
@@ -302,7 +302,7 @@ public class MainGamemodeServerManager {
 
 	public int getTotalServersOnline() {
 		int total = 0;
-		for(MainGamemodeServer server : serverList) {
+		for(PitSimServer server : serverList) {
 			if(server.status == ServerStatus.RUNNING || server.status == ServerStatus.RESTARTING_INITIAL) total++;
 		}
 
@@ -310,8 +310,8 @@ public class MainGamemodeServerManager {
 		return total;
 	}
 
-	public static MainGamemodeServerManager getManager(ServerType serverType) {
-		for(MainGamemodeServerManager manager : managers) {
+	public static PitSimServerManager getManager(ServerType serverType) {
+		for(PitSimServerManager manager : managers) {
 			if(manager.serverType == serverType) return manager;
 		}
 		return null;

@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 public class LeaderboardCalc {
 
-	public static MainGamemodeServerManager overworldManager = MainGamemodeServerManager.getManager(ServerType.OVERWORLD);
+	public static PitSimServerManager overworldManager = PitSimServerManager.getManager(ServerType.OVERWORLD);
 
 	public static Map<Leaderboard, List<PlayerData>> leaderboardPositions = new HashMap<>();
 
@@ -18,7 +18,7 @@ public class LeaderboardCalc {
 		assert overworldManager != null;
 
 		((ProxyRunnable) () -> {
-			for(MainGamemodeServer overworldServer : overworldManager.serverList) {
+			for(PitSimServer overworldServer : overworldManager.serverList) {
 				if(!overworldServer.status.isOnline()) continue;
 				sendLeaderboardData(overworldServer);
 			}
@@ -57,7 +57,7 @@ public class LeaderboardCalc {
 		System.out.println("Completed calculations in " + decimalFormat.format(totalSeconds) + "ms");
 	}
 
-	public static void sendLeaderboardData(MainGamemodeServer server) {
+	public static void sendLeaderboardData(PitSimServer server) {
 		PluginMessage message = new PluginMessage();
 		message.writeString("LEADERBOARD DATA");
 		for(Leaderboard leaderboard : Leaderboard.values()) {
@@ -84,7 +84,7 @@ public class LeaderboardCalc {
 		for(Leaderboard value : Leaderboard.values()) {
 			message.writeInt(getPosition(uuid, value));
 		}
-		for(MainGamemodeServer overworldServer : overworldManager.serverList) {
+		for(PitSimServer overworldServer : overworldManager.serverList) {
 			if(!overworldServer.status.isOnline()) continue;
 			message.addServer(overworldServer.getServerInfo());
 		}

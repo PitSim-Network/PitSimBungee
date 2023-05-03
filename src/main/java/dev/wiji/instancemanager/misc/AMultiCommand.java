@@ -7,7 +7,7 @@ package dev.wiji.instancemanager.misc;
 
 import dev.wiji.instancemanager.guilds.commands.guildcommands.DepositCommand;
 import dev.wiji.instancemanager.guilds.commands.guildcommands.WithdrawCommand;
-import dev.wiji.instancemanager.objects.MainGamemodeServer;
+import dev.wiji.instancemanager.objects.PitSimServer;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -68,7 +68,7 @@ public abstract class AMultiCommand extends ACommandBase {
 			args.remove(0);
 			if(subCommand instanceof WithdrawCommand || subCommand instanceof DepositCommand) {
 				assert sender instanceof ProxiedPlayer;
-				MainGamemodeServer.guildCooldown.put(((ProxiedPlayer) sender).getUniqueId(), System.currentTimeMillis());
+				PitSimServer.guildCooldown.put(((ProxiedPlayer) sender).getUniqueId(), System.currentTimeMillis());
 			}
 			subCommand.execute(sender, args);
 		}

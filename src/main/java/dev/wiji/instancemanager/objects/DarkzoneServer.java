@@ -1,6 +1,6 @@
 package dev.wiji.instancemanager.objects;
 
-public class DarkzoneServer extends MainGamemodeServer {
+public class DarkzoneServer extends PitSimServer {
 
 	private static int NEXT_INDEX = 1;
 

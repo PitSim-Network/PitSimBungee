@@ -1,6 +1,6 @@
 package dev.wiji.instancemanager.objects;
 
-public class OverworldServer extends MainGamemodeServer {
+public class OverworldServer extends PitSimServer {
 
 	private static int NEXT_INDEX = 1;
 

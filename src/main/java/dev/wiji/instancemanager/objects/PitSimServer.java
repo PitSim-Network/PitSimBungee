@@ -12,9 +12,9 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public abstract class MainGamemodeServer {
+public abstract class PitSimServer {
 
-	protected static final List<MainGamemodeServer> serverList = new ArrayList<>();
+	protected static final List<PitSimServer> serverList = new ArrayList<>();
 	public static Map<UUID, Long> cooldownPlayers = new HashMap<>();
 
 	public static Map<UUID, Long> guildCooldown = new HashMap<>();
@@ -33,7 +33,7 @@ public abstract class MainGamemodeServer {
 
 	private List<StorageProfile> loadedProfiles = new ArrayList<>();
 
-	public MainGamemodeServer(String pteroID, ServerType serverType, int serverIndex) {
+	public PitSimServer(String pteroID, ServerType serverType, int serverIndex) {
 		this.pteroID = pteroID;
 		this.serverIndex = serverIndex;
 
@@ -110,23 +110,23 @@ public abstract class MainGamemodeServer {
 		}).runAfter(20, TimeUnit.SECONDS);
 	}
 
-	public static MainGamemodeServer getServer(ServerInfo info) {
-		for(MainGamemodeServer mainGamemodeServer : serverList) {
-			if(mainGamemodeServer.getServerInfo() == info) return mainGamemodeServer;
+	public static PitSimServer getServer(ServerInfo info) {
+		for(PitSimServer pitSimServer : serverList) {
+			if(pitSimServer.getServerInfo() == info) return pitSimServer;
 		}
 		return null;
 	}
 
-	public static MainGamemodeServer getLoadedServer(StorageProfile profile) {
-		for(MainGamemodeServer mainGamemodeServer : serverList) {
-			if(mainGamemodeServer.loadedProfiles.contains(profile)) return mainGamemodeServer;
+	public static PitSimServer getLoadedServer(StorageProfile profile) {
+		for(PitSimServer pitSimServer : serverList) {
+			if(pitSimServer.loadedProfiles.contains(profile)) return pitSimServer;
 		}
 		return null;
 	}
 
-	public static MainGamemodeServer getServer(int index, boolean darkzone) {
-		for(MainGamemodeServer mainGamemodeServer : serverList) {
-			if(mainGamemodeServer.serverIndex == index && mainGamemodeServer.serverType == (darkzone ? ServerType.DARKZONE : ServerType.OVERWORLD)) return mainGamemodeServer;
+	public static PitSimServer getServer(int index, boolean darkzone) {
+		for(PitSimServer pitSimServer : serverList) {
+			if(pitSimServer.serverIndex == index && pitSimServer.serverType == (darkzone ? ServerType.DARKZONE : ServerType.OVERWORLD)) return pitSimServer;
 		}
 		return null;
 	}

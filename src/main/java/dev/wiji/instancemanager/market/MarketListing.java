@@ -4,10 +4,10 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.alogging.LogType;
 import dev.wiji.instancemanager.discord.MarketLog;
 import dev.wiji.instancemanager.misc.CustomSerializer;
-import dev.wiji.instancemanager.objects.MainGamemodeServer;
+import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.objects.ServerType;
-import dev.wiji.instancemanager.pitsim.MainGamemodeServerManager;
+import dev.wiji.instancemanager.pitsim.PitSimServerManager;
 import net.luckperms.api.model.user.User;
 
 import java.io.FileWriter;
@@ -108,9 +108,9 @@ public class MarketListing implements Serializable {
 	}
 
 	private void sendMessage(PluginMessage message) {
-		MainGamemodeServerManager manager = MainGamemodeServerManager.getManager(ServerType.DARKZONE);
+		PitSimServerManager manager = PitSimServerManager.getManager(ServerType.DARKZONE);
 		assert manager != null;
-		for(MainGamemodeServer darkzoneServer : manager.serverList) {
+		for(PitSimServer darkzoneServer : manager.serverList) {
 			if(!darkzoneServer.status.isOnline()) continue;
 			message.addServer(darkzoneServer.getServerInfo());
 		}

@@ -9,11 +9,11 @@ import dev.wiji.instancemanager.discord.DiscordManager;
 import dev.wiji.instancemanager.discord.DiscordUser;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.misc.Misc;
-import dev.wiji.instancemanager.objects.MainGamemodeServer;
+import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.objects.ServerStatus;
 import dev.wiji.instancemanager.objects.ServerType;
-import dev.wiji.instancemanager.pitsim.MainGamemodeServerManager;
+import dev.wiji.instancemanager.pitsim.PitSimServerManager;
 import dev.wiji.instancemanager.storage.EditSession;
 import dev.wiji.instancemanager.storage.EditSessionManager;
 import io.mokulu.discord.oauth.DiscordAPI;
@@ -86,7 +86,7 @@ public class AdminCommand extends Command {
 			}
 
 			Server server = player.getServer();
-			for(MainGamemodeServer overworldServer : MainGamemodeServerManager.mixedServerList) {
+			for(PitSimServer overworldServer : PitSimServerManager.mixedServerList) {
 				if(server.getInfo() == overworldServer.getServerInfo()) {
 					overworldServer.status = ServerStatus.SHUTTING_DOWN_INITIAL;
 					overworldServer.staffOverride = true;
@@ -112,21 +112,21 @@ public class AdminCommand extends Command {
 				}
 			}
 
-			if(MainGamemodeServerManager.networkIsShuttingDown) {
+			if(PitSimServerManager.networkIsShuttingDown) {
 				player.sendMessage((new ComponentBuilder("Network is already shutting down!").color(ChatColor.RED).create()));
 				return;
 			}
 
-			MainGamemodeServerManager.networkIsShuttingDown = true;
+			PitSimServerManager.networkIsShuttingDown = true;
 
 			player.sendMessage((new ComponentBuilder("Initiated network shutdown!").color(ChatColor.GREEN).create()));
-			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
+			for(PitSimServer server : PitSimServerManager.mixedServerList) {
 				for(ProxiedPlayer serverPlayer : server.getPlayers()) {
 					AOutput.color(serverPlayer, "&c&lTURNING OFF ALL PITSIM SERVERS");
 				}
 			}
 
-			for(MainGamemodeServer overworldServer : MainGamemodeServerManager.mixedServerList) {
+			for(PitSimServer overworldServer : PitSimServerManager.mixedServerList) {
 				if(overworldServer.isSuspended()) continue;
 				if(overworldServer.status == ServerStatus.RUNNING) {
 					overworldServer.shutDown(false, minutes);
@@ -139,9 +139,9 @@ public class AdminCommand extends Command {
 
 		if(args[0].equalsIgnoreCase("killnetwork")) {
 
-			MainGamemodeServerManager.networkIsShuttingDown = true;
+			PitSimServerManager.networkIsShuttingDown = true;
 
-			for(MainGamemodeServer overworldServer : MainGamemodeServerManager.mixedServerList) {
+			for(PitSimServer overworldServer : PitSimServerManager.mixedServerList) {
 				if(overworldServer.isSuspended()) continue;
 
 				for(ProxiedPlayer pitSimServerPlayer : overworldServer.getPlayers()) {
@@ -156,12 +156,12 @@ public class AdminCommand extends Command {
 
 		if(args[0].equalsIgnoreCase("startnetwork")) {
 
-			if(!MainGamemodeServerManager.networkIsShuttingDown) {
+			if(!PitSimServerManager.networkIsShuttingDown) {
 				player.sendMessage((new ComponentBuilder("The network isn't shut down!").color(ChatColor.RED).create()));
 				return;
 			}
 
-			MainGamemodeServerManager.networkIsShuttingDown = false;
+			PitSimServerManager.networkIsShuttingDown = false;
 
 			player.sendMessage((new ComponentBuilder("Resumed network processes!").color(ChatColor.GREEN).create()));
 		}
@@ -170,7 +170,7 @@ public class AdminCommand extends Command {
 
 			player.sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&8&m-----------------------------------------")));
 
-			for(MainGamemodeServer overworldServer : MainGamemodeServerManager.mixedServerList) {
+			for(PitSimServer overworldServer : PitSimServerManager.mixedServerList) {
 				BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
 						"&7[" + overworldServer.getServerInfo().getName() + "] &e(" + overworldServer.getPlayers().size() + ") " +
 								overworldServer.status.color + overworldServer.status));
@@ -187,10 +187,10 @@ public class AdminCommand extends Command {
 			ServerInfo serverInfo = player.getServer().getInfo();
 			if(args.length >= 2) {
 				boolean foundServer = false;
-				for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
-					if(!mainGamemodeServer.getServerInfo().getName().equalsIgnoreCase(args[1])) continue;
+				for(PitSimServer pitSimServer : PitSimServerManager.mixedServerList) {
+					if(!pitSimServer.getServerInfo().getName().equalsIgnoreCase(args[1])) continue;
 					foundServer = true;
-					serverInfo = mainGamemodeServer.getServerInfo();
+					serverInfo = pitSimServer.getServerInfo();
 					break;
 				}
 				if(!foundServer) {
@@ -207,26 +207,26 @@ public class AdminCommand extends Command {
 			ServerType serverType = null;
 
 			boolean suspend = false;
-			for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
-				if(serverInfo == mainGamemodeServer.getServerInfo()) {
-					serverType = mainGamemodeServer.serverType;
-					if(mainGamemodeServer.status != ServerStatus.SUSPENDED) {
+			for(PitSimServer pitSimServer : PitSimServerManager.mixedServerList) {
+				if(serverInfo == pitSimServer.getServerInfo()) {
+					serverType = pitSimServer.serverType;
+					if(pitSimServer.status != ServerStatus.SUSPENDED) {
 						suspend = true;
-						mainGamemodeServer.suspendedStatus = mainGamemodeServer.status;
-						mainGamemodeServer.status = ServerStatus.SUSPENDED;
+						pitSimServer.suspendedStatus = pitSimServer.status;
+						pitSimServer.status = ServerStatus.SUSPENDED;
 						AOutput.color(player, "&aServer has been suspended!");
 					} else {
-						if(mainGamemodeServer.suspendedStatus != null) {
-							if(mainGamemodeServer.suspendedStatus == ServerStatus.RESTARTING_FINAL)
-								mainGamemodeServer.status = ServerStatus.OFFLINE;
-							else if(mainGamemodeServer.suspendedStatus == ServerStatus.SHUTTING_DOWN_FINAL)
-								mainGamemodeServer.status = ServerStatus.OFFLINE;
-							else mainGamemodeServer.status = mainGamemodeServer.suspendedStatus;
-							mainGamemodeServer.suspendedStatus = null;
+						if(pitSimServer.suspendedStatus != null) {
+							if(pitSimServer.suspendedStatus == ServerStatus.RESTARTING_FINAL)
+								pitSimServer.status = ServerStatus.OFFLINE;
+							else if(pitSimServer.suspendedStatus == ServerStatus.SHUTTING_DOWN_FINAL)
+								pitSimServer.status = ServerStatus.OFFLINE;
+							else pitSimServer.status = pitSimServer.suspendedStatus;
+							pitSimServer.suspendedStatus = null;
 						} else {
-							mainGamemodeServer.status = ServerStatus.RUNNING;
+							pitSimServer.status = ServerStatus.RUNNING;
 						}
-						AOutput.color(player, "&aServer has been un-suspended: " + mainGamemodeServer.status.color + mainGamemodeServer.status);
+						AOutput.color(player, "&aServer has been un-suspended: " + pitSimServer.status.color + pitSimServer.status);
 					}
 				}
 			}
@@ -236,7 +236,7 @@ public class AdminCommand extends Command {
 				for(ProxiedPlayer proxiedPlayer : serverInfo.getPlayers()) {
 					if(proxiedPlayer == player || serverType == null) continue;
 
-					MainGamemodeServerManager manager = MainGamemodeServerManager.getManager(serverType);
+					PitSimServerManager manager = PitSimServerManager.getManager(serverType);
 					assert manager != null;
 					manager.queueFallback(proxiedPlayer, 0, serverType == ServerType.DARKZONE);
 				}

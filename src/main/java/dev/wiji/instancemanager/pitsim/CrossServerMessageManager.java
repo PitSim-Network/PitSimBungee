@@ -28,7 +28,7 @@ public class CrossServerMessageManager implements Listener {
 					.writeString(strings.get(0))
 					.writeString(displayName)
 					.writeString(itemStack);
-			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
+			for(PitSimServer server : PitSimServerManager.mixedServerList) {
 				if(!server.status.isOnline() || server.getServerInfo().getName().equals(serverName)) continue;
 				pluginMessage.addServer(server.getServerInfo());
 			}
@@ -41,7 +41,7 @@ public class CrossServerMessageManager implements Listener {
 					.writeString(strings.get(0))
 					.writeString(displayName)
 					.writeInt(prestige);
-			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
+			for(PitSimServer server : PitSimServerManager.mixedServerList) {
 				if(!server.status.isOnline() || server.getServerInfo().getName().equals(serverName)) continue;
 				pluginMessage.addServer(server.getServerInfo());
 			}
@@ -52,7 +52,7 @@ public class CrossServerMessageManager implements Listener {
 			PluginMessage pluginMessage = new PluginMessage()
 					.writeString(strings.get(0))
 					.writeString(playerUUID);
-			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
+			for(PitSimServer server : PitSimServerManager.mixedServerList) {
 				if(!server.status.isOnline() || server.getServerInfo().getName().equals(serverName)) continue;
 				pluginMessage.addServer(server.getServerInfo());
 			}
@@ -65,9 +65,9 @@ public class CrossServerMessageManager implements Listener {
 					.writeString(strings.get(0))
 					.writeString(serverName);
 
-			MainGamemodeServerManager darkzoneManager = MainGamemodeServerManager.getManager(ServerType.DARKZONE);
+			PitSimServerManager darkzoneManager = PitSimServerManager.getManager(ServerType.DARKZONE);
 			assert darkzoneManager != null;
-			for(MainGamemodeServer server : darkzoneManager.serverList) {
+			for(PitSimServer server : darkzoneManager.serverList) {
 				if(!server.status.isOnline()) continue;
 				forwardMessage.addServer(server.getServerInfo());
 				AOutput.log("Received request for darkzone data. forwarding to " + server.getServerInfo().getName());
@@ -86,9 +86,9 @@ public class CrossServerMessageManager implements Listener {
 			for(String string : strings) forwardMessage.writeString(string);
 			for(int integer : integers) forwardMessage.writeInt(integer);
 
-			MainGamemodeServerManager overworldManager = MainGamemodeServerManager.getManager(ServerType.OVERWORLD);
+			PitSimServerManager overworldManager = PitSimServerManager.getManager(ServerType.OVERWORLD);
 			assert overworldManager != null;
-			for(MainGamemodeServer server : overworldManager.serverList) {
+			for(PitSimServer server : overworldManager.serverList) {
 				if(!server.status.isOnline()) continue;
 				if(!serverName.isEmpty() && !server.getServerInfo().getName().equals(serverName)) continue;
 				forwardMessage.addServer(server.getServerInfo());

@@ -118,8 +118,8 @@ public class BungeeMain extends Plugin {
 		ConfigManager.getPitSimServerList();
 		ConfigManager.getDarkzoneServerList();
 
-		new MainGamemodeServerManager(ServerType.OVERWORLD, 8 ,4);
-		new MainGamemodeServerManager(ServerType.DARKZONE, 8 ,4);
+		new PitSimServerManager(ServerType.OVERWORLD, 8 ,4);
+		new PitSimServerManager(ServerType.DARKZONE, 8 ,4);
 
 		RestartManager.init();
 

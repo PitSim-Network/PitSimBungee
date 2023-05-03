@@ -4,10 +4,10 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.objects.MainGamemodeServer;
+import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.pitsim.IdentificationManager;
-import dev.wiji.instancemanager.pitsim.MainGamemodeServerManager;
+import dev.wiji.instancemanager.pitsim.PitSimServerManager;
 import io.mokulu.discord.oauth.DiscordAPI;
 import io.mokulu.discord.oauth.DiscordOAuth;
 import io.mokulu.discord.oauth.model.TokensResponse;
@@ -182,7 +182,7 @@ public class AuthenticationManager implements Listener {
 				} catch(Exception ignored) {}
 
 				boolean isOnlinePitSim = false;
-				for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
+				for(PitSimServer server : PitSimServerManager.mixedServerList) {
 					if(!server.status.isOnline() || server.getServerInfo() != proxiedPlayer.getServer().getInfo()) continue;
 					isOnlinePitSim = true;
 					break;

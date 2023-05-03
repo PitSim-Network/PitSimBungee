@@ -4,10 +4,10 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.misc.Misc;
-import dev.wiji.instancemanager.objects.MainGamemodeServer;
+import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.objects.ServerType;
-import dev.wiji.instancemanager.pitsim.MainGamemodeServerManager;
+import dev.wiji.instancemanager.pitsim.PitSimServerManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -72,19 +72,19 @@ public class ServerJoinCommand extends Command {
 			return;
 		}
 
-		for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
-			ServerType type = mainGamemodeServer.serverType;
+		for(PitSimServer pitSimServer : PitSimServerManager.mixedServerList) {
+			ServerType type = pitSimServer.serverType;
 
-			if(mainGamemodeServer.getServerInfo() == requestedServer) {
+			if(pitSimServer.getServerInfo() == requestedServer) {
 				if(previousServer.getName().contains("darkzone") || previousServer.getName().contains("pitsim")) {
 					new PluginMessage().writeString("REQUEST " + (type == ServerType.DARKZONE ? "DARKZONE " : "") + "SWITCH").writeString(affectedPlayer.getUniqueId().toString())
-							.writeInt(mainGamemodeServer.getServerIndex()).addServer(previousServer).send();
+							.writeInt(pitSimServer.getServerIndex()).addServer(previousServer).send();
 					return;
 				}
 
-				MainGamemodeServerManager manager = MainGamemodeServerManager.getManager(type);
+				PitSimServerManager manager = PitSimServerManager.getManager(type);
 				assert manager != null;
-				manager.queueFallback(affectedPlayer, mainGamemodeServer.getServerIndex(), previousServer.getName().contains("darkzone"));
+				manager.queueFallback(affectedPlayer, pitSimServer.getServerIndex(), previousServer.getName().contains("darkzone"));
 				return;
 			}
 		}

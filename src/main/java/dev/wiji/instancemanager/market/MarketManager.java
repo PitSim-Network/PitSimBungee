@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ProxyRunnable;
-import dev.wiji.instancemanager.objects.MainGamemodeServer;
+import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
-import dev.wiji.instancemanager.pitsim.MainGamemodeServerManager;
+import dev.wiji.instancemanager.pitsim.PitSimServerManager;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -170,8 +170,8 @@ public class MarketManager implements Listener {
 	public void onJoin(ServerConnectedEvent event) {
 		((ProxyRunnable) () -> {
 			if(event.getPlayer() == null || !event.getPlayer().isConnected()) return;
-			for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
-				if(mainGamemodeServer.getServerInfo().equals(event.getServer().getInfo())) {
+			for(PitSimServer pitSimServer : PitSimServerManager.mixedServerList) {
+				if(pitSimServer.getServerInfo().equals(event.getServer().getInfo())) {
 
 					List<MarketAlertManager.MarketAlert> remove = new ArrayList<>();
 					for(MarketAlertManager.MarketAlert alert : getAlerts(event.getPlayer().getUniqueId())) {

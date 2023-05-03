@@ -29,9 +29,9 @@ public class MessageListener implements Listener {
 
 		if(strings.size() >= 2 && strings.get(0).equals("INITIATE STARTUP")) {
 			String serverName = strings.get(1);
-			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
+			for(PitSimServer server : PitSimServerManager.mixedServerList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
-					if(MainGamemodeServerManager.networkIsShuttingDown || server.status.isShuttingDown()) {
+					if(PitSimServerManager.networkIsShuttingDown || server.status.isShuttingDown()) {
 						server.hardShutDown();
 					} else {
 						System.out.println("Server " + serverName + " is now running!");
@@ -54,7 +54,7 @@ public class MessageListener implements Listener {
 
 		if(strings.size() >= 2 && strings.get(0).equals("INITIATE FINAL SHUTDOWN")) {
 			String serverName = strings.get(1);
-			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
+			for(PitSimServer server : PitSimServerManager.mixedServerList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
 					server.serverData = null;
 					server.status = ServerStatus.SHUTTING_DOWN_FINAL;
@@ -66,7 +66,7 @@ public class MessageListener implements Listener {
 
 		if(strings.size() >= 2 && strings.get(0).equals("INITIATE FINAL RESTART")) {
 			String serverName = strings.get(1);
-			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
+			for(PitSimServer server : PitSimServerManager.mixedServerList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
 					server.serverData = null;
 					server.status = ServerStatus.RESTARTING_FINAL;
@@ -78,7 +78,7 @@ public class MessageListener implements Listener {
 		if(strings.size() >= 3 && strings.get(0).equals("STATUS REPORT")) {
 			String serverName = strings.get(1);
 			String status = strings.get(2);
-			for(MainGamemodeServer server : MainGamemodeServerManager.mixedServerList) {
+			for(PitSimServer server : PitSimServerManager.mixedServerList) {
 				if(server.getServerInfo().getName().equals(serverName)) {
 					server.status = ServerStatus.valueOf(status);
 					break;
@@ -104,7 +104,7 @@ public class MessageListener implements Listener {
 				fromDarkzone = booleans.get(0);
 			}
 
-			MainGamemodeServerManager manager = MainGamemodeServerManager.getManager(serverType);
+			PitSimServerManager manager = PitSimServerManager.getManager(serverType);
 			assert manager != null;
 			manager.queueFallback(player, requested, fromDarkzone);
 		}
@@ -121,7 +121,7 @@ public class MessageListener implements Listener {
 					.writeString(announcement)
 					.writeString(activatorUUID)
 					.writeInt(time);
-			for(MainGamemodeServer pitSimServer : MainGamemodeServerManager.mixedServerList) {
+			for(PitSimServer pitSimServer : PitSimServerManager.mixedServerList) {
 				if(pitSimServer.status.isOnline()) message.addServer(pitSimServer.getServerInfo());
 			}
 
@@ -141,7 +141,7 @@ public class MessageListener implements Listener {
 					.writeString(boosterName)
 					.writeString(activatorUUID.toString())
 					.writeInt(amount);
-			for(MainGamemodeServer pitSimServer : MainGamemodeServerManager.mixedServerList) {
+			for(PitSimServer pitSimServer : PitSimServerManager.mixedServerList) {
 				if(!pitSimServer.status.isOnline() || !pitSimServer.getPlayers().contains(proxiedPlayer)) continue;
 				message.addServer(pitSimServer.getServerInfo());
 				break;
@@ -166,7 +166,7 @@ public class MessageListener implements Listener {
 			PluginMessage response = new PluginMessage().writeString("TELEPORT JOIN");
 			response.writeString(staffUUID.toString()).writeString(playerName);
 
-			ServerInfo serverInfo = MainGamemodeServer.getServer(serverIndex + 1, darkzone).getServerInfo();
+			ServerInfo serverInfo = PitSimServer.getServer(serverIndex + 1, darkzone).getServerInfo();
 			response.addServer(serverInfo).send();
 		}
 
@@ -181,11 +181,11 @@ public class MessageListener implements Listener {
 
 			boolean isOnline = false;
 
-			for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
-				for(ProxiedPlayer pitSimServerPlayer : mainGamemodeServer.getPlayers()) {
+			for(PitSimServer pitSimServer : PitSimServerManager.mixedServerList) {
+				for(ProxiedPlayer pitSimServerPlayer : pitSimServer.getPlayers()) {
 					pitSimServerPlayer.sendMessage(components);
 				}
-				if(mainGamemodeServer.getPlayers().contains(player)) {
+				if(pitSimServer.getPlayers().contains(player)) {
 					isOnline = true;
 				}
 			}
