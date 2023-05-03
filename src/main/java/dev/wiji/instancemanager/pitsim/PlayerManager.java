@@ -16,16 +16,6 @@ import net.md_5.bungee.event.EventHandler;
 @SuppressWarnings("Duplicates")
 public class PlayerManager implements Listener {
 
-	static {
-//		((ProxyRunnable) () -> {
-//			for(MainGamemodeServer server : MainGamemodeServer.serverList) {
-//				for(ProxiedPlayer player : server.getPlayers()) {
-//					System.out.println(player.getName() + " " + BungeeVanishAPI.isInvisible(player));
-//				}
-//			}
-//		}).runAfterEvery(1, 1, TimeUnit.SECONDS);
-	}
-
 	@EventHandler
 	public void onServerJoin(ServerConnectEvent event) {
 		ProxiedPlayer player = event.getPlayer();

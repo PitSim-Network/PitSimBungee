@@ -31,7 +31,7 @@ public abstract class PitSimServer {
 	public final ServerType serverType;
 	public ServerData serverData;
 
-	private List<StorageProfile> loadedProfiles = new ArrayList<>();
+	private final List<StorageProfile> loadedProfiles = new ArrayList<>();
 
 	public PitSimServer(String pteroID, ServerType serverType, int serverIndex) {
 		this.pteroID = pteroID;
@@ -132,7 +132,6 @@ public abstract class PitSimServer {
 	}
 
 	public void removeProfile(StorageProfile profile) {
-//		System.out.println("Removed Profile: " + profile);
 		if(profile != null) loadedProfiles.remove(profile);
 	}
 

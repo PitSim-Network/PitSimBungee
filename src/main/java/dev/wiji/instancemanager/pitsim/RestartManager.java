@@ -17,11 +17,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class RestartManager {
 	public static boolean proxyRestarting = false;
-	public static long RESTART_TIME = 1000 * 60 * 60 * 12;
-	public static long RESTART_BUFFER = 1000 * 60 * 30;
+	public static final long RESTART_TIME = 1000 * 60 * 60 * 12;
+	public static final long RESTART_BUFFER = 1000 * 60 * 30;
 
-	public static long PROXY_RESTART_TIME = 1000 * 60 * 60 * 24 * 7;
-	public static long BACKUP_THRESHOLD = 1000 * 60 * 60 * 24;
+	public static final long PROXY_RESTART_TIME = 1000 * 60 * 60 * 24 * 7;
+	public static final long BACKUP_THRESHOLD = 1000 * 60 * 60 * 24;
 
 	public static long lastBackup = System.currentTimeMillis();
 
@@ -31,7 +31,6 @@ public class RestartManager {
 			if(BungeeMain.STARTUP_TIME + PROXY_RESTART_TIME < System.currentTimeMillis()) {
 				restartProxy();
 			}
-
 
 			for(PitSimServer activeServer : PitSimServerManager.mixedServerList) {
 				if(activeServer.status != ServerStatus.RUNNING) continue;
