@@ -64,29 +64,5 @@ public class ServerDataManager implements Listener {
 				message.addServer(mainGamemodeServer.getServerInfo().getName()).send();
 			}
 		}
-
-
-//		for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
-//			if(!mainGamemodeServer.status.isOnline()) continue;
-//
-//			ServerType type = mainGamemodeServer.serverType;
-//
-//			PluginMessage message = new PluginMessage();
-//			message.writeString((type == ServerType.DARKZONE ? "DARKZONE " : "") + "SERVER DATA");
-//
-//			for(MainGamemodeServer activeServer : MainGamemodeServerManager.getManager(ServerType.OVERWORLD)) {
-//				message.writeInt(activeServer.serverData == null ? 0 : activeServer.serverData.getPlayerStrings().size());
-//				message.writeBoolean(activeServer.status == ServerStatus.RUNNING);
-//
-//				if(activeServer.serverData != null) {
-//					for(String playerString : activeServer.serverData.getPlayerStrings()) {
-//						message.writeString(playerString);
-//					}
-//				}
-//
-//			}
-//
-//			message.addServer(mainGamemodeServer.getServerInfo().getName()).send();
-//		}
 	}
 }
