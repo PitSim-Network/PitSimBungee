@@ -6,6 +6,7 @@ import dev.wiji.instancemanager.ProxyRunnable;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -34,27 +35,58 @@ public class ServerDataManager implements Listener {
 	}
 
 	public static void sendServerData() {
-		for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
-			if(!mainGamemodeServer.status.isOnline()) continue;
 
-			ServerType type = mainGamemodeServer.serverType;
+		List<MainGamemodeServerManager> managers = new ArrayList<>();
+		managers.add(MainGamemodeServerManager.getManager(ServerType.OVERWORLD));
+		managers.add(MainGamemodeServerManager.getManager(ServerType.DARKZONE));
 
-			PluginMessage message = new PluginMessage();
-			message.writeString((type == ServerType.DARKZONE ? "DARKZONE " : "") + "SERVER DATA");
+		for(MainGamemodeServerManager manager : managers) {
+			for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
+				if(!mainGamemodeServer.status.isOnline()) continue;
 
-			for(MainGamemodeServer activeServer : MainGamemodeServerManager.mixedServerList) {
-				message.writeInt(activeServer.serverData == null ? 0 : activeServer.serverData.getPlayerStrings().size());
-				message.writeBoolean(activeServer.status == ServerStatus.RUNNING);
+				ServerType type = manager.serverType;
 
-				if(activeServer.serverData != null) {
-					for(String playerString : activeServer.serverData.getPlayerStrings()) {
-						message.writeString(playerString);
+				PluginMessage message = new PluginMessage();
+				message.writeString((type == ServerType.DARKZONE ? "DARKZONE " : "") + "SERVER DATA");
+
+				for(MainGamemodeServer activeServer : manager.serverList) {
+					message.writeInt(activeServer.serverData == null ? 0 : activeServer.serverData.getPlayerStrings().size());
+					message.writeBoolean(activeServer.status == ServerStatus.RUNNING);
+
+					if(activeServer.serverData != null) {
+						for(String playerString : activeServer.serverData.getPlayerStrings()) {
+							message.writeString(playerString);
+						}
 					}
+
 				}
 
+				message.addServer(mainGamemodeServer.getServerInfo().getName()).send();
 			}
-
-			message.addServer(mainGamemodeServer.getServerInfo().getName()).send();
 		}
+
+
+//		for(MainGamemodeServer mainGamemodeServer : MainGamemodeServerManager.mixedServerList) {
+//			if(!mainGamemodeServer.status.isOnline()) continue;
+//
+//			ServerType type = mainGamemodeServer.serverType;
+//
+//			PluginMessage message = new PluginMessage();
+//			message.writeString((type == ServerType.DARKZONE ? "DARKZONE " : "") + "SERVER DATA");
+//
+//			for(MainGamemodeServer activeServer : MainGamemodeServerManager.getManager(ServerType.OVERWORLD)) {
+//				message.writeInt(activeServer.serverData == null ? 0 : activeServer.serverData.getPlayerStrings().size());
+//				message.writeBoolean(activeServer.status == ServerStatus.RUNNING);
+//
+//				if(activeServer.serverData != null) {
+//					for(String playerString : activeServer.serverData.getPlayerStrings()) {
+//						message.writeString(playerString);
+//					}
+//				}
+//
+//			}
+//
+//			message.addServer(mainGamemodeServer.getServerInfo().getName()).send();
+//		}
 	}
 }
