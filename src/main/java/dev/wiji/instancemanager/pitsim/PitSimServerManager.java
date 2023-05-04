@@ -1,10 +1,7 @@
 package dev.wiji.instancemanager.pitsim;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
-import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.ConfigManager;
-import dev.wiji.instancemanager.ProxyRunnable;
-import dev.wiji.instancemanager.ServerManager;
+import dev.wiji.instancemanager.*;
 import dev.wiji.instancemanager.commands.LobbiesCommand;
 import dev.wiji.instancemanager.commands.ServerJoinCommand;
 import dev.wiji.instancemanager.discord.AuthenticationManager;
@@ -152,18 +149,12 @@ public class PitSimServerManager {
 			return false;
 		}
 
-		if(PitSimServer.cooldownPlayers.containsKey(player.getUniqueId())) {
-			long time = PitSimServer.cooldownPlayers.get(player.getUniqueId());
-
-			if(time + CommandListener.COOLDOWN_SECONDS * 1000 < System.currentTimeMillis()) {
-				PitSimServer.cooldownPlayers.remove(player.getUniqueId());
-			} else {
-				player.sendMessage((new ComponentBuilder("Please wait a moment before Queuing again").color(ChatColor.RED).create()));
-				return false;
-			}
+		if(CommandBlocker.blockedPlayers.contains(player.getUniqueId())) {
+			player.sendMessage((new ComponentBuilder("Please wait a moment before Queuing again").color(ChatColor.RED).create()));
+			return false;
 		}
 
-		PitSimServer.cooldownPlayers.put(player.getUniqueId(), System.currentTimeMillis());
+		CommandBlocker.blockPlayer(player.getUniqueId());
 
 		if(EditSessionManager.isBeingEdited(player.getUniqueId())) {
 			player.sendMessage(new ComponentBuilder("Your player-data is being modified. Please try again in a moment.").color(ChatColor.RED).create());

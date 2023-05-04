@@ -1,10 +1,13 @@
 package dev.wiji.instancemanager.commands;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.CommandBlocker;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.objects.*;
-import dev.wiji.instancemanager.pitsim.CommandListener;
+import dev.wiji.instancemanager.objects.PitSimServer;
+import dev.wiji.instancemanager.objects.PluginMessage;
+import dev.wiji.instancemanager.objects.ServerStatus;
+import dev.wiji.instancemanager.objects.ServerType;
 import dev.wiji.instancemanager.pitsim.PitSimServerManager;
 import dev.wiji.instancemanager.pitsim.ServerChangeListener;
 import dev.wiji.instancemanager.skywars.SkywarsGameManager;
@@ -53,23 +56,7 @@ public class PlayCommand extends Command {
 					return;
 				}
 
-				if(PitSimServer.cooldownPlayers.containsKey(player.getUniqueId())) {
-					long time = PitSimServer.cooldownPlayers.get(player.getUniqueId());
-
-					if(time + CommandListener.COOLDOWN_SECONDS * 1000 < System.currentTimeMillis()) {
-						PitSimServer.cooldownPlayers.remove(player.getUniqueId());
-					}
-				}
-
-				if(PitSimServer.guildCooldown.containsKey(player.getUniqueId())) {
-					long time = PitSimServer.guildCooldown.get(player.getUniqueId());
-
-					if(time + CommandListener.COOLDOWN_SECONDS * 1000 < System.currentTimeMillis()) {
-						PitSimServer.guildCooldown.remove(player.getUniqueId());
-					}
-				}
-
-				if(PitSimServer.guildCooldown.containsKey(player.getUniqueId()) || PitSimServer.cooldownPlayers.containsKey(player.getUniqueId()) || ServerChangeListener.recentlyLeft.contains(player.getUniqueId())) {
+				if(CommandBlocker.blockedPlayers.contains(player.getUniqueId()) || ServerChangeListener.recentlyLeft.contains(player.getUniqueId())) {
 					if(queuingPlayers.contains(player)) return;
 					AOutput.color(player, "&eQueuing you to find a server!");
 					queuingPlayers.add(player);
@@ -80,7 +67,7 @@ public class PlayCommand extends Command {
 				commandSender.sendMessage((new ComponentBuilder("Looking for a server...").color(ChatColor.GREEN).create()));
 				queuingPlayers.remove(player);
 
-				PitSimServer.guildCooldown.put(player.getUniqueId(), System.currentTimeMillis());
+				CommandBlocker.blockPlayer(player.getUniqueId());
 				new PluginMessage().writeString("REQUEST SWITCH").writeString(player.getUniqueId().toString()).addServer(currentServer.getInfo()).send();
 				return;
 			}

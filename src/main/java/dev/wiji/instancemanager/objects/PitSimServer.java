@@ -15,9 +15,6 @@ import java.util.concurrent.TimeUnit;
 public abstract class PitSimServer {
 
 	protected static final List<PitSimServer> serverList = new ArrayList<>();
-	public static Map<UUID, Long> cooldownPlayers = new HashMap<>();
-
-	public static Map<UUID, Long> guildCooldown = new HashMap<>();
 
 	public final String pteroID;
 	public final int serverIndex;

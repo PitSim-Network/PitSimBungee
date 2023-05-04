@@ -76,7 +76,6 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new ConnectionManager());
 		getProxy().getPluginManager().registerListener(this, new StorageManager());
 		getProxy().getPluginManager().registerListener(this, new EditSessionManager());
-		getProxy().getPluginManager().registerListener(this, new CommandListener());
 		getProxy().getPluginManager().registerListener(this, new IdentificationManager());
 		getProxy().getPluginManager().registerListener(this, new CrossServerMessageManager());
 		getProxy().getPluginManager().registerListener(this, new PlayerManager());
