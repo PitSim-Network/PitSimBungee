@@ -149,6 +149,8 @@ public class PitSimServerManager {
 			return false;
 		}
 
+
+		//TODO: Make sure that command run between SWITCH request is sent and received do not cause issues
 		if(CommandBlocker.blockedPlayers.contains(player.getUniqueId())) {
 			player.sendMessage((new ComponentBuilder("Please wait a moment before Queuing again").color(ChatColor.RED).create()));
 			return false;
@@ -297,7 +299,6 @@ public class PitSimServerManager {
 			if(server.status == ServerStatus.RUNNING || server.status == ServerStatus.RESTARTING_INITIAL) total++;
 		}
 
-		System.out.println("Total online servers: " + total);
 		return total;
 	}
 
