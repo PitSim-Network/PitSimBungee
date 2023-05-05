@@ -1,5 +1,6 @@
 package dev.wiji.instancemanager;
 
+import dev.wiji.instancemanager.misc.AOutput;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -18,8 +19,13 @@ public class CommandBlocker implements Listener {
 	public static List<UUID> blockedPlayers = new ArrayList<>();
 	public static Map<UUID, Integer> commandMap = new HashMap<>();
 
+	public static List<String> blockedCommandList = new ArrayList<>();
+
 	static {
 		((ProxyRunnable) () -> commandMap.clear()).runAfterEvery(1, 1, TimeUnit.SECONDS);
+
+		blockedCommandList.add("g");
+		blockedCommandList.add("guild");
 	}
 
 	public static void blockPlayer(UUID uuid) {
@@ -40,9 +46,14 @@ public class CommandBlocker implements Listener {
 		commandMap.put(player.getUniqueId(), commandMap.getOrDefault(player.getUniqueId(), 0) + 1);
 		if(commandMap.get(player.getUniqueId()) >= 5) player.disconnect(TextComponent.fromLegacyText(ChatColor.RED + "You are sending command too fast!"));
 
-		if(blockedPlayers.contains(player.getUniqueId())) {
-			event.setCancelled(true);
-			player.sendMessage(TextComponent.fromLegacyText(ChatColor.RED + "You may not use that command at this time."));
+		if(!blockedPlayers.contains(player.getUniqueId())) return;
+
+		for(String s : blockedCommandList) {
+			if(event.getMessage().toLowerCase().startsWith("/" + s)) {
+				event.setCancelled(true);
+				AOutput.color(player, "&cYou may not use that command at this time.");
+				return;
+			}
 		}
 	}
 

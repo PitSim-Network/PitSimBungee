@@ -6,6 +6,7 @@ import dev.wiji.instancemanager.commands.LobbiesCommand;
 import dev.wiji.instancemanager.commands.ServerJoinCommand;
 import dev.wiji.instancemanager.discord.AuthenticationManager;
 import dev.wiji.instancemanager.guilds.GuildMessaging;
+import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.*;
 import dev.wiji.instancemanager.storage.EditSessionManager;
 import dev.wiji.instancemanager.storage.StorageManager;
@@ -33,6 +34,11 @@ public class PitSimServerManager {
 	//	When the player count drops this many below a multiple of the number above, that server enabled by hitting
 	//	that threshold is no longer needed and gets shut down
 	public final int REQUIRED_DROP_FOR_SHUTDOWN;
+
+	//Queue info
+	public static final int JOINS_PER_SECOND = 5;
+	private int currentJoinCount = 0;
+	public static List<ProxiedPlayer> queuingPlayers = new ArrayList<>();
 
 	public PitSimServerManager(ServerType serverType, int newServerThreshold, int requiredDropForShutdown) {
 		this.serverType = serverType;
@@ -97,6 +103,8 @@ public class PitSimServerManager {
 		}).runAfterEvery(10, 10, TimeUnit.SECONDS);
 
 		managers.add(this);
+
+		((ProxyRunnable) () -> currentJoinCount = 0).runAfterEvery(0, 1, TimeUnit.SECONDS);
 	}
 
 	public void registerServers() {
@@ -150,11 +158,33 @@ public class PitSimServerManager {
 		}
 
 
-		//TODO: Make sure that command run between SWITCH request is sent and received do not cause issues
-		if(CommandBlocker.blockedPlayers.contains(player.getUniqueId())) {
-			player.sendMessage((new ComponentBuilder("Please wait a moment before Queuing again").color(ChatColor.RED).create()));
+		if(queuingPlayers.contains(player)) {
+			AOutput.color(player, "&eYou are already in the queue!");
 			return false;
 		}
+
+		if(currentJoinCount > JOINS_PER_SECOND || CommandBlocker.blockedPlayers.contains(player.getUniqueId()) ||
+				ServerChangeListener.recentlyLeft.contains(player.getUniqueId())) {
+
+			if(queuingPlayers.contains(player)) return false;
+
+			AOutput.color(player, "&eQueuing you to find a server!");
+			queuingPlayers.add(player);
+			((ProxyRunnable) () -> {
+				queuingPlayers.remove(player);
+				queue(player, requestedServer, fromDarkzone);
+			}).runAfter(3, TimeUnit.SECONDS);
+			return true;
+		}
+
+		currentJoinCount++;
+
+
+//		//TODO: Make sure that commands run between SWITCH request is sent and received do not cause issues
+//		if(CommandBlocker.blockedPlayers.contains(player.getUniqueId())) {
+//			player.sendMessage((new ComponentBuilder("Please wait a moment before Queuing again").color(ChatColor.RED).create()));
+//			return false;
+//		}
 
 		CommandBlocker.blockPlayer(player.getUniqueId());
 

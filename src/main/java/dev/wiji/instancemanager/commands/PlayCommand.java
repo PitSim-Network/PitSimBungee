@@ -1,15 +1,11 @@
 package dev.wiji.instancemanager.commands;
 
 import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.CommandBlocker;
-import dev.wiji.instancemanager.ProxyRunnable;
-import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.objects.ServerStatus;
 import dev.wiji.instancemanager.objects.ServerType;
 import dev.wiji.instancemanager.pitsim.PitSimServerManager;
-import dev.wiji.instancemanager.pitsim.ServerChangeListener;
 import dev.wiji.instancemanager.skywars.SkywarsGameManager;
 import dev.wiji.instancemanager.skywars.SkywarsQueueManager;
 import net.md_5.bungee.api.ChatColor;
@@ -20,22 +16,10 @@ import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 public class PlayCommand extends Command {
-
-	public static final int JOINS_PER_SECOND = 5;
-
-	private int currentJoinCount = 0;
-	public static List<ProxiedPlayer> queuingPlayers = new ArrayList<>();
-
 
 	public PlayCommand(Plugin bungeeMain) {
 		super("play");
-
-		((ProxyRunnable) () -> currentJoinCount = 0).runAfterEvery(0, 1, TimeUnit.SECONDS);
 	}
 
 	@Override
@@ -48,29 +32,6 @@ public class PlayCommand extends Command {
 			Server currentServer = player.getServer();
 			PitSimServerManager manager = PitSimServerManager.getManager(ServerType.OVERWORLD);
 			assert manager != null;
-
-			if(queuingPlayers.contains(player)) {
-				AOutput.color(player, "&eYou are already in the queue!");
-				return;
-			}
-
-			if(currentJoinCount > JOINS_PER_SECOND || CommandBlocker.blockedPlayers.contains(player.getUniqueId()) ||
-					ServerChangeListener.recentlyLeft.contains(player.getUniqueId())) {
-
-				System.out.println(1);
-				if(queuingPlayers.contains(player)) return;
-				System.out.println(2);
-
-				AOutput.color(player, "&eQueuing you to find a server!");
-				queuingPlayers.add(player);
-				((ProxyRunnable) () -> {
-					queuingPlayers.remove(player);
-					execute(commandSender, strings);
-				}).runAfter(3, TimeUnit.SECONDS);
-				return;
-			}
-
-			currentJoinCount++;
 
 			if(currentServer.getInfo().getName().contains("pitsim") || currentServer.getInfo().getName().contains("darkzone")) {
 				boolean canChange = false;
@@ -88,7 +49,6 @@ public class PlayCommand extends Command {
 
 				commandSender.sendMessage((new ComponentBuilder("Looking for a server...").color(ChatColor.GREEN).create()));
 
-//				CommandBlocker.blockPlayer(player.getUniqueId());
 				new PluginMessage().writeString("REQUEST SWITCH").writeString(player.getUniqueId().toString()).addServer(currentServer.getInfo()).send();
 				return;
 			}
