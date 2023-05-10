@@ -1,5 +1,6 @@
 package dev.wiji.instancemanager.pitsim;
 
+import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.objects.*;
 
@@ -68,9 +69,11 @@ public class LeaderboardCalc {
 				PlayerData data = leaderboardPlayers.get(i);
 				int prestige = Objects.requireNonNull(data.getDocument().getLong("prestige")).intValue();
 				int level = Objects.requireNonNull(data.getDocument().getLong("level")).intValue();
+				String username = BungeeMain.getName(data.getPlayerUUID(), false);
+				if(username == null) username = "Unknown";
 
 				leaderboardStrings.add(data.getPlayerUUID().toString() + "," + prestige + " " + level + "," +
-						BigDecimal.valueOf(data.getData(leaderboard)).toPlainString());
+						BigDecimal.valueOf(data.getData(leaderboard)).toPlainString() + "," + username);
 			}
 			message.writeString(String.join("|", leaderboardStrings));
 		}

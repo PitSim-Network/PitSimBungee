@@ -88,8 +88,10 @@ public class InGameNitro {
 
 				try {
 					SkinData skinData = fetchSkinData(uuid, memberIGN);
-					if(skinData != null) {
+					if(skinData != null && skinData.textureSignature != null && skinData.textureValue != null) {
 						skinDataList.add(skinData);
+					} else {
+						System.out.println("Failed to fetch skin data for " + memberIGN);
 					}
 
 				} catch(Exception e) {
