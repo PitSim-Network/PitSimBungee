@@ -7,6 +7,8 @@ import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
 import dev.wiji.instancemanager.alogging.ConnectionManager;
 import dev.wiji.instancemanager.alogging.LogManager;
 import dev.wiji.instancemanager.aserverstatistics.StatisticsManager;
+import dev.wiji.instancemanager.auctions.AuctionManager;
+import dev.wiji.instancemanager.auctions.AuctionMessaging;
 import dev.wiji.instancemanager.commands.*;
 import dev.wiji.instancemanager.discord.*;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
@@ -122,6 +124,7 @@ public class BungeeMain extends Plugin {
 		new PitSimServerManager(ServerType.DARKZONE, 8 ,4);
 
 		RestartManager.init();
+		AuctionManager.init();
 
 		ArcticGuilds.onEnable(this);
 	}

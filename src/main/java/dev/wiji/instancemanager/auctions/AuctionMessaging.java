@@ -1,7 +1,6 @@
-package dev.wiji.instancemanager.pitsim;
+package dev.wiji.instancemanager.auctions;
 
 import dev.wiji.instancemanager.events.MessageEvent;
-import dev.wiji.instancemanager.objects.AuctionItem;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;

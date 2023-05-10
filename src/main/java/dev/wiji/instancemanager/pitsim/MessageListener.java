@@ -1,6 +1,7 @@
 package dev.wiji.instancemanager.pitsim;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.auctions.AuctionManager;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.market.MarketManager;
 import dev.wiji.instancemanager.objects.PitSimServer;
@@ -37,6 +38,7 @@ public class MessageListener implements Listener {
 						server.hardShutDown();
 					} else {
 						System.out.println("Server " + serverName + " is now running!");
+						AuctionManager.sendAuctionsToServer(serverName);
 
 						BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&2&lKEEPER! &7Server &e" + serverName + " &7is now available!"));
 						for(ProxiedPlayer player : BungeeMain.INSTANCE.getProxy().getPlayers()) {

@@ -1,7 +1,8 @@
-package dev.wiji.instancemanager.objects;
+package dev.wiji.instancemanager.auctions;
 
 import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.pitsim.AuctionManager;
+import dev.wiji.instancemanager.objects.PitSimServer;
+import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.pitsim.PitSimServerManager;
 
 import java.io.FileWriter;
@@ -22,6 +23,14 @@ public class AuctionItem {
 		this.itemSeed = itemSeed;
 		this.dataSeed = dataSeed;
 		this.bidMap = bidMap;
+
+		for(PitSimServer server : PitSimServerManager.mixedServerList) {
+			if(!server.status.isOnline()) continue;
+
+			sendDataToServer(server.getServerInfo().getName());
+		}
+
+		save();
 	}
 
 	public AuctionItem() {
@@ -32,6 +41,7 @@ public class AuctionItem {
 		if(bid < getMinBid()) return false;
 
 		bidMap.put(player, bid);
+		save();
 		sendBidsToServers();
 		return true;
 	}
@@ -43,7 +53,9 @@ public class AuctionItem {
 
 		message.writeString(getBidString());
 		message.writeString(getNameString());
-		PitSimServerManager.mixedServerList.forEach(server -> message.addServer(server.getServerInfo()));
+		PitSimServerManager.mixedServerList.forEach(server -> {
+			if(server.status.isOnline()) message.addServer(server.getServerInfo());
+		});
 
 		message.send();
 	}
@@ -67,6 +79,23 @@ public class AuctionItem {
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public void end() {
+		UUID winner = getHighestBidder();
+
+		for(Map.Entry<UUID, Integer> entry : bidMap.entrySet()) {
+			UUID uuid = entry.getKey();
+			int bid = entry.getValue();
+
+			if(uuid.equals(winner)) continue;
+			new AuctionRewardManager.AuctionSoulReturn(uuid, bid);
+		}
+		AuctionManager.auctionRewardManager.saveRewards();
+
+		if(winner == null) return;
+		new AuctionRewardManager.AuctionItemReward(winner, itemSeed, dataSeed);
+		AuctionManager.auctionRewardManager.saveRewards();
 	}
 
 	public int getHighestBid() {

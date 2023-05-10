@@ -338,4 +338,11 @@ public class PitSimServerManager {
 		}
 		return null;
 	}
+
+	public static boolean isInPitSim(ProxiedPlayer player) {
+		for(PitSimServer pitSimServer : mixedServerList) {
+			if(player.getServer().getInfo().equals(pitSimServer.getServerInfo())) return true;
+		}
+		return false;
+	}
 }
