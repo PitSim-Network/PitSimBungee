@@ -2,6 +2,7 @@ package dev.wiji.instancemanager.pitsim;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
 import dev.wiji.instancemanager.*;
+import dev.wiji.instancemanager.auctions.AuctionMessaging;
 import dev.wiji.instancemanager.commands.LobbiesCommand;
 import dev.wiji.instancemanager.commands.ServerJoinCommand;
 import dev.wiji.instancemanager.discord.AuthenticationManager;
@@ -284,6 +285,7 @@ public class PitSimServerManager {
 
 		StorageProfile profile = StorageManager.getStorage(player.getUniqueId());
 		profile.sendToServer(targetServer.getServerInfo());
+		AuctionMessaging.checkForRewards(player);
 
 		player.sendMessage((new ComponentBuilder("Sending you to " + targetServer.getServerInfo().getName()).color(ChatColor.GREEN).create()));
 

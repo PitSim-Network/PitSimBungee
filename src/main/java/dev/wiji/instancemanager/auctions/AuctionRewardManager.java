@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class AuctionRewardManager {
+	public long endTime = 0;
+
 	public List<AuctionItemReward> itemRewards = new ArrayList<>();
 	public List<AuctionSoulReturn> soulReturns = new ArrayList<>();
 

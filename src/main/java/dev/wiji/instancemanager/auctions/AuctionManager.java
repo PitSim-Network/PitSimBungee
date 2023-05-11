@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.util.LinkedHashMap;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class AuctionManager {
@@ -18,13 +17,14 @@ public class AuctionManager {
 	public static final int AUCTION_NUM = 3;
 
 	public static AuctionItem[] auctionItems = new AuctionItem[AUCTION_NUM];
-	public static long endTime = 0;
-
 	public static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
 	public static AuctionRewardManager auctionRewardManager;
+	public static long endTime;
 
 	public static void init() {
 		auctionRewardManager = new AuctionRewardManager();
+		endTime = auctionRewardManager.endTime;
 
 		for(int i = 0; i < AUCTION_NUM; i++) {
 			loadAuction(i);
@@ -32,13 +32,13 @@ public class AuctionManager {
 
 		((ProxyRunnable) () -> {
 			if(System.currentTimeMillis() > endTime) {
+				endTime = generateEndTime();
+
 				for(int i = 0; i < auctionItems.length; i++) {
 					auctionItems[i].end();
 
 					auctionItems[i] = new AuctionItem(i, generateSeed(), generateSeed(), new LinkedHashMap<>());
 				}
-
-				endTime = generateEndTime();
 			}
 		}).runAfterEvery(1, 1, TimeUnit.SECONDS);
 	}
@@ -83,7 +83,8 @@ public class AuctionManager {
 	}
 
 	public static long generateEndTime() {
-		return System.currentTimeMillis() + (new Random().nextInt(60 * 12) + 60 * 6) * 60 * 1000;
+		return System.currentTimeMillis() + 1000 * 10;
+//		return System.currentTimeMillis() + (new Random().nextInt(60 * 12) + 60 * 6) * 60 * 1000;
 	}
 
 	public static File getRewardFile() {
