@@ -14,7 +14,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class AuctionManager {
-
+	//Needs to be duplicated on both spigot and bungee end
 	public static final int AUCTION_NUM = 3;
 
 	public static AuctionItem[] auctionItems = new AuctionItem[AUCTION_NUM];
