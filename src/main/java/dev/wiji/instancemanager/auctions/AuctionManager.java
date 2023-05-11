@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.util.LinkedHashMap;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class AuctionManager {
@@ -83,8 +84,7 @@ public class AuctionManager {
 	}
 
 	public static long generateEndTime() {
-		return System.currentTimeMillis() + 1000 * 10;
-//		return System.currentTimeMillis() + (new Random().nextInt(60 * 12) + 60 * 6) * 60 * 1000;
+		return System.currentTimeMillis() + (new Random().nextInt(60 * 12) + 60 * 6) * 60 * 1000;
 	}
 
 	public static File getRewardFile() {
