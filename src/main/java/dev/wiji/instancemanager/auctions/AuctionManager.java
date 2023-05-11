@@ -25,7 +25,7 @@ public class AuctionManager {
 
 	public static void init() {
 		auctionRewardManager = new AuctionRewardManager();
-		endTime = auctionRewardManager.endTime;
+		setEndTime(auctionRewardManager.endTime);
 
 		for(int i = 0; i < AUCTION_NUM; i++) {
 			loadAuction(i);
@@ -33,7 +33,7 @@ public class AuctionManager {
 
 		((ProxyRunnable) () -> {
 			if(System.currentTimeMillis() > endTime) {
-				endTime = generateEndTime();
+				setEndTime(generateEndTime());
 
 				for(int i = 0; i < auctionItems.length; i++) {
 					auctionItems[i].end();
@@ -69,8 +69,6 @@ public class AuctionManager {
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
-
-		endTime = generateEndTime();
 	}
 
 	public static long generateSeed() {
@@ -98,6 +96,12 @@ public class AuctionManager {
 		}
 
 		return file;
+	}
+
+	public static void setEndTime(long endTime) {
+		AuctionManager.endTime = endTime;
+		auctionRewardManager.endTime = endTime;
+		auctionRewardManager.saveRewards();
 	}
 
 	public static void addItemReward(AuctionRewardManager.AuctionItemReward reward) {

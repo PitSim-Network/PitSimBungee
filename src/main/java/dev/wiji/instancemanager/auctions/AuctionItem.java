@@ -1,6 +1,7 @@
 package dev.wiji.instancemanager.auctions;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.misc.Misc;
 import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.pitsim.PitSimServerManager;
@@ -96,6 +97,18 @@ public class AuctionItem {
 		if(winner == null) return;
 		new AuctionRewardManager.AuctionItemReward(winner, itemSeed, dataSeed);
 		AuctionManager.auctionRewardManager.saveRewards();
+
+		PluginMessage message = new PluginMessage().writeString("AUCTION ANNOUNCEMENT");
+		String playerName = Misc.getRankColor(winner) + BungeeMain.getName(winner, false);
+
+		message.writeString("&5&lDARK AUCTION! " + playerName + " &7has won %item% &7for &f" + getHighestBid() + " Souls&7!");
+		message.writeLong(itemSeed);
+
+		PitSimServerManager.mixedServerList.forEach(server -> {
+			if(server.status.isOnline()) message.addServer(server.getServerInfo());
+		});
+
+		message.send();
 	}
 
 	public int getHighestBid() {
