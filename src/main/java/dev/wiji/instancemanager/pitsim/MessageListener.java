@@ -9,6 +9,8 @@ import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.objects.ServerStatus;
 import dev.wiji.instancemanager.objects.ServerType;
 import dev.wiji.instancemanager.storage.EditSessionManager;
+import dev.wiji.instancemanager.storage.StorageManager;
+import dev.wiji.instancemanager.storage.StorageProfile;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -38,6 +40,12 @@ public class MessageListener implements Listener {
 						server.hardShutDown();
 					} else {
 						System.out.println("Server " + serverName + " is now running!");
+
+						for(ProxiedPlayer player : server.getPlayers()) {
+							StorageProfile profile = StorageManager.getStorage(player.getUniqueId());
+							profile.sendToServer(server.getServerInfo());
+						}
+
 						AuctionManager.sendAuctionsToServer(serverName);
 
 						BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&2&lKEEPER! &7Server &e" + serverName + " &7is now available!"));
