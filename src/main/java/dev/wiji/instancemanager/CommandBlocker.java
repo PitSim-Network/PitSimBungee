@@ -24,7 +24,7 @@ public class CommandBlocker implements Listener {
 	static {
 		((ProxyRunnable) () -> commandMap.clear()).runAfterEvery(1, 1, TimeUnit.SECONDS);
 
-		blockedCommandList.add("g");
+		blockedCommandList.add("g ");
 		blockedCommandList.add("guild");
 	}
 
