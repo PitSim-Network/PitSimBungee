@@ -9,7 +9,7 @@ import net.md_5.bungee.api.ChatColor;
 
 public class GuildSize extends GuildUpgrade {
 	public GuildSize() {
-		super(ChatColor.GREEN + "Increased Guild Size", "size", 5);
+		super(ChatColor.GREEN + "Increased Guild Size", "size", 6);
 	}
 
 	@Override
@@ -25,6 +25,8 @@ public class GuildSize extends GuildUpgrade {
 				return 50_000_000;
 			case 5:
 				return 100_000_000;
+			case 6:
+				return 1_000_000_000;
 		}
 		return -1;
 	}
