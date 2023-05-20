@@ -1,7 +1,9 @@
 package dev.wiji.instancemanager.pitsim;
 
+import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
+import dev.wiji.instancemanager.objects.ServerType;
+import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -21,5 +23,14 @@ public class ServerChangeListener implements Listener {
 
 		recentlyLeft.add(event.getPlayer().getUniqueId());
 		((ProxyRunnable) () -> recentlyLeft.remove(event.getPlayer().getUniqueId())).runAfter(3, TimeUnit.SECONDS);
+	}
+
+	@EventHandler
+	public void onProxyJoin(PostLoginEvent event) {
+		if(!ConfigManager.isDev()) return;
+
+		((ProxyRunnable) () -> {
+			PitSimServerManager.getManager(ServerType.OVERWORLD).queue(event.getPlayer(), 0, false);
+		}).runAfter(1, TimeUnit.SECONDS);
 	}
 }
