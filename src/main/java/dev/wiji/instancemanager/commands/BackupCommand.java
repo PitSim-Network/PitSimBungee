@@ -38,7 +38,7 @@ public class BackupCommand extends Command {
 
 		if(args.length >= 1 && args[0].equalsIgnoreCase("confirm")) {
 			try {
-				FirestoreManager.takeBackup();
+				FirestoreManager.takeBackup(true);
 				lastManualBackup = System.currentTimeMillis();
 				AOutput.color(sender, "&6&lBACKUP!&7 Started taking a backup");
 			} catch(IOException e) {
