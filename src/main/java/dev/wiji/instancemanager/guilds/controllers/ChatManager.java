@@ -3,16 +3,12 @@ package dev.wiji.instancemanager.guilds.controllers;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ServerManager;
 import dev.wiji.instancemanager.guilds.controllers.objects.Guild;
-import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.pitsim.OverworldServerManager;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
-import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.event.ServerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.List;

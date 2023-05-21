@@ -7,11 +7,14 @@ import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
 import dev.wiji.instancemanager.alogging.ConnectionManager;
 import dev.wiji.instancemanager.alogging.LogManager;
 import dev.wiji.instancemanager.aserverstatistics.StatisticsManager;
+import dev.wiji.instancemanager.auctions.AuctionManager;
+import dev.wiji.instancemanager.auctions.AuctionMessaging;
 import dev.wiji.instancemanager.commands.*;
 import dev.wiji.instancemanager.discord.*;
 import dev.wiji.instancemanager.guilds.ArcticGuilds;
 import dev.wiji.instancemanager.market.MarketManager;
 import dev.wiji.instancemanager.market.MarketMessaging;
+import dev.wiji.instancemanager.objects.ServerType;
 import dev.wiji.instancemanager.pitsim.*;
 import dev.wiji.instancemanager.skywars.PitsimQuestManager;
 import dev.wiji.instancemanager.skywars.PluginMessageSender;
@@ -73,10 +76,8 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new ServerChangeListener());
 		getProxy().getPluginManager().registerListener(this, new LogManager());
 		getProxy().getPluginManager().registerListener(this, new ConnectionManager());
-		getProxy().getPluginManager().registerListener(this, new OverworldServerManager());
 		getProxy().getPluginManager().registerListener(this, new StorageManager());
 		getProxy().getPluginManager().registerListener(this, new EditSessionManager());
-		getProxy().getPluginManager().registerListener(this, new CommandListener());
 		getProxy().getPluginManager().registerListener(this, new IdentificationManager());
 		getProxy().getPluginManager().registerListener(this, new CrossServerMessageManager());
 		getProxy().getPluginManager().registerListener(this, new PlayerManager());
@@ -84,10 +85,10 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new LockdownManager());
 		getProxy().getPluginManager().registerListener(this, new MarketMessaging());
 		getProxy().getPluginManager().registerListener(this, new MarketManager());
-		getProxy().getPluginManager().registerListener(this, new AuctionAlerts());
 		getProxy().getPluginManager().registerListener(this, new CommandBlocker());
 		getProxy().getPluginManager().registerListener(this, new AuthenticationManager());
 		getProxy().getPluginManager().registerListener(this, new StatisticsManager());
+		getProxy().getPluginManager().registerListener(this, new AuctionMessaging());
 		INSTANCE.getProxy().getPluginManager().registerListener(INSTANCE, new DupeManager());
 		ConfigManager.getMiniServerList();
 
@@ -118,9 +119,12 @@ public class BungeeMain extends Plugin {
 
 		ConfigManager.getPitSimServerList();
 		ConfigManager.getDarkzoneServerList();
-		OverworldServerManager.init();
-		DarkzoneServerManager.init();
+
+		new PitSimServerManager(ServerType.OVERWORLD, 8 ,4);
+		new PitSimServerManager(ServerType.DARKZONE, 8 ,4);
+
 		RestartManager.init();
+		AuctionManager.init();
 
 		ArcticGuilds.onEnable(this);
 	}

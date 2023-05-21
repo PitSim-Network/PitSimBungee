@@ -3,7 +3,7 @@ package dev.wiji.instancemanager.storage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.objects.MainGamemodeServer;
+import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -90,7 +90,7 @@ public class StorageProfile {
 		for(Outfit outfit : outfits) outfit.writeData(message);
 
 		message.send();
-		Objects.requireNonNull(MainGamemodeServer.getServer(server)).addProfile(this);
+		Objects.requireNonNull(PitSimServer.getServer(server)).addProfile(this);
 	}
 
 	public void updateData(PluginMessage message, String server, boolean logout) {
@@ -98,13 +98,13 @@ public class StorageProfile {
 		List<Integer> integers = message.getIntegers();
 
 		if(logout) {
-			MainGamemodeServer mainGamemodeServer = MainGamemodeServer.getServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
-			if(mainGamemodeServer == null) {
+			PitSimServer pitSimServer = PitSimServer.getServer(BungeeMain.INSTANCE.getProxy().getServerInfo(server));
+			if(pitSimServer == null) {
 				//TODO: Critical Error
 				System.out.println("CRITICAL ERROR WITH PLAYER " + uuid);
 				return;
 			}
-			mainGamemodeServer.removeProfile(this);
+			pitSimServer.removeProfile(this);
 		}
 
 		defaultOverworldSet = integers.remove(0);

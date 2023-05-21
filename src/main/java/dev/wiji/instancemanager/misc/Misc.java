@@ -9,9 +9,7 @@ import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class Misc {
 	public static boolean isKyro(UUID uuid) {
@@ -97,5 +95,19 @@ public class Misc {
 
 	public static String s(double value) {
 		return value == 1 ? "" : "s";
+	}
+
+	public static Map<UUID, String> rankColorMap = new HashMap<>();
+	public static String getRankColor(UUID uuid) {
+		if(rankColorMap.containsKey(uuid)) return rankColorMap.get(uuid);
+		try {
+			String rankColor = BungeeMain.LUCKPERMS.getUserManager().loadUser(uuid).get().getCachedData().getMetaData().getPrefix();
+//			TODO: Check-in with players to make sure this fixed it and it wasn't returning "null" as a string
+			if(rankColor == null) throw new Exception();
+			rankColorMap.put(uuid, rankColor);
+			return rankColor;
+		} catch(Exception ignored) {
+			return "&7";
+		}
 	}
 }

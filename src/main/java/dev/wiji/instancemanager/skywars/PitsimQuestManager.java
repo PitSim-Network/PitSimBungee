@@ -2,12 +2,12 @@ package dev.wiji.instancemanager.skywars;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ProxyRunnable;
-import dev.wiji.instancemanager.objects.MainGamemodeServer;
+import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
+import dev.wiji.instancemanager.pitsim.PitSimServerManager;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
-import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -27,10 +27,10 @@ public class PitsimQuestManager implements Listener {
 			return;
 		}
 
-		for(MainGamemodeServer mainGamemodeServer : MainGamemodeServer.serverList) {
-			if(mainGamemodeServer.getServerInfo() == player.getServer().getInfo()) {
+		for(PitSimServer pitSimServer : PitSimServerManager.mixedServerList) {
+			if(pitSimServer.getServerInfo() == player.getServer().getInfo()) {
 				PluginMessage message = new PluginMessage().writeString("SKYWARS PASS QUEST").writeString(uuid.toString());
-				message.writeInt(1).addServer(mainGamemodeServer.getServerInfo()).send();
+				message.writeInt(1).addServer(pitSimServer.getServerInfo()).send();
 				return;
 			}
 		}
@@ -45,11 +45,11 @@ public class PitsimQuestManager implements Listener {
 		if(!gameMap.containsKey(player.getUniqueId())) return;
 
 		ServerInfo serverInfo = event.getServer().getInfo();
-		for(MainGamemodeServer mainGamemodeServer : MainGamemodeServer.serverList) {
-			if(mainGamemodeServer.getServerInfo() == serverInfo) {
+		for(PitSimServer pitSimServer : PitSimServerManager.mixedServerList) {
+			if(pitSimServer.getServerInfo() == serverInfo) {
 				((ProxyRunnable) () -> {
 					PluginMessage message = new PluginMessage().writeString("SKYWARS PASS QUEST").writeString(player.getUniqueId().toString())
-							.writeInt(gameMap.get(player.getUniqueId())).addServer(mainGamemodeServer.getServerInfo()).send();
+							.writeInt(gameMap.get(player.getUniqueId())).addServer(pitSimServer.getServerInfo()).send();
 					gameMap.remove(player.getUniqueId());
 				}).runAfter(1, TimeUnit.SECONDS);
 			}

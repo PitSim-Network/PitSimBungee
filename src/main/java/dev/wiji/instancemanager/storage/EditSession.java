@@ -3,7 +3,7 @@ package dev.wiji.instancemanager.storage;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.objects.MainGamemodeServer;
+import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -71,7 +71,7 @@ public class EditSession {
 			sendTask = new ProxyRunnable() {
 				@Override
 				public void run() {
-					MainGamemodeServer server = MainGamemodeServer.getLoadedServer(editProfile);
+					PitSimServer server = PitSimServer.getLoadedServer(editProfile);
 					if(server == null) {
 						StorageManager.getStorage(playerUUID).sendToServer(getStaffServer());
 						sendTask.cancel();

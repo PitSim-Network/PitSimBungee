@@ -2,9 +2,9 @@ package dev.wiji.instancemanager.discord;
 
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ProxyRunnable;
-import dev.wiji.instancemanager.objects.OverworldServer;
+import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
-import dev.wiji.instancemanager.pitsim.OverworldServerManager;
+import dev.wiji.instancemanager.pitsim.PitSimServerManager;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.luckperms.api.model.user.User;
@@ -110,10 +110,10 @@ public class InGameNitro {
 				message.writeString(stringData);
 			}
 
-			for(OverworldServer overworldServer : OverworldServerManager.serverList) {
-				if(!overworldServer.status.isOnline()) continue;
+			for(PitSimServer pitSimServer : PitSimServerManager.mixedServerList) {
+				if(!pitSimServer.status.isOnline()) continue;
 
-				message.addServer(overworldServer.getServerInfo());
+				message.addServer(pitSimServer.getServerInfo());
 			}
 
 			message.send();

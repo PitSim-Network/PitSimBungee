@@ -1,15 +1,11 @@
 package dev.wiji.instancemanager.commands;
 
 import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.ProxyRunnable;
-import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.objects.MainGamemodeServer;
-import dev.wiji.instancemanager.objects.OverworldServer;
+import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.objects.ServerStatus;
-import dev.wiji.instancemanager.pitsim.CommandListener;
-import dev.wiji.instancemanager.pitsim.OverworldServerManager;
-import dev.wiji.instancemanager.pitsim.ServerChangeListener;
+import dev.wiji.instancemanager.objects.ServerType;
+import dev.wiji.instancemanager.pitsim.PitSimServerManager;
 import dev.wiji.instancemanager.skywars.SkywarsGameManager;
 import dev.wiji.instancemanager.skywars.SkywarsQueueManager;
 import net.md_5.bungee.api.ChatColor;
@@ -20,16 +16,11 @@ import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 public class PlayCommand extends Command {
+
 	public PlayCommand(Plugin bungeeMain) {
 		super("play");
 	}
-
-	public static List<ProxiedPlayer> queuingPlayers = new ArrayList<>();
 
 	@Override
 	public void execute(CommandSender commandSender, String[] strings) {
@@ -39,10 +30,13 @@ public class PlayCommand extends Command {
 
 		if(strings.length < 1 || strings[0].toLowerCase().startsWith("pit")) {
 			Server currentServer = player.getServer();
+			PitSimServerManager manager = PitSimServerManager.getManager(ServerType.OVERWORLD);
+			assert manager != null;
 
 			if(currentServer.getInfo().getName().contains("pitsim") || currentServer.getInfo().getName().contains("darkzone")) {
 				boolean canChange = false;
-				for(OverworldServer overworldServer : OverworldServerManager.serverList) {
+
+				for(PitSimServer overworldServer : manager.serverList) {
 					if(overworldServer.getServerInfo() == currentServer.getInfo()) continue;
 					if(overworldServer.status != ServerStatus.RUNNING) continue;
 					canChange = true;
@@ -53,39 +47,14 @@ public class PlayCommand extends Command {
 					return;
 				}
 
-				if(MainGamemodeServer.cooldownPlayers.containsKey(player.getUniqueId())) {
-					long time = MainGamemodeServer.cooldownPlayers.get(player.getUniqueId());
-
-					if(time + CommandListener.COOLDOWN_SECONDS * 1000 < System.currentTimeMillis()) {
-						MainGamemodeServer.cooldownPlayers.remove(player.getUniqueId());
-					}
-				}
-
-				if(MainGamemodeServer.guildCooldown.containsKey(player.getUniqueId())) {
-					long time = MainGamemodeServer.guildCooldown.get(player.getUniqueId());
-
-					if(time + CommandListener.COOLDOWN_SECONDS * 1000 < System.currentTimeMillis()) {
-						MainGamemodeServer.guildCooldown.remove(player.getUniqueId());
-					}
-				}
-
-				if(MainGamemodeServer.guildCooldown.containsKey(player.getUniqueId()) || MainGamemodeServer.cooldownPlayers.containsKey(player.getUniqueId()) || ServerChangeListener.recentlyLeft.contains(player.getUniqueId())) {
-					if(queuingPlayers.contains(player)) return;
-					AOutput.color(player, "&eQueuing you to find a server!");
-					queuingPlayers.add(player);
-					((ProxyRunnable) () -> execute(commandSender, strings)).runAfter(3, TimeUnit.SECONDS);
-					return;
-				}
-
 				commandSender.sendMessage((new ComponentBuilder("Looking for a server...").color(ChatColor.GREEN).create()));
-				queuingPlayers.remove(player);
 
-				MainGamemodeServer.guildCooldown.put(player.getUniqueId(), System.currentTimeMillis());
 				new PluginMessage().writeString("REQUEST SWITCH").writeString(player.getUniqueId().toString()).addServer(currentServer.getInfo()).send();
 				return;
 			}
 
-			OverworldServerManager.queueFallback((ProxiedPlayer) commandSender, 0, false);
+
+			manager.queueFallback((ProxiedPlayer) commandSender, 0, false);
 
 		} else if(strings[0].equalsIgnoreCase("sync")) {
 			commandSender.sendMessage((new ComponentBuilder("Sending you to Sync!").color(ChatColor.GREEN).create()));

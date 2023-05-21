@@ -4,8 +4,7 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.ServerManager;
-import dev.wiji.instancemanager.objects.DarkzoneServer;
-import dev.wiji.instancemanager.objects.OverworldServer;
+import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.ServerStatus;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -18,11 +17,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class RestartManager {
 	public static boolean proxyRestarting = false;
-	public static long RESTART_TIME = 1000 * 60 * 60 * 12;
-	public static long RESTART_BUFFER = 1000 * 60 * 30;
+	public static final long RESTART_TIME = 1000 * 60 * 60 * 12;
+	public static final long RESTART_BUFFER = 1000 * 60 * 30;
 
-	public static long PROXY_RESTART_TIME = 1000 * 60 * 60 * 24 * 7;
-	public static long BACKUP_THRESHOLD = 1000 * 60 * 60 * 24;
+	public static final long PROXY_RESTART_TIME = 1000 * 60 * 60 * 24 * 7;
+	public static final long BACKUP_THRESHOLD = 1000 * 60 * 60 * 24;
 
 	public static long lastBackup = System.currentTimeMillis();
 
@@ -33,13 +32,12 @@ public class RestartManager {
 				restartProxy();
 			}
 
-
-			for(OverworldServer activeServer : OverworldServerManager.serverList) {
+			for(PitSimServer activeServer : PitSimServerManager.mixedServerList) {
 				if(activeServer.status != ServerStatus.RUNNING) continue;
 
 				if(activeServer.getStartTime() + RESTART_TIME < System.currentTimeMillis()) {
 
-					for(OverworldServer server : OverworldServerManager.serverList) {
+					for(PitSimServer server : PitSimServerManager.mixedServerList) {
 						if(activeServer == server || server.status != ServerStatus.RUNNING) continue;
 						if((server.getStartTime() + RESTART_TIME) < RESTART_BUFFER + System.currentTimeMillis()) {
 							server.setStartTime(server.getStartTime() + RESTART_BUFFER);
@@ -57,23 +55,6 @@ public class RestartManager {
 				try {
 					FirestoreManager.takeBackup(false);
 				} catch(IOException e) { throw new RuntimeException(e); }
-			}
-
-
-			for(DarkzoneServer activeServer : DarkzoneServerManager.serverList) {
-				if(activeServer.status != ServerStatus.RUNNING) continue;
-
-				if(activeServer.getStartTime() + RESTART_TIME < System.currentTimeMillis()) {
-
-					for(DarkzoneServer server : DarkzoneServerManager.serverList) {
-						if(activeServer == server || server.status != ServerStatus.RUNNING) continue;
-						if((server.getStartTime() + RESTART_TIME) < RESTART_BUFFER + System.currentTimeMillis()) {
-							server.setStartTime(server.getStartTime() + RESTART_BUFFER);
-						}
-					}
-
-					activeServer.shutDown(true);
-				}
 			}
 
 		}).runAfterEvery(1, 1, TimeUnit.MINUTES);
