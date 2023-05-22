@@ -59,7 +59,7 @@ public class CrossServerMessageManager implements Listener {
 			pluginMessage.send();
 		} else if(strings.get(0).equals("BROADCAST")) {
 			boolean prefix = booleans.get(0);
-			BroadcastCommand.broadcast(strings.get(1));
+			BroadcastCommand.broadcast(strings.get(1), prefix);
 		}
 	}
 }
