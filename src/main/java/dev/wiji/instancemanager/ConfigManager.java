@@ -69,9 +69,13 @@ public class ConfigManager {
 	}
 
 	public static UUID getControllingGuild() {
-		String s = configuration.getString("controlling-guild");
-		if(s == null) return null;
-		return UUID.fromString(s);
+		try {
+			String s = configuration.getString("controlling-guild");
+			if(s == null || s.equals("null")) return null;
+			return UUID.fromString(s);
+		} catch(Exception e) {
+			return null;
+		}
 	}
 
 	public static void setControllingGuild(UUID uuid) {
