@@ -144,28 +144,7 @@ public class GuildMessaging implements Listener {
 	}
 
 	public static void sendGuildData(ProxiedPlayer player) {
-
-		Guild guild = GuildManager.getGuildFromPlayer(player.getUniqueId());
-		if(guild == null) return;
-
-		PluginMessage message = new PluginMessage().writeString("GUILD DATA");
-		message.writeString(player.getUniqueId().toString());
-
-		message.writeString(guild.uuid.toString());
-
-		message.writeString(guild.tag);
-
-		message.writeString(guild.getColor().name());
-
-		for(Integer value : guild.buffLevels.values()) {
-			message.writeInt(value);
-		}
-
-		for(PitSimServer pitSimServer : PitSimServerManager.mixedServerList) {
-			if(pitSimServer.status.isOnline()) message.addServer(pitSimServer.getServerInfo());
-		}
-
-		message.send();
+		sendGuildData(player, null);
 	}
 
 	public static void sendGuildData(ProxiedPlayer player, PitSimServer server) {
@@ -182,14 +161,21 @@ public class GuildMessaging implements Listener {
 
 		message.writeString(guild.getColor().name());
 
+		message.writeString(guild.name);
+
 		for(Integer value : guild.buffLevels.values()) {
 			message.writeInt(value);
 		}
 
-		if(server.status.isOnline()) {
+		if(server == null) {
+			for(PitSimServer pitSimServer : PitSimServerManager.mixedServerList) {
+				if(pitSimServer.status.isOnline()) message.addServer(pitSimServer.getServerInfo());
+			}
+		} else if(server.status.isOnline()) {
 			message.addServer(server.getServerInfo());
-			message.send();
 		}
+
+		message.send();
 	}
 
 	public static void deposit(ProxiedPlayer player, int amount, ProxyRunnable success, ProxyRunnable fail) {
