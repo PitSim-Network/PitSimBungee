@@ -2,8 +2,8 @@ package dev.wiji.instancemanager.pitsim;
 
 import dev.wiji.instancemanager.commands.BroadcastCommand;
 import dev.wiji.instancemanager.events.MessageEvent;
-import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.objects.*;
+import dev.wiji.instancemanager.objects.PitSimServer;
+import dev.wiji.instancemanager.objects.PluginMessage;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -58,43 +58,8 @@ public class CrossServerMessageManager implements Listener {
 			}
 			pluginMessage.send();
 		} else if(strings.get(0).equals("BROADCAST")) {
+			boolean prefix = booleans.get(0);
 			BroadcastCommand.broadcast(strings.get(1));
-		} else if(strings.get(0).equals("AUCTIONREQUEST")) {
-			String serverName = strings.get(1);
-			PluginMessage forwardMessage = new PluginMessage()
-					.writeString(strings.get(0))
-					.writeString(serverName);
-
-			PitSimServerManager darkzoneManager = PitSimServerManager.getManager(ServerType.DARKZONE);
-			assert darkzoneManager != null;
-			for(PitSimServer server : darkzoneManager.serverList) {
-				if(!server.status.isOnline()) continue;
-				forwardMessage.addServer(server.getServerInfo());
-				AOutput.log("Received request for darkzone data. forwarding to " + server.getServerInfo().getName());
-				break;
-			}
-			forwardMessage.send();
-		} else if(strings.get(0).equals("AUCTIONDATA")) {
-			String serverName = strings.get(1);
-			long timeRemaining = longs.get(0);
-			PluginMessage forwardMessage = new PluginMessage()
-					.writeString(strings.get(0))
-					.writeLong(timeRemaining);
-
-			strings.remove(0);
-			strings.remove(0);
-			for(String string : strings) forwardMessage.writeString(string);
-			for(int integer : integers) forwardMessage.writeInt(integer);
-
-			PitSimServerManager overworldManager = PitSimServerManager.getManager(ServerType.OVERWORLD);
-			assert overworldManager != null;
-			for(PitSimServer server : overworldManager.serverList) {
-				if(!server.status.isOnline()) continue;
-				if(!serverName.isEmpty() && !server.getServerInfo().getName().equals(serverName)) continue;
-				forwardMessage.addServer(server.getServerInfo());
-				AOutput.log("Received darkzone data. forwarding to " + server.getServerInfo().getName());
-			}
-			forwardMessage.send();
 		}
 	}
 }

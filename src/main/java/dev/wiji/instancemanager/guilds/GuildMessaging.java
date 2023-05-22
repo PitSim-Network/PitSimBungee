@@ -1,6 +1,7 @@
 package dev.wiji.instancemanager.guilds;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.guilds.controllers.GuildManager;
@@ -9,6 +10,7 @@ import dev.wiji.instancemanager.guilds.controllers.objects.Guild;
 import dev.wiji.instancemanager.guilds.events.InventoryClickEvent;
 import dev.wiji.instancemanager.guilds.events.InventoryCloseEvent;
 import dev.wiji.instancemanager.objects.*;
+import dev.wiji.instancemanager.pitsim.MessageListener;
 import dev.wiji.instancemanager.pitsim.PitSimServerManager;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
@@ -79,27 +81,58 @@ public class GuildMessaging implements Listener {
 		}
 
 		if(strings.size() >= 2 && strings.get(0).equals("DEPOSIT")) {
-			ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(UUID.fromString(strings.get(1)));
-			if(player == null) return;
-
-			boolean success = booleans.get(0);
-			if(waitingForBalance.containsKey(player)) {
-				if(success) waitingForBalance.get(player).success.run();
-				else waitingForBalance.get(player).fail.run();
-				waitingForBalance.remove(player);
-			}
+			executeCallback(strings, booleans, waitingForBalance);
 		}
 
 		if(strings.size() >= 2 && strings.get(0).equals("WITHDRAW")) {
-			ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(UUID.fromString(strings.get(1)));
-			if(player == null) return;
+			executeCallback(strings, booleans, waitingForWithdraw);
+		}
 
-			boolean success = booleans.get(0);
-			if(waitingForWithdraw.containsKey(player)) {
-				if(success) waitingForWithdraw.get(player).success.run();
-				else waitingForWithdraw.get(player).fail.run();
-				waitingForWithdraw.remove(player);
+		if(strings.size() >= 1 && strings.get(0).equals("OUTPOST DATA")) {
+			UUID guildUUID = UUID.fromString(strings.get(1));
+			boolean isActive = booleans.get(0);
+
+			if(isActive) ConfigManager.setControllingGuild(guildUUID);
+
+			MessageListener.sendOutpostData(guildUUID, isActive, false);
+		}
+
+		if(strings.size() >= 1 && strings.get(0).equals("GUILD MESSAGE")) {
+			UUID guildUUID = UUID.fromString(strings.get(1));
+			Guild guild = GuildManager.getGuildFromGuildUUID(guildUUID);
+			String guildMessage = strings.get(2);
+
+			if(guild == null) return;
+			guild.broadcast("&8[&6Guild&8] " + guildMessage);
+		}
+
+		if(strings.size() >= 1 && strings.get(0).equals("OUTPOST GOLD")) {
+			UUID guildUUID = UUID.fromString(strings.get(1));
+			Guild guild = GuildManager.getGuildFromGuildUUID(guildUUID);
+			String notification = strings.get(2);
+			int amount = integers.get(0);
+
+			if(guild == null) return;
+
+			if(amount > guild.getMaxBank() - guild.getBalance()) {
+				amount = (int) (guild.getMaxBank() - guild.getBalance());
 			}
+
+			guild.deposit(amount);
+
+			guild.broadcast("&8[&6Guild&8] " + notification);
+		}
+	}
+
+	private void executeCallback(List<String> strings, List<Boolean> booleans, Map<ProxiedPlayer, Callback> waitingForWithdraw) {
+		ProxiedPlayer player = BungeeMain.INSTANCE.getProxy().getPlayer(UUID.fromString(strings.get(1)));
+		if(player == null) return;
+
+		boolean success = booleans.get(0);
+		if(waitingForWithdraw.containsKey(player)) {
+			if(success) waitingForWithdraw.get(player).success.run();
+			else waitingForWithdraw.get(player).fail.run();
+			waitingForWithdraw.remove(player);
 		}
 	}
 
@@ -124,18 +157,7 @@ public class GuildMessaging implements Listener {
 	}
 
 	public static void withdraw(ProxiedPlayer player, int amount, ProxyRunnable success, ProxyRunnable fail) {
-		if(waitingForWithdraw.containsKey(player)) {
-			fail.run();
-			return;
-		}
-
-		waitingForWithdraw.put(player, new Callback(success, fail));
-
-		((ProxyRunnable) () -> {
-			if(!waitingForWithdraw.containsKey(player)) return;
-			waitingForWithdraw.remove(player);
-			fail.run();
-		}).runAfter(1, TimeUnit.SECONDS);
+		if(executeCallbacks(player, success, fail, waitingForWithdraw)) return;
 
 		PluginMessage message = new PluginMessage().writeString("WITHDRAW").writeString(player.getUniqueId().toString());
 		message.writeInt(amount);
@@ -179,9 +201,18 @@ public class GuildMessaging implements Listener {
 	}
 
 	public static void deposit(ProxiedPlayer player, int amount, ProxyRunnable success, ProxyRunnable fail) {
+		if(executeCallbacks(player, success, fail, waitingForBalance)) return;
+
+		PluginMessage message = new PluginMessage().writeString("DEPOSIT").writeString(player.getUniqueId().toString());
+		message.writeInt(amount);
+		message.addServer(player.getServer().getInfo());
+		message.send();
+	}
+
+	private static boolean executeCallbacks(ProxiedPlayer player, ProxyRunnable success, ProxyRunnable fail, Map<ProxiedPlayer, Callback> waitingForBalance) {
 		if(waitingForBalance.containsKey(player)) {
 			fail.run();
-			return;
+			return true;
 		}
 
 		waitingForBalance.put(player, new Callback(success, fail));
@@ -191,11 +222,7 @@ public class GuildMessaging implements Listener {
 			waitingForBalance.remove(player);
 			fail.run();
 		}).runAfter(1, TimeUnit.SECONDS);
-
-		PluginMessage message = new PluginMessage().writeString("DEPOSIT").writeString(player.getUniqueId().toString());
-		message.writeInt(amount);
-		message.addServer(player.getServer().getInfo());
-		message.send();
+		return false;
 	}
 
 	public static class Callback {

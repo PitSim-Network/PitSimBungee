@@ -41,7 +41,11 @@ public class BroadcastCommand extends Command {
 	}
 
 	public static void broadcast(String message) {
-		String broadcastMessage = "&c&lBROADCAST!&7 " + message;
+		broadcast(message, true);
+	}
+
+	public static void broadcast(String message, boolean prefix) {
+		String broadcastMessage = (prefix ? "&c&lBROADCAST!&7 " : "") + message;
 		for(ProxiedPlayer player : ProxyServer.getInstance().getPlayers())
 			player.sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', broadcastMessage)));
 	}

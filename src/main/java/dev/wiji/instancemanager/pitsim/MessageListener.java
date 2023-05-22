@@ -1,13 +1,11 @@
 package dev.wiji.instancemanager.pitsim;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.auctions.AuctionManager;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.market.MarketManager;
-import dev.wiji.instancemanager.objects.PitSimServer;
-import dev.wiji.instancemanager.objects.PluginMessage;
-import dev.wiji.instancemanager.objects.ServerStatus;
-import dev.wiji.instancemanager.objects.ServerType;
+import dev.wiji.instancemanager.objects.*;
 import dev.wiji.instancemanager.storage.EditSessionManager;
 import dev.wiji.instancemanager.storage.StorageManager;
 import dev.wiji.instancemanager.storage.StorageProfile;
@@ -47,6 +45,11 @@ public class MessageListener implements Listener {
 						}
 
 						AuctionManager.sendAuctionsToServer(serverName);
+
+						if(server instanceof DarkzoneServer) {
+							UUID guild = ConfigManager.getControllingGuild();
+							if(guild != null) sendOutpostData(guild, true, true);
+						}
 
 						BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&2&lKEEPER! &7Server &e" + serverName + " &7is now available!"));
 						for(ProxiedPlayer player : BungeeMain.INSTANCE.getProxy().getPlayers()) {
@@ -181,6 +184,29 @@ public class MessageListener implements Listener {
 			ServerInfo serverInfo = PitSimServer.getServer(serverIndex + 1, darkzone).getServerInfo();
 			response.addServer(serverInfo).send();
 		}
+	}
+
+	public static void sendOutpostData(UUID guildUUID, boolean isActive, boolean darkzone) {
+		PluginMessage forwardMessage = new PluginMessage().writeString("OUTPOST DATA");
+
+		forwardMessage.writeString(guildUUID.toString());
+		forwardMessage.writeBoolean(isActive);
+
+		PitSimServerManager manager = PitSimServerManager.getManager(ServerType.OVERWORLD);
+
+		if(darkzone) {
+			manager = PitSimServerManager.getManager(ServerType.DARKZONE);
+		} else {
+			manager = PitSimServerManager.getManager(ServerType.OVERWORLD);
+		}
+
+		assert manager != null;
+		for(PitSimServer pitSimServer : manager.serverList) {
+			if(!pitSimServer.status.isOnline()) continue;
+			forwardMessage.addServer(pitSimServer.getServerInfo());
+		}
+
+		forwardMessage.send();
 	}
 
 }
