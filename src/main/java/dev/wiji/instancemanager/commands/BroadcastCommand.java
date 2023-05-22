@@ -1,6 +1,7 @@
 package dev.wiji.instancemanager.commands;
 
 import dev.wiji.instancemanager.misc.AOutput;
+import dev.wiji.instancemanager.pitsim.PitSimServerManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -46,7 +47,12 @@ public class BroadcastCommand extends Command {
 
 	public static void broadcast(String message, boolean prefix) {
 		String broadcastMessage = (prefix ? "&c&lBROADCAST!&7 " : "") + message;
-		for(ProxiedPlayer player : ProxyServer.getInstance().getPlayers())
+
+
+
+		for(ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+			if(!prefix && !PitSimServerManager.isInPitSim(player)) continue;
 			player.sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', broadcastMessage)));
+		}
 	}
 }
