@@ -48,7 +48,7 @@ public class MessageListener implements Listener {
 
 						if(server instanceof DarkzoneServer) {
 							UUID guild = ConfigManager.getControllingGuild();
-							if(guild != null) sendOutpostData(guild, true, true);
+							if(guild != null) sendOutpostData(guild.toString(), true, true);
 						}
 
 						BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&2&lKEEPER! &7Server &e" + serverName + " &7is now available!"));
@@ -186,10 +186,10 @@ public class MessageListener implements Listener {
 		}
 	}
 
-	public static void sendOutpostData(UUID guildUUID, boolean isActive, boolean darkzone) {
+	public static void sendOutpostData(String guildUUID, boolean isActive, boolean darkzone) {
 		PluginMessage forwardMessage = new PluginMessage().writeString("OUTPOST DATA");
 
-		forwardMessage.writeString(guildUUID.toString());
+		forwardMessage.writeString(guildUUID);
 		forwardMessage.writeBoolean(isActive);
 
 		PitSimServerManager manager = PitSimServerManager.getManager(ServerType.OVERWORLD);

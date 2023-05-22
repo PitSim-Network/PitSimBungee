@@ -89,10 +89,13 @@ public class GuildMessaging implements Listener {
 		}
 
 		if(strings.size() >= 1 && strings.get(0).equals("OUTPOST DATA")) {
-			UUID guildUUID = UUID.fromString(strings.get(1));
+			if(strings.get(1) == null) return;
+
+
+			String guildUUID = strings.get(1);
 			boolean isActive = booleans.get(0);
 
-			if(isActive) ConfigManager.setControllingGuild(guildUUID);
+			if(isActive && !guildUUID.equals("null")) ConfigManager.setControllingGuild(UUID.fromString(guildUUID));
 
 			MessageListener.sendOutpostData(guildUUID, isActive, false);
 		}
