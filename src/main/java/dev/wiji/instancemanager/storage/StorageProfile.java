@@ -77,6 +77,10 @@ public class StorageProfile {
 	}
 
 	public void sendToServer(ServerInfo server) {
+		sendToServer(server, false);
+	}
+
+	public void sendToServer(ServerInfo server, boolean viewOnly) {
 		PluginMessage message = new PluginMessage()
 				.writeString("PLAYER DATA")
 				.writeString(uuid.toString())
@@ -88,9 +92,11 @@ public class StorageProfile {
 		for(String armorString : armor) message.writeString(armorString);
 		for(EnderchestPage enderchestPage : enderchestPages) enderchestPage.writeData(message);
 		for(Outfit outfit : outfits) outfit.writeData(message);
+		if(viewOnly) message.writeBoolean(true);
 
 		message.send();
-		Objects.requireNonNull(PitSimServer.getServer(server)).addProfile(this);
+
+		if(!viewOnly) Objects.requireNonNull(PitSimServer.getServer(server)).addProfile(this);
 	}
 
 	public void updateData(PluginMessage message, String server, boolean logout) {

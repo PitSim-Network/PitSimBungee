@@ -173,12 +173,16 @@ public class GuildMessaging implements Listener {
 	}
 
 	public static void sendGuildData(ProxiedPlayer player, PitSimServer server) {
+		sendGuildData(player.getUniqueId(), server);
+	}
 
-		Guild guild = GuildManager.getGuildFromPlayer(player.getUniqueId());
+	public static void sendGuildData(UUID player, PitSimServer server) {
+
+		Guild guild = GuildManager.getGuildFromPlayer(player);
 		if(guild == null) return;
 
 		PluginMessage message = new PluginMessage().writeString("GUILD DATA");
-		message.writeString(player.getUniqueId().toString());
+		message.writeString(player.toString());
 
 		message.writeString(guild.uuid.toString());
 
