@@ -29,6 +29,11 @@ public class ViewCommand extends Command {
 			return;
 		}
 
+		if(args.length != 1) {
+			AOutput.error(player, "&cUsage: /view <player>");
+			return;
+		}
+
 		String targetString = args[0];
 		ProxiedPlayer target = BungeeMain.INSTANCE.getProxy().getPlayer(targetString);
 		ServerInfo executorServer = player.getServer().getInfo();
