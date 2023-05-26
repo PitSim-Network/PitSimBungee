@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public class LogManager implements Listener {
 
@@ -70,6 +71,15 @@ public class LogManager implements Listener {
 			if(!DiscordManager.isEnabled) return;
 			DiscordLogChannel logChannelInfo = DiscordLogChannel.valueOf(strings.get(1));
 			String message = strings.get(2);
+			if(logChannelInfo == DiscordLogChannel.BAN_LOG_CHANNEL) {
+				String[] split = message.split(",");
+				UUID uuid = UUID.fromString(split[1]);
+				String name = BungeeMain.getName(uuid, false);
+				if(name == null) name = "Unknown";
+
+				message = split[0].replaceAll("\\|", name);
+			}
+
 			TextChannel logChannel = DiscordManager.JDA.getTextChannelById(logChannelInfo.getChannelID());
 			assert logChannel != null;
 			logChannel.sendMessage(message).queue();
