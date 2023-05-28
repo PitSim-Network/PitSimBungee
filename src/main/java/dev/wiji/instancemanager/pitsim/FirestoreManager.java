@@ -13,6 +13,8 @@ import com.google.cloud.firestore.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
+import com.mattmalec.pterodactyl4j.client.entities.Backup;
+import com.mattmalec.pterodactyl4j.client.entities.ClientServer;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
@@ -116,6 +118,27 @@ public class FirestoreManager {
 		AOutput.log("----------------------------------");
 		AOutput.log(exportName);
 		AOutput.log("----------------------------------");
+	}
+
+	public static void takeItemBackup() {
+		ClientServer server = BungeeMain.client.retrieveServerByIdentifier("f904ac91").execute();
+		int backupLimit = Integer.parseInt(server.getFeatureLimits().getBackups());
+		List<Backup> backups = server.retrieveBackups().execute();
+
+		Backup oldestBackup = null;
+		if(backups.size() >= backupLimit) {
+			for(Backup backup : backups) {
+				if(backup.isLocked()) continue;
+				if(oldestBackup == null) oldestBackup = backup;
+
+				if(backup.getTimeCreated().isBefore(oldestBackup.getTimeCreated())) {
+					oldestBackup = backup;
+				}
+			}
+			server.getBackupManager().deleteBackup(oldestBackup).execute();
+		}
+
+		server.getBackupManager().createBackup().execute();
 	}
 
 	private static String sendPostRequest(String uri, String requestBody) throws IOException {
