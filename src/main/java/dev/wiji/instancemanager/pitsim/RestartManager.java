@@ -54,6 +54,7 @@ public class RestartManager {
 				lastBackup = System.currentTimeMillis();
 				try {
 					FirestoreManager.takeBackup(false);
+					FirestoreManager.takeItemBackup();
 				} catch(IOException e) { throw new RuntimeException(e); }
 			}
 

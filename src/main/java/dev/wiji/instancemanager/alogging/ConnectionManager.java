@@ -1,6 +1,5 @@
 package dev.wiji.instancemanager.alogging;
 
-import com.google.gson.Gson;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.pitsim.IdentificationManager;
 import net.md_5.bungee.api.event.LoginEvent;
@@ -9,8 +8,6 @@ import net.md_5.bungee.event.EventHandler;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
-import java.nio.file.Files;
 import java.util.*;
 
 public class ConnectionManager implements Listener {
@@ -28,14 +25,16 @@ public class ConnectionManager implements Listener {
 		}
 
 		trackedSubdomains.add("mc.pitsim.net");
+		trackedSubdomains.add("pitsim.enet");
+		trackedSubdomains.add("pitsim.com");
 		trackedSubdomains.add("play.pitsim.net");
 		trackedSubdomains.add("vote.pitsim.net");
 		trackedSubdomains.add("tomcat.pitsim.net");
 		trackedSubdomains.add("bomp.pitsim.net");
-		trackedSubdomains.add("pitfall.pitsim.net");
+//		trackedSubdomains.add("pitfall.pitsim.net");
 //		trackedSubdomains.add("panda.pitsim.net");
 		trackedSubdomains.add("planet.pitsim.net");
-		trackedSubdomains.add("future.pitsim.net");
+//		trackedSubdomains.add("future.pitsim.net");
 //		trackedSubdomains.add("maleffect.pitsim.net");
 //		trackedSubdomains.add("sammh.pitsim.net");
 		trackedSubdomains.add("ct.pitsim.net");

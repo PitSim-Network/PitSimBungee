@@ -76,9 +76,11 @@ public class ServerJoinCommand extends Command {
 			ServerType type = pitSimServer.serverType;
 
 			if(pitSimServer.getServerInfo() == requestedServer) {
+
 				if(previousServer.getName().contains("darkzone") || previousServer.getName().contains("pitsim")) {
 					new PluginMessage().writeString("REQUEST " + (type == ServerType.DARKZONE ? "DARKZONE " : "") + "SWITCH").writeString(affectedPlayer.getUniqueId().toString())
 							.writeInt(pitSimServer.getServerIndex()).addServer(previousServer).send();
+					System.out.print(pitSimServer.serverType);
 					return;
 				}
 

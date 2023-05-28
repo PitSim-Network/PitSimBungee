@@ -23,7 +23,7 @@ public class ViewCommand extends Command {
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		ProxiedPlayer player = (ProxiedPlayer) sender;
-		if(!player.hasPermission("pitsim.admin")) return;
+
 		if(!PitSimServerManager.isInPitSim(player)) {
 			AOutput.error(player, "&cYou are not in a PitSim server");
 			return;

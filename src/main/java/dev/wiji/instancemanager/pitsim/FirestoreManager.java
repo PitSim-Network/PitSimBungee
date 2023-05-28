@@ -121,7 +121,7 @@ public class FirestoreManager {
 	}
 
 	public static void takeItemBackup() {
-		ClientServer server = BungeeMain.client.retrieveServerByIdentifier("f904ac91").execute();
+		ClientServer server = BungeeMain.client.retrieveServerByIdentifier(ConfigManager.getProxyServer()).execute();
 		int backupLimit = Integer.parseInt(server.getFeatureLimits().getBackups());
 		List<Backup> backups = server.retrieveBackups().execute();
 
