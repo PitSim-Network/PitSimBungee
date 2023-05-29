@@ -107,4 +107,5 @@ public class PrivateInfo {
 	public static final String BOT_TOKEN = "***REMOVED***";
 	public static final String PLAYER_DATA_SQL_PASSWORD = "***REMOVED***";
 	public static final String STATISTICS_SQL_PASSWORD = "***REMOVED***";
+	public static final String DEVELOPMENT_SQL_PASSWORD = "***REMOVED***";
 }

@@ -5,7 +5,6 @@ import dev.wiji.instancemanager.discord.DiscordManager;
 import dev.wiji.instancemanager.discord.DiscordUser;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.misc.Misc;
-import dev.wiji.instancemanager.pitsim.IdentificationManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -63,7 +62,7 @@ public class UnlinkCommand extends Command {
 			AOutput.color(proxiedPlayer, "&9&lLINK!&7 Unliked your discord account");
 		} else {
 			try {
-				String username = IdentificationManager.getUsername(IdentificationManager.getConnection(), targetUUID);
+				String username = BungeeMain.getName(targetUUID, false);
 				AOutput.color(proxiedPlayer, "&9&lLINK!&7 Unliked discord account for " + username);
 				ProxiedPlayer proxiedTarget = BungeeMain.INSTANCE.getProxy().getPlayer(targetUUID);
 				if(proxiedTarget != null) AOutput.color(proxiedTarget, "&9&lLINK!&7 Unliked your discord account");

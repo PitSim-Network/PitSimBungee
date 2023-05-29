@@ -1,6 +1,10 @@
 package dev.wiji.instancemanager.commands;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.SQL.Constraint;
+import dev.wiji.instancemanager.SQL.Field;
+import dev.wiji.instancemanager.SQL.SQLTable;
+import dev.wiji.instancemanager.SQL.TableManager;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.misc.Misc;
 import dev.wiji.instancemanager.pitsim.IdentificationManager;
@@ -9,13 +13,9 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
-
-import static dev.wiji.instancemanager.pitsim.IdentificationManager.NEW_TABLE;
 
 public class SeenCommand extends Command {
 	public SeenCommand() {
@@ -34,7 +34,7 @@ public class SeenCommand extends Command {
 			return;
 		}
 
-		UUID target = null;
+		UUID target;
 
 		try {
 			target = UUID.fromString(args[0]);
@@ -57,14 +57,16 @@ public class SeenCommand extends Command {
 			return;
 		}
 
-		Connection conn = IdentificationManager.getConnection();
+		SQLTable table = TableManager.getTable(IdentificationManager.TABLE_NAME);
+		if(table == null) throw new RuntimeException("Table not found");
+
+		ResultSet rs = table.selectRow(
+				new Field("username"),
+				new Field("last_join"),
+				new Constraint("uuid", target.toString())
+		);
 
 		try {
-			String sql = "SELECT username, last_join FROM " + NEW_TABLE + " WHERE uuid = ?";
-			assert conn != null;
-			PreparedStatement stmt = conn.prepareStatement(sql);
-			stmt.setString(1, target.toString());
-			ResultSet rs = stmt.executeQuery();
 			if(rs.next()) {
 
 				String username = rs.getString("username");
@@ -74,9 +76,8 @@ public class SeenCommand extends Command {
 			} else {
 				AOutput.error(player, "&cPlayer not found. (Try UUID?)");
 			}
+
+			rs.close();
 		} catch(SQLException e) { throw new RuntimeException(e); }
-
-		try { conn.close(); } catch(SQLException e) { throw new RuntimeException(e); }
-
 	}
 }

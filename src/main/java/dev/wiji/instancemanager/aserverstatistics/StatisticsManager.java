@@ -1,13 +1,17 @@
 package dev.wiji.instancemanager.aserverstatistics;
 
+import dev.wiji.instancemanager.SQL.Constraint;
+import dev.wiji.instancemanager.SQL.SQLTable;
+import dev.wiji.instancemanager.SQL.TableManager;
+import dev.wiji.instancemanager.SQL.Value;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.misc.PrivateInfo;
 import dev.wiji.instancemanager.pitsim.PitEnchant;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,16 +19,11 @@ import java.util.function.Consumer;
 
 public class StatisticsManager implements Listener {
 	public static final List<StatisticDataChunk> queuedChunks = new ArrayList<>();
-
-	public static final String URL = "jdbc:mysql://sql.pitsim.net:3306/s9_Statistics";
-	public static final String USERNAME = "***REMOVED***";
-	public static final String PASSWORD = PrivateInfo.STATISTICS_SQL_PASSWORD;
 	public static final String TABLE_NAME = "enchant_statistics";
 	public static final long MAX_TIME = 1000L * 60 * 60 * 24 * 30;
 
 	public StatisticsManager() {
 		new Thread(() -> {
-			if(!tableExists(TABLE_NAME)) createTable();
 			deleteOldRows();
 			while(true) {
 				if(queuedChunks.isEmpty()) {
@@ -54,137 +53,61 @@ public class StatisticsManager implements Listener {
 	}
 
 	public static void queryByCategory(StatisticCategory category, Consumer<ResultSet> callback) {
-		Connection connection = getConnection();
+		SQLTable table = TableManager.getTable(TABLE_NAME);
+		if(table == null) throw new RuntimeException("Table not found");
+
+		ResultSet rs = table.selectRow(new Constraint("category", category.name()));
+
 		try {
-			String sql = "SELECT * FROM " + TABLE_NAME + " WHERE category = ?";
-			PreparedStatement stmt = connection.prepareStatement(sql);
-			stmt.setString(1, category.name());
-			ResultSet rs = stmt.executeQuery();
-
-			// call the callback function with the result set
 			callback.accept(rs);
-
 			rs.close();
-			stmt.close();
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
-		} finally {
-			try {
-				connection.close();
-			} catch(SQLException e) {
-				throw new RuntimeException(e);
-			}
 		}
 	}
 
 	public static void insertChunk(StatisticDataChunk dataChunk) {
 		AOutput.log("Inserting data to: " + TABLE_NAME);
-		Connection connection = getConnection();
-		try {
-			Statement stmt = connection.createStatement();
-			for(StatisticDataChunk.Record record : dataChunk.records) {
-				List<String> hits = new ArrayList<>();
-				for (Map.Entry<String, Integer> entry : record.getHitsWithEnchant().entrySet()) {
-					int hitValue = entry.getValue();
-					String hitString = hitValue != 0 ? String.valueOf(hitValue) : "NULL";
-					hits.add(hitString);
-				}
-				String enchantRefName = record.getEnchantRefName() == null ? "NULL" : "'" + record.getEnchantRefName() + "'";
-				String sql = "INSERT INTO " + TABLE_NAME + " (date, enchant, category, total_hits, " +
-						String.join(", ", PitEnchant.getAllRefNames()) +
-						") VALUES (" +
-						dataChunk.getStartTime() + ", " +
-						enchantRefName + ", " +
-						"'" + record.getCategory() + "', " +
-						record.getTotalHits() + ", " +
-						String.join(", ", hits) +
-						")";
-				stmt.addBatch(sql);
-			}
-			stmt.executeBatch();
+		SQLTable table = TableManager.getTable(TABLE_NAME);
+		if(table == null) throw new RuntimeException("Table not found");
 
-			stmt.close();
-		} catch(SQLException e) {
-			throw new RuntimeException(e);
-		}
-		try {
-			connection.close();
-		} catch(SQLException e) {
-			throw new RuntimeException(e);
+		for(StatisticDataChunk.Record record : dataChunk.records) {
+			List<String> hits = new ArrayList<>();
+			for (Map.Entry<String, Integer> entry : record.getHitsWithEnchant().entrySet()) {
+				int hitValue = entry.getValue();
+				String hitString = hitValue != 0 ? String.valueOf(hitValue) : "NULL";
+				hits.add(hitString);
+			}
+			String enchantRefName = record.getEnchantRefName() == null ? "NULL" : "'" + record.getEnchantRefName() + "'";
+
+			List<Value> values = new ArrayList<>();
+			values.add(new Value("date", dataChunk.getStartTime()));
+			values.add(new Value("enchant", enchantRefName));
+			values.add(new Value("category", record.getCategory()));
+			values.add(new Value("total_hits", record.getTotalHits()));
+
+			for(int i = 0; i < PitEnchant.getAllRefNames().size(); i++) {
+				values.add(new Value(PitEnchant.getAllRefNames().get(i), hits.get(i)));
+			}
+
+			table.insertRow(values.toArray(new Value[0]));
 		}
 	}
 
 	public static void deleteOldRows() {
 		AOutput.log("Removing old enchant rows from: " + TABLE_NAME);
-		Connection connection = getConnection();
-		try {
-			Statement stmt = connection.createStatement();
-			String sql = "DELETE FROM " + TABLE_NAME + " WHERE date + " + MAX_TIME + " < " + System.currentTimeMillis();
-			stmt.executeUpdate(sql);
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-		try {
-			connection.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+		SQLTable table = TableManager.getTable(TABLE_NAME);
+		if(table == null) throw new RuntimeException("Table not found");
+
+		table.deleteRow(
+				new Constraint("date + " + MAX_TIME, System.currentTimeMillis(), "<")
+		);
 	}
 
-	public static void createTable() {
-		AOutput.log("Creating table: " + TABLE_NAME);
-		Connection connection = getConnection();
-		try {
-			List<String> enchantColumns = new ArrayList<>();
-			for(String enchantRefName : PitEnchant.getAllRefNames()) enchantColumns.add(enchantRefName + " INT");
-			Statement stmt = connection.createStatement();
-			String sql = "CREATE TABLE " + TABLE_NAME + " (" +
-					"date LONG, " +
-					"enchant VARCHAR(50) NULL, " +
-					"category VARCHAR(50), " +
-					"total_hits INT, " +
-					String.join(", ", enchantColumns) +
-					")";
-			stmt.executeUpdate(sql);
-
-			stmt.close();
-		} catch(SQLException e) {
-			throw new RuntimeException(e);
-		}
-		try {
-			connection.close();
-		} catch(SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
 
 	public static boolean tableExists(String tableName) {
-		Connection connection = getConnection();
-		try {
-			DatabaseMetaData metadata = connection.getMetaData();
-			ResultSet tables = metadata.getTables(null, null, tableName, null);
-			boolean exists = tables.next();
-			tables.close();
-			return exists;
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-		finally {
-			try {
-				connection.close();
-			} catch (SQLException e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
-
-	public static Connection getConnection() {
-		try {
-			return DriverManager.getConnection(URL, USERNAME, PASSWORD);
-		} catch(Exception e) {
-			throw new RuntimeException(e);
-		}
+		SQLTable table = TableManager.getTable(tableName);
+		return table != null;
 	}
 
 	public static void sleep(long millis) {

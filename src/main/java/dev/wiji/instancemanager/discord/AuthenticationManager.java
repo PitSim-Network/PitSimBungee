@@ -6,7 +6,6 @@ import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.misc.AOutput;
 import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
-import dev.wiji.instancemanager.pitsim.IdentificationManager;
 import dev.wiji.instancemanager.pitsim.PitSimServerManager;
 import io.mokulu.discord.oauth.DiscordAPI;
 import io.mokulu.discord.oauth.DiscordOAuth;
@@ -73,7 +72,7 @@ public class AuthenticationManager implements Listener {
 					user.save();
 				} catch(HttpStatusException exception) {
 					int statusCode = exception.getStatusCode();
-					String name = IdentificationManager.getUsername(IdentificationManager.getConnection(), user.uuid);
+					String name = BungeeMain.getName(uuid, false);
 					if(statusCode == 400) {
 						System.out.println("Marking discord user as invalid: " + name);
 						user.accessToken = "INVALID";
@@ -170,8 +169,7 @@ public class AuthenticationManager implements Listener {
 				DiscordUser previousUser = DiscordManager.getUser(userId);
 				if(previousUser != null) {
 					AOutput.error(proxiedPlayer, "&c&lERROR!&7 Your discord (" + user.getFullUsername() +
-							") is already linked to " + IdentificationManager.getUsername(
-									IdentificationManager.getConnection(), previousUser.uuid));
+							") is already linked to " + BungeeMain.getName(previousUser.uuid, false));
 					return;
 				}
 
@@ -197,7 +195,7 @@ public class AuthenticationManager implements Listener {
 				try {
 					Objects.requireNonNull(DiscordManager.JDA.getTextChannelById(Constants.VERIFICATION_LOG_CHANNEL))
 							.sendMessage("Discord: `" + user.getFullUsername() + "`" +
-									"\nIGN/UUID: `" + IdentificationManager.getUsername(IdentificationManager.getConnection(), playerUUID) + "`").queue();
+									"\nIGN/UUID: `" + BungeeMain.getName(playerUUID, false) + "`").queue();
 				} catch(Exception exception) {
 					exception.printStackTrace();
 				}
