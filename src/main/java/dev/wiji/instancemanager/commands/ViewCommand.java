@@ -13,9 +13,14 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class ViewCommand extends Command {
+	public static final long COOLDOWN_MS = 1000 * 3;
+	public static Map<UUID, Long> cooldownMap = new HashMap<>();
+
 	public ViewCommand() {
 		super("view");
 	}
@@ -35,8 +40,7 @@ public class ViewCommand extends Command {
 		}
 
 		String targetString = args[0];
-		ProxiedPlayer target = BungeeMain.INSTANCE.getProxy().getPlayer(targetString);
-		ServerInfo executorServer = player.getServer().getInfo();
+
 
 		UUID targetUUID = BungeeMain.getUUID(targetString, false);
 		if(targetUUID == null) {
@@ -44,20 +48,27 @@ public class ViewCommand extends Command {
 			return;
 		}
 
+		if(cooldownMap.getOrDefault(player.getUniqueId(), 0L) + COOLDOWN_MS > System.currentTimeMillis()) {
+			AOutput.error(player, "&c&lERROR! &7Please wait before using this command!");
+			return;
+		}
+
+		sendViewData(player, targetUUID);
+		cooldownMap.put(player.getUniqueId(), System.currentTimeMillis());
+	}
+
+	public static void sendViewData(ProxiedPlayer player, UUID targetUUID) {
+		ServerInfo executorServer = player.getServer().getInfo();
 		PluginMessage message = new PluginMessage().writeString("VIEW INFO").writeString(targetUUID.toString())
 				.writeString(player.getUniqueId().toString());
 		message.addServer(executorServer);
 
-		if(target == null || executorServer != target.getServer().getInfo()) {
-			message.writeBoolean(false);
-			StorageProfile profile = StorageManager.getStorage(targetUUID);
-			profile.sendToServer(executorServer, true);
+		StorageProfile profile = StorageManager.getStorage(targetUUID);
+		profile.sendToServer(executorServer, true);
 
-			PitSimServer server = PitSimServer.getServer(executorServer);
-			GuildMessaging.sendGuildData(targetUUID, server);
-			message.writeString(BungeeMain.getName(targetUUID, false));
-
-		} else message.writeBoolean(true);
+		PitSimServer server = PitSimServer.getServer(executorServer);
+		GuildMessaging.sendGuildData(targetUUID, server);
+		message.writeString(BungeeMain.getName(targetUUID, false));
 
 		message.send();
 	}

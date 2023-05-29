@@ -3,6 +3,7 @@ package dev.wiji.instancemanager.pitsim;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.auctions.AuctionManager;
+import dev.wiji.instancemanager.commands.ViewCommand;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.market.MarketManager;
 import dev.wiji.instancemanager.objects.*;
@@ -183,6 +184,15 @@ public class MessageListener implements Listener {
 
 			ServerInfo serverInfo = PitSimServer.getServer(serverIndex + 1, darkzone).getServerInfo();
 			response.addServer(serverInfo).send();
+		}
+
+		if(strings.size() >= 3 && strings.get(0).equals("VIEW REQUEST")) {
+			UUID player = UUID.fromString(strings.get(1));
+			UUID target = UUID.fromString(strings.get(2));
+
+			ProxiedPlayer proxiedPlayer = BungeeMain.INSTANCE.getProxy().getPlayer(player);
+			if(proxiedPlayer == null) return;
+			ViewCommand.sendViewData(proxiedPlayer, target);
 		}
 	}
 
