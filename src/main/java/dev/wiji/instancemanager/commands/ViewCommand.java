@@ -3,6 +3,7 @@ package dev.wiji.instancemanager.commands;
 import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.guilds.GuildMessaging;
 import dev.wiji.instancemanager.misc.AOutput;
+import dev.wiji.instancemanager.misc.Misc;
 import dev.wiji.instancemanager.objects.PitSimServer;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import dev.wiji.instancemanager.pitsim.PitSimServerManager;
@@ -12,12 +13,11 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.api.plugin.TabExecutor;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
-public class ViewCommand extends Command {
+public class ViewCommand extends Command implements TabExecutor {
 	public static final long COOLDOWN_MS = 1000 * 3;
 	public static Map<UUID, Long> cooldownMap = new HashMap<>();
 
@@ -71,5 +71,21 @@ public class ViewCommand extends Command {
 		message.writeString(BungeeMain.getName(targetUUID, false));
 
 		message.send();
+	}
+
+	@Override
+	public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
+		List<String> list = new ArrayList<>();
+
+		for(ProxiedPlayer player : BungeeMain.INSTANCE.getProxy().getPlayers()) {
+			if(PitSimServerManager.isInPitSim(player)) {
+				list.add(player.getName());
+			}
+		}
+
+		if(args.length == 0) return list;
+
+		String text = args[0];
+		return Misc.getTabComplete(text, list);
 	}
 }

@@ -60,6 +60,17 @@ public class Misc {
 		return durationString.trim();
 	}
 
+	public static List<String> getTabComplete(String current, List<String> options) {
+		return getTabComplete(current, options.toArray(new String[0]));
+	}
+
+	public static List<String> getTabComplete(String current, String... options) {
+		if(current == null || current.isEmpty()) return Arrays.asList(options);
+		List<String> tabComplete = new ArrayList<>();
+		for(String option : options) if(option.toLowerCase().startsWith(current.toLowerCase())) tabComplete.add(option);
+		return tabComplete;
+	}
+
 	public static String formatDurationMostSignificant(double seconds) {
 		DecimalFormat decimalFormat = new DecimalFormat("0.#");
 		if(seconds < 60) return decimalFormat.format(seconds) + " seconds";
