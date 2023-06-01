@@ -88,11 +88,11 @@ public class StorageProfile {
 				.writeInt(defaultDarkzoneSet)
 				.addServer(server);
 
+		message.writeBoolean(viewOnly);
 		for(String itemString : inventory) message.writeString(itemString);
 		for(String armorString : armor) message.writeString(armorString);
 		for(EnderchestPage enderchestPage : enderchestPages) enderchestPage.writeData(message);
 		for(Outfit outfit : outfits) outfit.writeData(message);
-		if(viewOnly) message.writeBoolean(true);
 
 		message.send();
 

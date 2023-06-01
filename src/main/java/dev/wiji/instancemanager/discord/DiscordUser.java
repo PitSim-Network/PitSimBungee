@@ -83,13 +83,7 @@ public class DiscordUser {
 		if(table == null) throw new RuntimeException("Table not found");
 
 		ResultSet rs = table.selectRow(
-				new Constraint("uuid", uuid.toString()),
-				new Constraint("discord_id", discordID),
-				new Constraint("access_token", accessToken),
-				new Constraint("refresh_token", refreshToken),
-				new Constraint("last_refresh", lastRefresh),
-				new Constraint("last_link", lastLink),
-				new Constraint("last_boosting_claim", lastBoostingClaim)
+				new Constraint("uuid", uuid.toString())
 		);
 
 		try {

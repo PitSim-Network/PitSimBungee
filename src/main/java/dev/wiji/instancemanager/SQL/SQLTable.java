@@ -68,8 +68,6 @@ public class SQLTable {
 
 		StringBuilder query = new StringBuilder("INSERT INTO " + tableName + " VALUES (");
 		for(int i = 0; i < values.length; i++) {
-			System.out.println(values[i].value.getClass() + " " + structure.columns.get(i).type);
-
 			if(values[i].value.getClass() != structure.columns.get(i).type)
 				throw new RuntimeException("\nCorrect values: " + String.join(", ", columnStrings));
 
