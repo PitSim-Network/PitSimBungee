@@ -141,7 +141,7 @@ public class PitSimServerManager {
 
 	public boolean queueFallback(ProxiedPlayer player, int requestedServer, boolean fromDarkzone) {
 		boolean success = queue(player, requestedServer, fromDarkzone);
-		if(!success) {
+		if(!success && player.isConnected()) {
 			player.connect(BungeeMain.INSTANCE.getProxy().getServerInfo(ConfigManager.getLobbyServer()));
 		}
 		return success;
@@ -207,6 +207,7 @@ public class PitSimServerManager {
 
 		PitSimServer previousServer = null;
 		for(PitSimServer server : serverList) {
+			if(player.getServer() == null) return false;
 			if(server.getServerInfo() == player.getServer().getInfo()) {
 				previousServer = server;
 				break;

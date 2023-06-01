@@ -108,6 +108,7 @@ public class AuthenticationManager implements Listener {
 					if(line == null || line.isEmpty()) break;
 
 					String[] parts = line.split(" ");
+					if(parts.length <= 1) continue;
 					String requestUrl = parts[1];
 					String[] queryParams = requestUrl.split("\\?");
 					if(queryParams.length <= 1) continue;

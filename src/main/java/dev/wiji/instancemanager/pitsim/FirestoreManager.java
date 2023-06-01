@@ -126,7 +126,7 @@ public class FirestoreManager {
 		List<Backup> backups = server.retrieveBackups().execute();
 
 		Backup oldestBackup = null;
-		if(backups.size() >= backupLimit) {
+		if(backups.size() >= backupLimit && backupLimit != 0) {
 			for(Backup backup : backups) {
 				if(backup.isLocked()) continue;
 				if(oldestBackup == null) oldestBackup = backup;
