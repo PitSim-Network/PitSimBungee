@@ -90,13 +90,6 @@ public class DiscordUser {
 			if(rs.next()) {
 				table.updateRow(
 						new Constraint("uuid", uuid.toString()),
-						new Constraint("discord_id", discordID),
-						new Constraint("access_token", accessToken),
-						new Constraint("refresh_token", refreshToken),
-						new Constraint("last_refresh", lastRefresh),
-						new Constraint("last_link", lastLink),
-						new Constraint("last_boosting_claim", lastBoostingClaim),
-						new Value("uuid", uuid.toString()),
 						new Value("discord_id", discordID),
 						new Value("access_token", accessToken),
 						new Value("refresh_token", refreshToken),

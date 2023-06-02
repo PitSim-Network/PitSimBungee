@@ -49,7 +49,7 @@ public class AuctionMessaging implements Listener {
 
 	public static void checkForRewards(ProxiedPlayer player) {
 		for(AuctionRewardManager.AuctionItemReward item : AuctionManager.auctionRewardManager.itemRewards) {
-			if(!item.playerUUID.equals(player.getUniqueId())) continue;
+			if(item == null || !item.playerUUID.equals(player.getUniqueId())) continue;
 
 			((ProxyRunnable) () -> {
 				if(!PitSimServerManager.isInPitSim(player)) return;
@@ -65,7 +65,7 @@ public class AuctionMessaging implements Listener {
 		}
 
 		for(AuctionRewardManager.AuctionSoulReturn item : AuctionManager.auctionRewardManager.soulReturns) {
-			if(!item.playerUUID.equals(player.getUniqueId())) continue;
+			if(item == null || !item.playerUUID.equals(player.getUniqueId())) continue;
 
 			((ProxyRunnable) () -> {
 				if(!PitSimServerManager.isInPitSim(player)) return;

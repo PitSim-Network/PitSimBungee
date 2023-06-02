@@ -105,10 +105,12 @@ public class AuctionManager {
 	}
 
 	public static void addItemReward(AuctionRewardManager.AuctionItemReward reward) {
+		if(reward == null) return;
 		auctionRewardManager.itemRewards.add(reward);
 	}
 
 	public static void addSoulReturn(AuctionRewardManager.AuctionSoulReturn soulReturn) {
+		if(soulReturn == null) return;
 		auctionRewardManager.soulReturns.add(soulReturn);
 	}
 }
