@@ -1,6 +1,7 @@
 package net.pitsim.bungee.discord;
 
 import net.pitsim.bungee.BungeeMain;
+import net.pitsim.bungee.ConfigManager;
 import net.pitsim.bungee.ProxyRunnable;
 import net.pitsim.bungee.SQL.Constraint;
 import net.pitsim.bungee.SQL.Field;
@@ -12,7 +13,6 @@ import net.pitsim.bungee.discord.commands.PingCommand;
 import net.pitsim.bungee.discord.commands.SpamWijiCommand;
 import net.pitsim.bungee.events.MessageEvent;
 import net.pitsim.bungee.misc.AOutput;
-import net.pitsim.bungee.misc.PrivateInfo;
 import net.pitsim.bungee.objects.PluginMessage;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -33,7 +33,8 @@ import net.md_5.bungee.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.security.auth.login.LoginException;
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -57,7 +58,7 @@ public class DiscordManager implements EventListener, Listener {
 		AOutput.log("Discord bot loading");
 		isEnabled = true;
 
-		BUILDER = JDABuilder.createDefault(PrivateInfo.BOT_TOKEN);
+		BUILDER = JDABuilder.createDefault(ConfigManager.get("discord-bot-token"));
 		try {
 			BUILDER.setMemberCachePolicy(MemberCachePolicy.ALL);
 			BUILDER.enableIntents(GatewayIntent.GUILD_MEMBERS);

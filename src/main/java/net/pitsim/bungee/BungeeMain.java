@@ -39,10 +39,8 @@ import java.util.UUID;
 
 public class BungeeMain extends Plugin {
 	public static BungeeMain INSTANCE;
-	public static PteroApplication api = PteroBuilder.createApplication("***REMOVED***",
-			"***REMOVED***");
-	public static PteroClient client = PteroBuilder.createClient("***REMOVED***",
-			"***REMOVED***");
+	public static PteroApplication api;
+	public static PteroClient client;
 
 	public static long STARTUP_TIME;
 	public static final ZoneId TIME_ZONE = ZoneId.of("America/New_York");
@@ -53,6 +51,12 @@ public class BungeeMain extends Plugin {
 	public void onEnable() {
 		INSTANCE = this;
 		ConfigManager.onEnable();
+
+		api = PteroBuilder.createApplication(ConfigManager.get("ptero-url"),
+				ConfigManager.get("ptero-api-key"));
+		client = PteroBuilder.createClient(ConfigManager.get("ptero-url"),
+				ConfigManager.get("ptero-client-key"));
+
 		TableManager.registerTables();
 
 		LUCKPERMS = LuckPermsProvider.get();
@@ -160,34 +164,4 @@ public class BungeeMain extends Plugin {
 	public static UUID getUUID(String name, boolean printError) {
 		return IdentificationManager.getUUID(name);
 	}
-
-//	public void createServer() {
-//
-//		PteroApplication api = PteroBuilder.createApplication("***REMOVED***", "ePKZBUXCVt1gS42MHwh20MfD5vreObm9JFNVCo788eV0ROnr");
-//		api.retrieveUsers().executeAsync(users -> users.forEach(u -> System.out.println(u.getFullName())));
-//
-//
-//		Nest nest = api.retrieveNestById("1").execute();
-//		Location location = api.retrieveLocationById("1").execute();
-//		ApplicationEgg egg = api.retrieveEggById(nest, "3").execute();
-//
-//		Map<String, EnvironmentValue<?>> map = new HashMap<>();
-//		map.put("SERVER_JARFILE", EnvironmentValue.ofString("server.jar"));
-//		map.put("VERSION", EnvironmentValue.ofString("1.8.8"));
-//
-//		PteroAction<ApplicationServer> action = api.createServer()
-//				.setName("Mini01")
-//				.setOwner(api.retrieveUserById("1").execute())
-//				.setEgg(egg)
-//				.setLocation(location)
-//				.setAllocations(1L)
-//				.setDatabases(0L)
-//				.setCPU(50L)
-//				.setDisk(3L, DataType.GB)
-//				.setMemory(1L, DataType.GB)
-//				.setPort(25802)
-//				.startOnCompletion(false)
-//				.setEnvironment(map);
-//		ApplicationServer server = action.execute();
-//	}
 }

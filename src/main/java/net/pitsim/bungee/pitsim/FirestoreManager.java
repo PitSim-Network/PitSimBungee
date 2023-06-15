@@ -19,12 +19,13 @@ import net.pitsim.bungee.BungeeMain;
 import net.pitsim.bungee.ConfigManager;
 import net.pitsim.bungee.ProxyRunnable;
 import net.pitsim.bungee.misc.AOutput;
-import net.pitsim.bungee.misc.FileResourcesUtils;
 import net.pitsim.bungee.objects.PlayerData;
 import org.apache.http.HttpHeaders;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -43,7 +44,8 @@ public class FirestoreManager {
 
 		try {
 			System.out.println("Loading PitSim database");
-			InputStream serviceAccount = new FileResourcesUtils().getFileFromResourceAsStream("google-key.json");
+			File file = new File(BungeeMain.INSTANCE.getDataFolder() + "/google-key.json");
+			InputStream serviceAccount = Files.newInputStream(file.toPath());
 			credentials = GoogleCredentials.fromStream(serviceAccount);
 
 			FirebaseOptions options = new FirebaseOptions.Builder()

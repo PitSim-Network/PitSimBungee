@@ -1,11 +1,11 @@
 package net.pitsim.bungee.discord;
 
+import net.pitsim.bungee.ConfigManager;
 import net.pitsim.bungee.SQL.Constraint;
 import net.pitsim.bungee.SQL.SQLTable;
 import net.pitsim.bungee.SQL.TableManager;
 import net.pitsim.bungee.SQL.Value;
 import net.pitsim.bungee.misc.AOutput;
-import net.pitsim.bungee.misc.PrivateInfo;
 import io.mokulu.discord.oauth.DiscordAPI;
 import io.mokulu.discord.oauth.model.User;
 import okhttp3.*;
@@ -132,7 +132,7 @@ public class DiscordUser {
 				.url(requestUrl)
 				.method("PUT", body)
 				.addHeader("Content-Type", "application/json")
-				.addHeader("Authorization", "Bot " + PrivateInfo.BOT_TOKEN)
+				.addHeader("Authorization", "Bot " + ConfigManager.get("discord-bot-token"))
 				.build();
 
 		Response response = client.newCall(request).execute();
