@@ -1,6 +1,7 @@
 package dev.wiji.instancemanager.discord;
 
 import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.SQL.Constraint;
 import dev.wiji.instancemanager.SQL.Field;
@@ -12,7 +13,6 @@ import dev.wiji.instancemanager.discord.commands.PingCommand;
 import dev.wiji.instancemanager.discord.commands.SpamWijiCommand;
 import dev.wiji.instancemanager.events.MessageEvent;
 import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.misc.PrivateInfo;
 import dev.wiji.instancemanager.objects.PluginMessage;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -33,7 +33,8 @@ import net.md_5.bungee.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.security.auth.login.LoginException;
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -57,7 +58,7 @@ public class DiscordManager implements EventListener, Listener {
 		AOutput.log("Discord bot loading");
 		isEnabled = true;
 
-		BUILDER = JDABuilder.createDefault(PrivateInfo.BOT_TOKEN);
+		BUILDER = JDABuilder.createDefault(ConfigManager.get("discord-bot-token"));
 		try {
 			BUILDER.setMemberCachePolicy(MemberCachePolicy.ALL);
 			BUILDER.enableIntents(GatewayIntent.GUILD_MEMBERS);

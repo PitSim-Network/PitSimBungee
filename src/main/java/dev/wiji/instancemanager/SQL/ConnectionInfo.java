@@ -1,6 +1,6 @@
 package dev.wiji.instancemanager.SQL;
 
-import dev.wiji.instancemanager.misc.PrivateInfo;
+import dev.wiji.instancemanager.ConfigManager;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -8,9 +8,9 @@ import java.sql.SQLException;
 public enum ConnectionInfo {
 
 
-	DEVELOPMENT("jdbc:mysql://sql.pitsim.net:3306/s9_Development", "***REMOVED***", PrivateInfo.DEVELOPMENT_SQL_PASSWORD, 1000L * 60 * 60 * 24 * 30),
-	PLAYER_DATA("jdbc:mysql://sql.pitsim.net:3306/s9_PlayerData", "***REMOVED***", PrivateInfo.PLAYER_DATA_SQL_PASSWORD, 1000L * 60 * 60 * 24 * 30),
-	STATISTICS("jdbc:mysql://sql.pitsim.net:3306/s9_Statistics", "***REMOVED***", PrivateInfo.STATISTICS_SQL_PASSWORD, 1000L * 60 * 60 * 24 * 30),
+	DEVELOPMENT(get("sql-dev-url"), get("sql-dev-username"), get("sql-dev-password"), 1000L * 60 * 60 * 24 * 30),
+	PLAYER_DATA(get("sql-data-url"), get("sql-data-username"), get("sql-data-password"), 1000L * 60 * 60 * 24 * 30),
+	STATISTICS(get("sql-stats-url"), get("sql-stats-username"), get("sql-stats-password"), 1000L * 60 * 60 * 24 * 30),
 	;
 
 	 public final String URL;
@@ -30,5 +30,9 @@ public enum ConnectionInfo {
 		 String URL = this.URL;
 		 try { Class.forName("com.mysql.jdbc.Driver"); } catch(ClassNotFoundException e) { throw new RuntimeException(e); }
 		 try { return java.sql.DriverManager.getConnection(URL, USERNAME, PASSWORD); } catch(SQLException e) { throw new RuntimeException(e); }
+	 }
+
+	 public static String get(String key) {
+		return ConfigManager.get(key);
 	 }
 }

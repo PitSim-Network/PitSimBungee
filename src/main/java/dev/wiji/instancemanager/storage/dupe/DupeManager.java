@@ -37,13 +37,13 @@ public class DupeManager implements Listener {
 
 	static {
 		miscItems.add(new TrackedMiscItem("Feathers", "feathers",
-				"***REMOVED***"));
+				ConfigManager.get("feather-webhook")));
 		miscItems.add(new TrackedMiscItem("Gem Shards", "shards",
-				"***REMOVED***"));
+				ConfigManager.get("shard-webhook")));
 		miscItems.add(new TrackedMiscItem("Gems", "gems",
-				"***REMOVED***"));
+				ConfigManager.get("gem-webhook")));
 		miscItems.add(new TrackedMiscItem("Helmets", "helmets",
-				"***REMOVED***"));
+				ConfigManager.get("helmet-webhook")));
 
 		if(!ConfigManager.isDev()) run();
 	}

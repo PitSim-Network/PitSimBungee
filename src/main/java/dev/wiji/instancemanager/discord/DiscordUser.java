@@ -1,11 +1,11 @@
 package dev.wiji.instancemanager.discord;
 
+import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.SQL.Constraint;
 import dev.wiji.instancemanager.SQL.SQLTable;
 import dev.wiji.instancemanager.SQL.TableManager;
 import dev.wiji.instancemanager.SQL.Value;
 import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.misc.PrivateInfo;
 import io.mokulu.discord.oauth.DiscordAPI;
 import io.mokulu.discord.oauth.model.User;
 import okhttp3.*;
@@ -132,7 +132,7 @@ public class DiscordUser {
 				.url(requestUrl)
 				.method("PUT", body)
 				.addHeader("Content-Type", "application/json")
-				.addHeader("Authorization", "Bot " + PrivateInfo.BOT_TOKEN)
+				.addHeader("Authorization", "Bot " + ConfigManager.get("discord-bot-token"))
 				.build();
 
 		Response response = client.newCall(request).execute();

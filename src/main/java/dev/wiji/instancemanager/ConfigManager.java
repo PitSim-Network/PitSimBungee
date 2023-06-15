@@ -14,6 +14,9 @@ public class ConfigManager {
 	public static File file;
 	public static Configuration configuration;
 
+	public static File privateInfo;
+	public static Configuration privateInfoConfiguration;
+
 	public static Map<String, String> miniServerMap = new HashMap<>();
 
 	public static void onEnable() {
@@ -28,11 +31,24 @@ public class ConfigManager {
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
+
+		privateInfo = new File(BungeeMain.INSTANCE.getDataFolder() + "/private-info.yml");
+
+		try {
+			if(!privateInfo.exists()) {
+				privateInfo.createNewFile();
+			}
+			privateInfoConfiguration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(privateInfo);
+			ConfigurationProvider.getProvider(YamlConfiguration.class).save(privateInfoConfiguration, privateInfo);
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void save() {
 		try {
 			ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, file);
+			ConfigurationProvider.getProvider(YamlConfiguration.class).save(privateInfoConfiguration, privateInfo);
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -85,5 +101,11 @@ public class ConfigManager {
 
 	public static boolean isDev() {
 		return getProxyServer().equals("3989365c");
+	}
+
+	public static String get(String key) {
+		String obj = privateInfoConfiguration.getString(key);
+		if(obj == null) throw new RuntimeException("Missing private info: " + key);
+		return obj;
 	}
 }

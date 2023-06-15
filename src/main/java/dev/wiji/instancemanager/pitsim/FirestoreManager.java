@@ -19,12 +19,13 @@ import dev.wiji.instancemanager.BungeeMain;
 import dev.wiji.instancemanager.ConfigManager;
 import dev.wiji.instancemanager.ProxyRunnable;
 import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.misc.FileResourcesUtils;
 import dev.wiji.instancemanager.objects.PlayerData;
 import org.apache.http.HttpHeaders;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -43,7 +44,8 @@ public class FirestoreManager {
 
 		try {
 			System.out.println("Loading PitSim database");
-			InputStream serviceAccount = new FileResourcesUtils().getFileFromResourceAsStream("google-key.json");
+			File file = new File(BungeeMain.INSTANCE.getDataFolder() + "/google-key.json");
+			InputStream serviceAccount = Files.newInputStream(file.toPath());
 			credentials = GoogleCredentials.fromStream(serviceAccount);
 
 			FirebaseOptions options = new FirebaseOptions.Builder()
