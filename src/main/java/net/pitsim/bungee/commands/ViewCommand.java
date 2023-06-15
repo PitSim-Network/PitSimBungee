@@ -40,8 +40,6 @@ public class ViewCommand extends Command implements TabExecutor {
 		}
 
 		String targetString = args[0];
-
-
 		UUID targetUUID = BungeeMain.getUUID(targetString, false);
 		if(targetUUID == null) {
 			AOutput.error(player, "&cCould not find that player");

@@ -72,7 +72,7 @@ public class GuildManager implements Listener {
 	}
 
 	public static Guild getGuildFromPlayer(UUID playerUUID) {
-		GuildMember member = GuildManager.getMember(playerUUID);
+		GuildMember member = getMember(playerUUID);
 		UUID guildUUID = member.getGuildUUID();
 		if(guildUUID == null) return null;
 		return getGuildFromGuildUUID(guildUUID);
