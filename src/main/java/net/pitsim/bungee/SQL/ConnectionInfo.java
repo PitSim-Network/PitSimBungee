@@ -3,11 +3,10 @@ package net.pitsim.bungee.SQL;
 import net.pitsim.bungee.ConfigManager;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public enum ConnectionInfo {
-
-
 	DEVELOPMENT(get("sql-dev-url"), get("sql-dev-username"), get("sql-dev-password"), 1000L * 60 * 60 * 24 * 30),
 	PLAYER_DATA(get("sql-data-url"), get("sql-data-username"), get("sql-data-password"), 1000L * 60 * 60 * 24 * 30),
 	STATISTICS(get("sql-stats-url"), get("sql-stats-username"), get("sql-stats-password"), 1000L * 60 * 60 * 24 * 30),
@@ -27,9 +26,16 @@ public enum ConnectionInfo {
 	 }
 
 	 public Connection getConnection() {
-		 String URL = this.URL;
-		 try { Class.forName("com.mysql.jdbc.Driver"); } catch(ClassNotFoundException e) { throw new RuntimeException(e); }
-		 try { return java.sql.DriverManager.getConnection(URL, USERNAME, PASSWORD); } catch(SQLException e) { throw new RuntimeException(e); }
+		 try {
+			 Class.forName("com.mysql.jdbc.Driver");
+		 } catch(ClassNotFoundException e) {
+			 throw new RuntimeException(e);
+		 }
+		 try {
+			 return DriverManager.getConnection(URL, USERNAME, PASSWORD);
+		 } catch(SQLException e) {
+			 throw new RuntimeException(e);
+		 }
 	 }
 
 	 public static String get(String key) {
