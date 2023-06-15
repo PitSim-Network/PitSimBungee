@@ -3,39 +3,38 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
-group 'dev.wiji'
-version '1.0'
+group 'net.pitsim'
+version ''
 
 repositories {
     mavenCentral()
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     maven { url "https://repo.mattmalec.com/repository/releases" }
     maven { url 'https://jitpack.io' }
-    maven { url 'https://m2.dv8tion.net/releases' }
 }
 
 dependencies {
-    compileOnly 'com.github.Mokulu:discord-oauth2-api:1.0.2'
-
     compileOnly 'com.mattmalec:Pterodactyl4J:2.BETA_81'
+    compileOnly 'com.github.Mokulu:discord-oauth2-api:1.0.2'
     compileOnly 'net.md-5:bungeecord-api:1.8-SNAPSHOT'
-    compileOnly files('libs/PluginQuery.jar')
-    compileOnly files('libs/PlayerStatus-0.2.0.jar')
-    compileOnly files('libs/PremiumVanish-2.7.20.jar')
-//    compileOnly 'com.github.LeonMangler:PremiumVanishAPI:2.7.11-2'
     compileOnly 'com.google.firebase:firebase-admin:8.0.0'
-    compileOnly files('libs/craftbukkit-1.8.8-R0.1-SNAPSHOT-latest.jar')
     compileOnly 'net.luckperms:api:5.4'
-    compileOnly 'com.squareup.okhttp3:okhttp:4.9.2'
-
     compileOnly group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
     compileOnly ('net.dv8tion:JDA:5.0.0-alpha.12') {
         exclude module: 'opus-java'
     }
+
+    compileOnly files('libs/PitSimBungeeDependencies-1-all.jar')
 }
 
 shadowJar {
     relocate 'dev.kyro.arcticapi', 'dev.kyro.pitsim.arcticapi'
     relocate 'net.kyori', 'dev.kyro.pitsim.kyori'
     relocate 'com.squareup.okhttp3', 'dev.pitsim.libs.okhhtp'
+}
+
+gradle.projectsEvaluated {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << '-Xmaxerrs' << '1000'
+    }
 }

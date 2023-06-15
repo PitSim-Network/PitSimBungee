@@ -1,10 +1,10 @@
 name: PitSimBungee
 description: Manages the proxy of the PitSim network
-main: dev.wiji.instancemanager.BungeeMain
+main: net.pitsim.bungee.BungeeMain
 version: 1.0
-author: wiji
+author: PitSim
+depends: [PitSimBungeeDependencies, LuckPerms, PluginQuery]
 commands:
   play:
   toggle:
   dev:
-depends: [PitSimBungeeDependencies, LuckPerms, PluginQuery]
