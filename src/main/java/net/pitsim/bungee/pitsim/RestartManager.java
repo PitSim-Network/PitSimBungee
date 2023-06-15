@@ -23,7 +23,7 @@ public class RestartManager {
 	public static final long PROXY_RESTART_TIME = 1000 * 60 * 60 * 24 * 7;
 	public static final long BACKUP_THRESHOLD = 1000 * 60 * 60 * 24;
 
-	public static long lastBackup = System.currentTimeMillis();
+	public static long lastBackup = 0;
 
 	static {
 		((ProxyRunnable) () -> {
