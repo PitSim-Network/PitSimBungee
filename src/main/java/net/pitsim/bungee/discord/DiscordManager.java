@@ -185,6 +185,8 @@ public class DiscordManager implements EventListener, Listener {
 			} else return null;
 		} catch(SQLException e) {
 			e.printStackTrace();
+		} finally {
+
 		}
 
 		return null;
@@ -208,7 +210,10 @@ public class DiscordManager implements EventListener, Listener {
 			if(rs.next()) {
 				UUID uuid = UUID.fromString(rs.getString("uuid"));
 				return getValues(discordID, rs, uuid);
-			} else return null;
+			} else {
+				rs.close();
+				return null;
+			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}

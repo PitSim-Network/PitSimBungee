@@ -1,9 +1,12 @@
 package net.pitsim.bungee.SQL;
 
+import net.pitsim.bungee.ProxyRunnable;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class SQLTable {
 	public TableStructure structure;
@@ -176,7 +179,21 @@ public class SQLTable {
 				stmt.setObject(i + 1, constraints.get(i).value);
 			}
 
-			return executeQuery(stmt);
+			ResultSet rs = executeQuery(stmt);
+			TableManager.totalResultSets++;
+
+			new ProxyRunnable() {
+				@Override
+				public void run() {
+					try {
+						if(!rs.isClosed()) TableManager.openResultSets++;
+					} catch(SQLException e) {
+						throw new RuntimeException(e);
+					}
+				}
+			}.runAfter(2, TimeUnit.SECONDS);
+
+			return rs;
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
 		}

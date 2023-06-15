@@ -66,7 +66,11 @@ public class IdentificationManager implements Listener {
 		);
 
 		try {
-			if(rs.next()) return rs.getString("username");
+			if(rs.next()) {
+				String s = rs.getString("username");
+				rs.close();
+				return s;
+			}
 			rs.close();
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
@@ -85,7 +89,11 @@ public class IdentificationManager implements Listener {
 		);
 
 		try {
-			if(rs.next()) return UUID.fromString(rs.getString("uuid"));
+			if(rs.next()) {
+				UUID uuid = UUID.fromString(rs.getString("uuid"));
+				rs.close();
+				return uuid;
+			}
 			rs.close();
 		} catch(SQLException e) {
 			throw new RuntimeException(e);

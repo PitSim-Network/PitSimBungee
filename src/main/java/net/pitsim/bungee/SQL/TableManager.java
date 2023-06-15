@@ -2,11 +2,14 @@ package net.pitsim.bungee.SQL;
 
 import net.pitsim.bungee.pitsim.PitEnchant;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TableManager {
 	private static final List<SQLTable> tables = new ArrayList<>();
+	public static int openResultSets = 0;
+	public static int totalResultSets = 0;
 
 	public static void registerTables() {
 
@@ -49,8 +52,6 @@ public class TableManager {
 			structure.columns.add(new TableColumn(Integer.class, enchantRefName));
 		}
 		new SQLTable(ConnectionInfo.STATISTICS, "enchant_statistics", structure);
-
-
 	}
 
 	protected static void registerTable(SQLTable table) {
