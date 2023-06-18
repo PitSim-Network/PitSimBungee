@@ -10,10 +10,10 @@ import net.md_5.bungee.api.ChatColor;
 
 import java.util.Map;
 
-public class RenownBuff extends GuildBuff {
-	public RenownBuff() {
-		super(ChatColor.YELLOW + "Renown Buff", "renown",
-				new ALoreBuilder("&7Increased passive renown").getLore(), ChatColor.YELLOW);
+public class SoulBuff extends GuildBuff {
+	public SoulBuff() {
+		super(ChatColor.YELLOW + "Soul Buff", "soul",
+				new ALoreBuilder("&7Increased soul chance").getLore(), ChatColor.YELLOW);
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class RenownBuff extends GuildBuff {
 			}
 		}
 
-		DummyItemStack itemStack = new DummyItemStack("BEACON");
+		DummyItemStack itemStack = new DummyItemStack("GHAST_TEAR");
 		itemStack.setDisplayName(displayName);
 		itemStack.setLore(lore.getLore());
 		return itemStack;
@@ -35,15 +35,15 @@ public class RenownBuff extends GuildBuff {
 
 	@Override
 	public void addBuffs() {
-		SubBuff renownSub = new SubBuff("renown", "&e+%amount%% &7more passive renown");
+		SubBuff soulSub = new SubBuff("soul", "&e+%amount%% &7more passive soul");
 
-		addSubBuff(1, renownSub, 12.5);
-		addSubBuff(2, renownSub, 12.5);
-		addSubBuff(3, renownSub, 12.5);
-		addSubBuff(4, renownSub, 12.5);
-		addSubBuff(5, renownSub, 12.5);
-		addSubBuff(6, renownSub, 12.5);
-		addSubBuff(7, renownSub, 12.5);
-		addSubBuff(8, renownSub, 12.5);
+		addSubBuff(1, soulSub, 12.5);
+		addSubBuff(2, soulSub, 12.5);
+		addSubBuff(3, soulSub, 12.5);
+		addSubBuff(4, soulSub, 12.5);
+		addSubBuff(5, soulSub, 12.5);
+		addSubBuff(6, soulSub, 12.5);
+		addSubBuff(7, soulSub, 12.5);
+		addSubBuff(8, soulSub, 12.5);
 	}
 }
