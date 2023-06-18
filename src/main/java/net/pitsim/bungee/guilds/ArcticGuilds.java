@@ -92,7 +92,7 @@ public class ArcticGuilds {
 		BuffManager.registerBuff(new XPBuff());
 		BuffManager.registerBuff(new GoldBuff());
 //		BuffManager.registerBuff(new DispersionBuff());
-		BuffManager.registerBuff(new RenownBuff());
+		BuffManager.registerBuff(new SoulBuff());
 	}
 
 	private static void registerUpgrades() {
