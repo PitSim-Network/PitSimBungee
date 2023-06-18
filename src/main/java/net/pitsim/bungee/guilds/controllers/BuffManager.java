@@ -40,10 +40,10 @@ public class BuffManager implements Listener {
 	public void onReputation(GuildReputationEvent event) {
 		Guild guild = event.getGuild();
 
-		GuildBuff renownBuff = BuffManager.getBuff("renown");
-		int renownBuffLevel = guild.getLevel(renownBuff);
-		if(renownBuffLevel != 0) {
-			Map<GuildBuff.SubBuff, Double> buffs = renownBuff.getBuffs(renownBuffLevel);
+		GuildBuff soulBuff = BuffManager.getBuff("soul");
+		int soulBuffLevel = guild.getLevel(soulBuff);
+		if(soulBuffLevel != 0) {
+			Map<GuildBuff.SubBuff, Double> buffs = soulBuff.getBuffs(soulBuffLevel);
 			for(Map.Entry<GuildBuff.SubBuff, Double> entry : buffs.entrySet()) {
 				event.addMultiplier(1 + entry.getValue() / 100.0);
 				break;
