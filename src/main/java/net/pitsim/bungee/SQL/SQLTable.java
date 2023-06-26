@@ -1,6 +1,8 @@
 package net.pitsim.bungee.SQL;
 
+import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.pitsim.bungee.ProxyRunnable;
+import net.pitsim.bungee.commands.PTestCommand;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -182,9 +184,10 @@ public class SQLTable {
 			ResultSet rs = executeQuery(stmt);
 			TableManager.totalResultSets++;
 
-			new ProxyRunnable() {
+			ScheduledTask runnable = new ProxyRunnable() {
 				@Override
 				public void run() {
+					PTestCommand.sqlThreadIDs.add(Thread.currentThread().getId());
 					try {
 						if(!rs.isClosed()) TableManager.openResultSets++;
 					} catch(SQLException e) {
@@ -192,6 +195,8 @@ public class SQLTable {
 					}
 				}
 			}.runAfter(2, TimeUnit.SECONDS);
+
+
 
 			return rs;
 		} catch(SQLException e) {
