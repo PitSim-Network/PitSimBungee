@@ -149,7 +149,6 @@ public class BungeeMain extends Plugin {
 	}
 
 	public static String getName(UUID uuid, boolean printError) {
-		System.out.println("Getting name");
 		return IdentificationManager.getUsername(uuid);
 	}
 
@@ -163,7 +162,6 @@ public class BungeeMain extends Plugin {
 	}
 
 	public static UUID getUUID(String name, boolean printError) {
-		System.out.println("Getting uuid");
 		return IdentificationManager.getUUID(name);
 	}
 }
