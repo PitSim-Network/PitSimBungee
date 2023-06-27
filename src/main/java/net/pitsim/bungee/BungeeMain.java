@@ -120,7 +120,7 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerCommand(this, new BackupCommand());
 		getProxy().getPluginManager().registerCommand(this, new LinkCommand());
 		getProxy().getPluginManager().registerCommand(this, new UnlinkCommand());
-//		getProxy().getPluginManager().registerCommand(this, new ViewCommand());
+		getProxy().getPluginManager().registerCommand(this, new ViewCommand());
 //		getProxy().getPluginManager().registerCommand(this, new MigrateCommand());
 
 		ConfigManager.getPitSimServerList();
