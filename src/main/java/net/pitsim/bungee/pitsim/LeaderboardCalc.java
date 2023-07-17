@@ -23,7 +23,7 @@ public class LeaderboardCalc {
 				if(!overworldServer.status.isOnline()) continue;
 				sendLeaderboardData(overworldServer);
 			}
-		}).runAfterEvery(60, 15, TimeUnit.SECONDS);
+		}).runAfterEvery(10, 15, TimeUnit.SECONDS);
 	}
 
 	public static void init() {
@@ -69,10 +69,12 @@ public class LeaderboardCalc {
 				PlayerData data = leaderboardPlayers.get(i);
 				int prestige = Objects.requireNonNull(data.getDocument().getLong("prestige")).intValue();
 				int level = Objects.requireNonNull(data.getDocument().getLong("level")).intValue();
+				double overflow = data.getDocument().contains("overflowXP") ?
+						Objects.requireNonNull(data.getDocument().getDouble("overflowXP")) : 0;
 				String username = BungeeMain.getName(data.getPlayerUUID(), false);
 				if(username == null) username = "Unknown";
 
-				leaderboardStrings.add(data.getPlayerUUID().toString() + "," + prestige + " " + level + "," +
+				leaderboardStrings.add(data.getPlayerUUID().toString() + "," + prestige + " " + level + " " + overflow + "," +
 						BigDecimal.valueOf(data.getData(leaderboard)).toPlainString() + "," + username);
 			}
 			message.writeString(String.join("|", leaderboardStrings));

@@ -24,8 +24,9 @@ public class PlayerData {
 
 				int prestige = Objects.requireNonNull(document.getLong("prestige")).intValue();
 				int level = Objects.requireNonNull(document.getLong("level")).intValue();
+				double overflow = document.contains("overflowXP") ? Objects.requireNonNull(document.getDouble("overflowXP")) : 0;
 //				long remainingXP = document.getLong("remainingXP");
-				dataMap.put(value, (double) (level + prestige * 1000));
+				dataMap.put(value, (double) ((level + prestige * 1000)) + overflow);
 				continue;
 			}
 
