@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 public class AuthenticationManager implements Listener {
 	public static DiscordOAuth oauthHandler;
 	public static final String CLIENT_ID = "841567626466951171";
-	public static final String OAUTH_SECRET = "L-X8MhiQ8Gi2H7wgLm3-FBjBfrSxrOql";
 
 	public static Map<UUID, UUID> secretClientStateMap = new HashMap<>();
 	public static List<UUID> rewardVerificationList = new ArrayList<>(); // players who weren't on a pitsim server when they verified
@@ -38,53 +37,52 @@ public class AuthenticationManager implements Listener {
 
 	public static List<UUID> queuedUsers = new ArrayList<>();
 
-	static {
-		if(!ConfigManager.isDev()) {
-			oauthHandler = new DiscordOAuth(CLIENT_ID, OAUTH_SECRET,
-					"http://147.135.8.130:3000", new String[] {"identify", "guilds.join"});
+	public AuthenticationManager() {
+		if(ConfigManager.isDev()) return;
+		oauthHandler = new DiscordOAuth(CLIENT_ID, ConfigManager.get("discord-oauth-secret"),
+				"http://147.135.8.130:3000", new String[] {"identify", "guilds.join"});
 
-			new Thread(() -> {
-				try(ServerSocket serverSocket = new ServerSocket(3000)) {
-					System.out.println("listening for discord authentications on port 3000");
-					while(true) {
-						Socket socket = serverSocket.accept();
-						RequestHandler requestHandler = new RequestHandler(socket);
-						requestHandler.start();
-					}
-				} catch(IOException e) {
-					throw new RuntimeException(e);
+		new Thread(() -> {
+			try(ServerSocket serverSocket = new ServerSocket(3000)) {
+				System.out.println("listening for discord authentications on port 3000");
+				while(true) {
+					Socket socket = serverSocket.accept();
+					RequestHandler requestHandler = new RequestHandler(socket);
+					requestHandler.start();
 				}
-			}).start();
+			} catch(IOException e) {
+				throw new RuntimeException(e);
+			}
+		}).start();
 
-			((ProxyRunnable) () -> {
-				if(queuedUsers.isEmpty()) queuedUsers = DiscordManager.getAllDiscordUserUUIDs();
-				if(queuedUsers.isEmpty()) return;
-				UUID uuid = queuedUsers.remove(0);
+		((ProxyRunnable) () -> {
+			if(queuedUsers.isEmpty()) queuedUsers = DiscordManager.getAllDiscordUserUUIDs();
+			if(queuedUsers.isEmpty()) return;
+			UUID uuid = queuedUsers.remove(0);
 
-				DiscordUser user = DiscordManager.getUser(uuid);
-				if(user == null || user.lastRefresh + 1000 * 60 * 60 * 24 > System.currentTimeMillis() || user.accessToken.equals("INVALID")) return;
+			DiscordUser user = DiscordManager.getUser(uuid);
+			if(user == null || user.lastRefresh + 1000 * 60 * 60 * 24 > System.currentTimeMillis() || user.accessToken.equals("INVALID")) return;
 
-				try {
-					TokensResponse tokens = oauthHandler.refreshTokens(user.refreshToken);
-					user.accessToken = tokens.getAccessToken();
-					user.refreshToken = tokens.getRefreshToken();
-					user.lastRefresh = System.currentTimeMillis();
+			try {
+				TokensResponse tokens = oauthHandler.refreshTokens(user.refreshToken);
+				user.accessToken = tokens.getAccessToken();
+				user.refreshToken = tokens.getRefreshToken();
+				user.lastRefresh = System.currentTimeMillis();
+				user.save();
+			} catch(HttpStatusException exception) {
+				int statusCode = exception.getStatusCode();
+				String name = BungeeMain.getName(uuid, false);
+				if(statusCode == 400) {
+					System.out.println("Marking discord user as invalid: " + name);
+					user.accessToken = "INVALID";
+					user.refreshToken = "INVALID";
 					user.save();
-				} catch(HttpStatusException exception) {
-					int statusCode = exception.getStatusCode();
-					String name = BungeeMain.getName(uuid, false);
-					if(statusCode == 400) {
-						System.out.println("Marking discord user as invalid: " + name);
-						user.accessToken = "INVALID";
-						user.refreshToken = "INVALID";
-						user.save();
-					}
-				} catch(IOException exception) {
-					exception.printStackTrace();
-					queuedUsers.add(uuid);
 				}
-			}).runAfterEvery(1, 1, TimeUnit.MINUTES);
-		}
+			} catch(IOException exception) {
+				exception.printStackTrace();
+				queuedUsers.add(uuid);
+			}
+		}).runAfterEvery(1, 1, TimeUnit.MINUTES);
 	}
 
 	public static class RequestHandler extends Thread {
