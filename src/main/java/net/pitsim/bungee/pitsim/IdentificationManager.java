@@ -4,6 +4,7 @@ import dev.wiji.instancemanager.SQL.*;
 import dev.wiji.instancemanager.alogging.ConnectionData;
 import dev.wiji.instancemanager.alogging.ConnectionManager;
 import net.md_5.bungee.api.plugin.Listener;
+import net.pitsim.bungee.BungeeMain;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -98,6 +99,7 @@ public class IdentificationManager implements Listener {
 		stmt.setLong(3, time);
 		stmt.setString(4, domain);
 		stmt.execute();
+
 
 		ConnectionManager.connectionData.playerConnectionMap.put(uuid.toString(), new ConnectionData.PlayerConnectionData(username, domain));
 	}

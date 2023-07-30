@@ -1,20 +1,5 @@
 package net.pitsim.bungee.discord;
 
-import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.ConfigManager;
-import dev.wiji.instancemanager.ProxyRunnable;
-import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.objects.PitSimServer;
-import dev.wiji.instancemanager.objects.PluginMessage;
-import dev.wiji.instancemanager.pitsim.IdentificationManager;
-import dev.wiji.instancemanager.pitsim.PitSimServerManager;
-import net.pitsim.bungee.BungeeMain;
-import net.pitsim.bungee.ConfigManager;
-import net.pitsim.bungee.ProxyRunnable;
-import net.pitsim.bungee.misc.AOutput;
-import net.pitsim.bungee.objects.PitSimServer;
-import net.pitsim.bungee.objects.PluginMessage;
-import net.pitsim.bungee.pitsim.PitSimServerManager;
 import io.mokulu.discord.oauth.DiscordAPI;
 import io.mokulu.discord.oauth.DiscordOAuth;
 import io.mokulu.discord.oauth.model.TokensResponse;
@@ -23,6 +8,14 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
+import net.pitsim.bungee.BungeeMain;
+import net.pitsim.bungee.ConfigManager;
+import net.pitsim.bungee.ProxyRunnable;
+import net.pitsim.bungee.misc.AOutput;
+import net.pitsim.bungee.objects.PitSimServer;
+import net.pitsim.bungee.objects.PluginMessage;
+import net.pitsim.bungee.pitsim.IdentificationManager;
+import net.pitsim.bungee.pitsim.PitSimServerManager;
 import org.bukkit.ChatColor;
 import org.jsoup.HttpStatusException;
 
