@@ -1,13 +1,14 @@
 package net.pitsim.bungee.commands;
 
-import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.discord.DiscordManager;
-import dev.wiji.instancemanager.discord.DiscordUser;
-import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.misc.Misc;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+import net.pitsim.bungee.BungeeMain;
+import net.pitsim.bungee.discord.DiscordManager;
+import net.pitsim.bungee.discord.DiscordUser;
+import net.pitsim.bungee.misc.AOutput;
+import net.pitsim.bungee.misc.Misc;
+import net.pitsim.bungee.pitsim.IdentificationManager;
 
 import java.util.UUID;
 

@@ -1,19 +1,5 @@
 package net.pitsim.bungee.discord;
 
-import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.ProxyRunnable;
-import dev.wiji.instancemanager.SQL.Constraint;
-import dev.wiji.instancemanager.SQL.Field;
-import dev.wiji.instancemanager.SQL.SQLTable;
-import dev.wiji.instancemanager.SQL.TableManager;
-import dev.wiji.instancemanager.discord.commands.CleanCommand;
-import dev.wiji.instancemanager.discord.commands.GraphCommand;
-import dev.wiji.instancemanager.discord.commands.PingCommand;
-import dev.wiji.instancemanager.discord.commands.SpamWijiCommand;
-import dev.wiji.instancemanager.events.MessageEvent;
-import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.misc.PrivateInfo;
-import dev.wiji.instancemanager.objects.PluginMessage;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -30,6 +16,17 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.pitsim.bungee.BungeeMain;
+import net.pitsim.bungee.ConfigManager;
+import net.pitsim.bungee.ProxyRunnable;
+import net.pitsim.bungee.discord.commands.CleanCommand;
+import net.pitsim.bungee.discord.commands.GraphCommand;
+import net.pitsim.bungee.discord.commands.PingCommand;
+import net.pitsim.bungee.discord.commands.SpamWijiCommand;
+import net.pitsim.bungee.events.MessageEvent;
+import net.pitsim.bungee.misc.AOutput;
+import net.pitsim.bungee.objects.PluginMessage;
+import net.pitsim.bungee.pitsim.IdentificationManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.security.auth.login.LoginException;
@@ -57,7 +54,7 @@ public class DiscordManager implements EventListener, Listener {
 		AOutput.log("Discord bot loading");
 		isEnabled = true;
 
-		BUILDER = JDABuilder.createDefault(PrivateInfo.BOT_TOKEN);
+		BUILDER = JDABuilder.createDefault(ConfigManager.get("discord-bot-token"));
 		try {
 			BUILDER.setMemberCachePolicy(MemberCachePolicy.ALL);
 			BUILDER.enableIntents(GatewayIntent.GUILD_MEMBERS);
@@ -163,15 +160,9 @@ public class DiscordManager implements EventListener, Listener {
 		}
 	}
 
+
 	public static Connection getConnection() {
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			String dbUrl = "jdbc:mysql://sql.pitsim.net:3306/s9_PlayerData";
-			String username = "***REMOVED***";
-			String password = PrivateInfo.PLAYER_DATA_SQL_PASSWORD;
-			return DriverManager.getConnection(dbUrl, username, password);
-		} catch(Exception ignored) {}
-		return null;
+		return IdentificationManager.getConnection();
 	}
 
 	public static void createTable(Connection connection) throws SQLException {

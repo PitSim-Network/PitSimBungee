@@ -4,32 +4,10 @@ package net.pitsim.bungee;
 import com.mattmalec.pterodactyl4j.PteroBuilder;
 import com.mattmalec.pterodactyl4j.application.entities.PteroApplication;
 import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
-import dev.wiji.instancemanager.SQL.TableManager;
-import dev.wiji.instancemanager.alogging.ConnectionManager;
-import dev.wiji.instancemanager.alogging.LogManager;
-import dev.wiji.instancemanager.aserverstatistics.StatisticsManager;
-import dev.wiji.instancemanager.auctions.AuctionManager;
-import dev.wiji.instancemanager.auctions.AuctionMessaging;
-import dev.wiji.instancemanager.commands.*;
-import dev.wiji.instancemanager.discord.AuthenticationManager;
-import dev.wiji.instancemanager.discord.DiscordManager;
-import dev.wiji.instancemanager.guilds.ArcticGuilds;
-import dev.wiji.instancemanager.market.MarketManager;
-import dev.wiji.instancemanager.market.MarketMessaging;
-import dev.wiji.instancemanager.objects.ServerType;
-import dev.wiji.instancemanager.pitsim.*;
-import dev.wiji.instancemanager.skywars.PitsimQuestManager;
-import dev.wiji.instancemanager.skywars.PluginMessageSender;
-import dev.wiji.instancemanager.skywars.SkywarsGameManager;
-import dev.wiji.instancemanager.skywars.SkywarsPluginListener;
-import dev.wiji.instancemanager.storage.EditSessionManager;
-import dev.wiji.instancemanager.storage.StorageManager;
-import dev.wiji.instancemanager.storage.dupe.DupeManager;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
-import net.pitsim.bungee.SQL.TableManager;
 import net.pitsim.bungee.alogging.ConnectionManager;
 import net.pitsim.bungee.alogging.LogManager;
 import net.pitsim.bungee.aserverstatistics.StatisticsManager;
@@ -80,8 +58,6 @@ public class BungeeMain extends Plugin {
 				ConfigManager.get("ptero-api-key"));
 		client = PteroBuilder.createClient(ConfigManager.get("ptero-url"),
 				ConfigManager.get("ptero-client-key"));
-
-		TableManager.registerTables();
 
 		LUCKPERMS = LuckPermsProvider.get();
 		this.getProxy().registerChannel("BungeeCord");

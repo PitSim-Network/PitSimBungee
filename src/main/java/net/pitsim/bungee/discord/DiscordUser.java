@@ -1,13 +1,9 @@
 package net.pitsim.bungee.discord;
 
-import dev.wiji.instancemanager.SQL.Constraint;
-import dev.wiji.instancemanager.SQL.SQLTable;
-import dev.wiji.instancemanager.SQL.TableManager;
-import dev.wiji.instancemanager.SQL.Value;
-import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.misc.PrivateInfo;
 import io.mokulu.discord.oauth.DiscordAPI;
 import io.mokulu.discord.oauth.model.User;
+import net.pitsim.bungee.ConfigManager;
+import net.pitsim.bungee.misc.AOutput;
 import okhttp3.*;
 
 import java.io.IOException;

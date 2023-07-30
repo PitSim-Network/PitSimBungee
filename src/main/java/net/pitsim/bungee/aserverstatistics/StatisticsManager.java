@@ -1,14 +1,11 @@
 package net.pitsim.bungee.aserverstatistics;
 
-import dev.wiji.instancemanager.SQL.Constraint;
-import dev.wiji.instancemanager.SQL.SQLTable;
-import dev.wiji.instancemanager.SQL.TableManager;
-import dev.wiji.instancemanager.SQL.Value;
-import dev.wiji.instancemanager.events.MessageEvent;
-import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.pitsim.PitEnchant;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.pitsim.bungee.ConfigManager;
+import net.pitsim.bungee.events.MessageEvent;
+import net.pitsim.bungee.misc.AOutput;
+import net.pitsim.bungee.pitsim.PitEnchant;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -19,9 +16,9 @@ import java.util.function.Consumer;
 public class StatisticsManager implements Listener {
 	public static final List<StatisticDataChunk> queuedChunks = new ArrayList<>();
 
-	public static final String URL = "jdbc:mysql://sql.pitsim.net:3306/s9_Statistics";
-	public static final String USERNAME = "***REMOVED***";
-	public static final String PASSWORD = PrivateInfo.STATISTICS_SQL_PASSWORD;
+	public static final String URL = ConfigManager.get("sql-stats-url");
+	public static final String USERNAME = ConfigManager.get("sql-stats-username");
+	public static final String PASSWORD = ConfigManager.get("sql-stats-password");
 	public static final String TABLE_NAME = "enchant_statistics";
 	public static final long MAX_TIME = 1000L * 60 * 60 * 24 * 30;
 

@@ -1,11 +1,6 @@
 package net.pitsim.bungee.alogging;
 
-import dev.wiji.instancemanager.SQL.Field;
-import dev.wiji.instancemanager.SQL.SQLTable;
-import dev.wiji.instancemanager.SQL.TableManager;
-import dev.wiji.instancemanager.pitsim.IdentificationManager;
-
-import java.io.FileWriter;
+import net.pitsim.bungee.pitsim.IdentificationManager;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;

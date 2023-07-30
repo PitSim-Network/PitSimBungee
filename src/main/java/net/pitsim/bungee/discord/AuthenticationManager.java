@@ -1,5 +1,12 @@
 package net.pitsim.bungee.discord;
 
+import net.pitsim.bungee.BungeeMain;
+import net.pitsim.bungee.ConfigManager;
+import net.pitsim.bungee.ProxyRunnable;
+import net.pitsim.bungee.misc.AOutput;
+import net.pitsim.bungee.objects.PitSimServer;
+import net.pitsim.bungee.objects.PluginMessage;
+import net.pitsim.bungee.pitsim.PitSimServerManager;
 import io.mokulu.discord.oauth.DiscordAPI;
 import io.mokulu.discord.oauth.DiscordOAuth;
 import io.mokulu.discord.oauth.model.TokensResponse;
@@ -8,14 +15,6 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
-import net.pitsim.bungee.BungeeMain;
-import net.pitsim.bungee.ConfigManager;
-import net.pitsim.bungee.ProxyRunnable;
-import net.pitsim.bungee.misc.AOutput;
-import net.pitsim.bungee.objects.PitSimServer;
-import net.pitsim.bungee.objects.PluginMessage;
-import net.pitsim.bungee.pitsim.IdentificationManager;
-import net.pitsim.bungee.pitsim.PitSimServerManager;
 import org.bukkit.ChatColor;
 import org.jsoup.HttpStatusException;
 
@@ -28,12 +27,9 @@ import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static net.pitsim.bungee.discord.AuthenticationManager.*;
-
 public class AuthenticationManager implements Listener {
 	public static DiscordOAuth oauthHandler;
 	public static final String CLIENT_ID = "841567626466951171";
-	public static final String OAUTH_SECRET = "L-X8MhiQ8Gi2H7wgLm3-FBjBfrSxrOql";
 
 	public static Map<UUID, UUID> secretClientStateMap = new HashMap<>();
 	public static List<UUID> rewardVerificationList = new ArrayList<>(); // players who weren't on a pitsim server when they verified
@@ -68,26 +64,25 @@ public class AuthenticationManager implements Listener {
 			if(user == null || user.lastRefresh + 1000 * 60 * 60 * 24 > System.currentTimeMillis() || user.accessToken.equals("INVALID")) return;
 
 			try {
-					TokensResponse tokens = oauthHandler.refreshTokens(user.refreshToken);
-					user.accessToken = tokens.getAccessToken();
-					user.refreshToken = tokens.getRefreshToken();
-					user.lastRefresh = System.currentTimeMillis();
+				TokensResponse tokens = oauthHandler.refreshTokens(user.refreshToken);
+				user.accessToken = tokens.getAccessToken();
+				user.refreshToken = tokens.getRefreshToken();
+				user.lastRefresh = System.currentTimeMillis();
+				user.save();
+			} catch(HttpStatusException exception) {
+				int statusCode = exception.getStatusCode();
+				String name = BungeeMain.getName(uuid, false);
+				if(statusCode == 400) {
+					System.out.println("Marking discord user as invalid: " + name);
+					user.accessToken = "INVALID";
+					user.refreshToken = "INVALID";
 					user.save();
-				} catch(HttpStatusException exception) {
-					int statusCode = exception.getStatusCode();
-					String name = IdentificationManager.getUsername(IdentificationManager.getConnection(), user.uuid);
-					if(statusCode == 400) {
-						System.out.println("Marking discord user as invalid: " + name);
-						user.accessToken = "INVALID";
-						user.refreshToken = "INVALID";
-						user.save();
-					}
-				} catch(IOException exception) {
-					exception.printStackTrace();
-					queuedUsers.add(uuid);
 				}
-			}).runAfterEvery(1, 1, TimeUnit.MINUTES);
-		}
+			} catch(IOException exception) {
+				exception.printStackTrace();
+				queuedUsers.add(uuid);
+			}
+		}).runAfterEvery(1, 1, TimeUnit.MINUTES);
 	}
 
 	public static class RequestHandler extends Thread {
@@ -151,7 +146,6 @@ public class AuthenticationManager implements Listener {
 			}
 		}
 
-
 		public void authenticate(String code, UUID state) {
 			try {
 				TokensResponse tokens = oauthHandler.getTokens(code);
@@ -174,8 +168,7 @@ public class AuthenticationManager implements Listener {
 				DiscordUser previousUser = DiscordManager.getUser(userId);
 				if(previousUser != null) {
 					AOutput.error(proxiedPlayer, "&c&lERROR!&7 Your discord (" + user.getFullUsername() +
-							") is already linked to " + IdentificationManager.getUsername(
-									IdentificationManager.getConnection(), previousUser.uuid));
+							") is already linked to " + BungeeMain.getName(previousUser.uuid, false));
 					return;
 				}
 
@@ -201,7 +194,7 @@ public class AuthenticationManager implements Listener {
 				try {
 					Objects.requireNonNull(DiscordManager.JDA.getTextChannelById(Constants.VERIFICATION_LOG_CHANNEL))
 							.sendMessage("Discord: `" + user.getFullUsername() + "`" +
-									"\nIGN/UUID: `" + IdentificationManager.getUsername(IdentificationManager.getConnection(), playerUUID) + "`").queue();
+									"\nIGN/UUID: `" + BungeeMain.getName(playerUUID, false) + "`").queue();
 				} catch(Exception exception) {
 					exception.printStackTrace();
 				}
@@ -209,10 +202,7 @@ public class AuthenticationManager implements Listener {
 				throw new RuntimeException(exception);
 			}
 		}
-
 	}
-
-
 
 	public static void attemptAuthentication(ProxiedPlayer proxiedPlayer) {
 		DiscordUser discordUser = DiscordManager.getUser(proxiedPlayer.getUniqueId());

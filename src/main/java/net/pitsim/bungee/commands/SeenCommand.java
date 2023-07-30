@@ -1,17 +1,13 @@
 package net.pitsim.bungee.commands;
 
-import dev.wiji.instancemanager.BungeeMain;
-import dev.wiji.instancemanager.SQL.Constraint;
-import dev.wiji.instancemanager.SQL.Field;
-import dev.wiji.instancemanager.SQL.SQLTable;
-import dev.wiji.instancemanager.SQL.TableManager;
-import dev.wiji.instancemanager.misc.AOutput;
-import dev.wiji.instancemanager.misc.Misc;
-import dev.wiji.instancemanager.pitsim.IdentificationManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+import net.pitsim.bungee.BungeeMain;
+import net.pitsim.bungee.misc.AOutput;
+import net.pitsim.bungee.misc.Misc;
+import net.pitsim.bungee.pitsim.IdentificationManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,7 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import static dev.wiji.instancemanager.pitsim.IdentificationManager.NEW_TABLE;
+import static net.pitsim.bungee.pitsim.IdentificationManager.NEW_TABLE;
 
 public class SeenCommand extends Command {
 	public SeenCommand() {
