@@ -25,7 +25,7 @@ public class ConnectionManager implements Listener {
 		}
 
 		trackedSubdomains.add("mc.pitsim.net");
-		trackedSubdomains.add("pitsim.net");
+		trackedSubdomains.add("pitsim.enet");
 		trackedSubdomains.add("pitsim.com");
 		trackedSubdomains.add("play.pitsim.net");
 		trackedSubdomains.add("vote.pitsim.net");

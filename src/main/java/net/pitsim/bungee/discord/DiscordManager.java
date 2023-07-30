@@ -1,19 +1,19 @@
 package net.pitsim.bungee.discord;
 
-import net.pitsim.bungee.BungeeMain;
-import net.pitsim.bungee.ConfigManager;
-import net.pitsim.bungee.ProxyRunnable;
-import net.pitsim.bungee.SQL.Constraint;
-import net.pitsim.bungee.SQL.Field;
-import net.pitsim.bungee.SQL.SQLTable;
-import net.pitsim.bungee.SQL.TableManager;
-import net.pitsim.bungee.discord.commands.CleanCommand;
-import net.pitsim.bungee.discord.commands.GraphCommand;
-import net.pitsim.bungee.discord.commands.PingCommand;
-import net.pitsim.bungee.discord.commands.SpamWijiCommand;
-import net.pitsim.bungee.events.MessageEvent;
-import net.pitsim.bungee.misc.AOutput;
-import net.pitsim.bungee.objects.PluginMessage;
+import dev.wiji.instancemanager.BungeeMain;
+import dev.wiji.instancemanager.ProxyRunnable;
+import dev.wiji.instancemanager.SQL.Constraint;
+import dev.wiji.instancemanager.SQL.Field;
+import dev.wiji.instancemanager.SQL.SQLTable;
+import dev.wiji.instancemanager.SQL.TableManager;
+import dev.wiji.instancemanager.discord.commands.CleanCommand;
+import dev.wiji.instancemanager.discord.commands.GraphCommand;
+import dev.wiji.instancemanager.discord.commands.PingCommand;
+import dev.wiji.instancemanager.discord.commands.SpamWijiCommand;
+import dev.wiji.instancemanager.events.MessageEvent;
+import dev.wiji.instancemanager.misc.AOutput;
+import dev.wiji.instancemanager.misc.PrivateInfo;
+import dev.wiji.instancemanager.objects.PluginMessage;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -33,8 +33,7 @@ import net.md_5.bungee.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.security.auth.login.LoginException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -58,7 +57,7 @@ public class DiscordManager implements EventListener, Listener {
 		AOutput.log("Discord bot loading");
 		isEnabled = true;
 
-		BUILDER = JDABuilder.createDefault(ConfigManager.get("discord-bot-token"));
+		BUILDER = JDABuilder.createDefault(PrivateInfo.BOT_TOKEN);
 		try {
 			BUILDER.setMemberCachePolicy(MemberCachePolicy.ALL);
 			BUILDER.enableIntents(GatewayIntent.GUILD_MEMBERS);
@@ -164,24 +163,55 @@ public class DiscordManager implements EventListener, Listener {
 		}
 	}
 
-	public static DiscordUser getUser(UUID uuid) {
-		SQLTable table = TableManager.getTable(DISCORD_TABLE);
-		if(table == null) throw new RuntimeException("Discord table not found");
+	public static Connection getConnection() {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			String dbUrl = "jdbc:mysql://sql.pitsim.net:3306/s9_PlayerData";
+			String username = "***REMOVED***";
+			String password = PrivateInfo.PLAYER_DATA_SQL_PASSWORD;
+			return DriverManager.getConnection(dbUrl, username, password);
+		} catch(Exception ignored) {}
+		return null;
+	}
 
-		ResultSet rs = table.selectRow(
-				new Field("discord_id"),
-				new Field("access_token"),
-				new Field("refresh_token"),
-				new Field("last_refresh"),
-				new Field("last_link"),
-				new Field("last_boosting_claim"),
-				new Constraint("uuid", uuid.toString())
-		);
+	public static void createTable(Connection connection) throws SQLException {
+		Statement stmt = connection.createStatement();
+
+		// Create the table
+		String createTableSQL = "CREATE TABLE " + DISCORD_TABLE + " (" +
+				"uuid VARCHAR(36) PRIMARY KEY, " +
+				"discord_id BIGINT NOT NULL, " +
+				"access_token VARCHAR(50), " +
+				"refresh_token VARCHAR(50), " +
+				"last_refresh BIGINT NOT NULL, " +
+				"last_link BIGINT NOT NULL, " +
+				"last_boosting_claim BIGINT NOT NULL)";
+		stmt.executeUpdate(createTableSQL);
+
+		// Close the statement and connection
+		stmt.close();
+		connection.close();
+	}
+
+	public static DiscordUser getUser(UUID uuid) {
+		Connection connection = getConnection();
+		assert connection != null;
 
 		try {
+			String sql = "SELECT discord_id, access_token, refresh_token, last_refresh, last_link, last_boosting_claim FROM " + DISCORD_TABLE + " WHERE uuid = ?";
+			PreparedStatement stmt = connection.prepareStatement(sql);
+			stmt.setString(1, uuid.toString());
+			ResultSet rs = stmt.executeQuery();
+
 			if(rs.next()) {
 				long id = rs.getLong("discord_id");
-				return getValues(id, rs, uuid);
+				String access = rs.getString("access_token");
+				String refresh = rs.getString("refresh_token");
+				long refreshTime = rs.getLong("last_refresh");
+				long lastLink = rs.getLong("last_link");
+				long claim = rs.getLong("last_boosting_claim");
+
+				return new DiscordUser(uuid, id, access, refresh, refreshTime, lastLink, claim);
 			} else return null;
 		} catch(SQLException e) {
 			e.printStackTrace();
@@ -189,31 +219,8 @@ public class DiscordManager implements EventListener, Listener {
 
 		}
 
-		return null;
-	}
-
-	public static DiscordUser getUser(long discordID) {
-		SQLTable table = TableManager.getTable(DISCORD_TABLE);
-		if(table == null) throw new RuntimeException("Discord table not found");
-
-		ResultSet rs = table.selectRow(
-				new Field("uuid"),
-				new Field("access_token"),
-				new Field("refresh_token"),
-				new Field("last_refresh"),
-				new Field("last_link"),
-				new Field("last_boosting_claim"),
-				new Constraint("discord_id", discordID)
-		);
-
 		try {
-			if(rs.next()) {
-				UUID uuid = UUID.fromString(rs.getString("uuid"));
-				return getValues(discordID, rs, uuid);
-			} else {
-				rs.close();
-				return null;
-			}
+			connection.close();
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
@@ -221,34 +228,59 @@ public class DiscordManager implements EventListener, Listener {
 		return null;
 	}
 
-	@NotNull
-	private static DiscordUser getValues(long discordID, ResultSet rs, UUID uuid) throws SQLException {
-		String access = rs.getString("access_token");
-		String refresh = rs.getString("refresh_token");
-		long refreshTime = rs.getLong("last_refresh");
-		long lastLink = rs.getLong("last_link");
-		long claim = rs.getLong("last_boosting_claim");
+	public static DiscordUser getUser(long discordID) {
+		Connection connection = getConnection();
+		assert connection != null;
 
-		rs.close();
-		return new DiscordUser(uuid, discordID, access, refresh, refreshTime, lastLink, claim);
+		try {
+			String sql = "SELECT uuid, access_token, refresh_token, last_refresh, last_link, last_boosting_claim FROM " + DISCORD_TABLE + " WHERE discord_id = ?";
+			PreparedStatement stmt = connection.prepareStatement(sql);
+			stmt.setLong(1, discordID);
+			ResultSet rs = stmt.executeQuery();
+
+			if(rs.next()) {
+				UUID uuid = UUID.fromString(rs.getString("uuid"));
+				String access = rs.getString("access_token");
+				String refresh = rs.getString("refresh_token");
+				long refreshTime = rs.getLong("last_refresh");
+				long lastLink = rs.getLong("last_link");
+				long claim = rs.getLong("last_boosting_claim");
+
+				return new DiscordUser(uuid, discordID, access, refresh, refreshTime, lastLink, claim);
+			} else return null;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			connection.close();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	public static List<UUID> getAllDiscordUserUUIDs() {
 		List<UUID> discordUsers = new ArrayList<>();
-		SQLTable table = TableManager.getTable(DISCORD_TABLE);
-		if(table == null) throw new RuntimeException("Discord table not found");
-
-		ResultSet rs = table.selectRow(
-				new Field("uuid")
-		);
+		Connection connection = getConnection();
+		assert connection != null;
 
 		try {
+			String sql = "SELECT uuid FROM " + DISCORD_TABLE;
+			PreparedStatement stmt = connection.prepareStatement(sql);
+			ResultSet rs = stmt.executeQuery();
+
 			while(rs.next()) {
 				UUID uuid = UUID.fromString(rs.getString("uuid"));
 				discordUsers.add(uuid);
 			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
 
-			rs.close();
+		try {
+			connection.close();
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}

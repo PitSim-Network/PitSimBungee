@@ -4,6 +4,27 @@ package net.pitsim.bungee;
 import com.mattmalec.pterodactyl4j.PteroBuilder;
 import com.mattmalec.pterodactyl4j.application.entities.PteroApplication;
 import com.mattmalec.pterodactyl4j.client.entities.PteroClient;
+import dev.wiji.instancemanager.SQL.TableManager;
+import dev.wiji.instancemanager.alogging.ConnectionManager;
+import dev.wiji.instancemanager.alogging.LogManager;
+import dev.wiji.instancemanager.aserverstatistics.StatisticsManager;
+import dev.wiji.instancemanager.auctions.AuctionManager;
+import dev.wiji.instancemanager.auctions.AuctionMessaging;
+import dev.wiji.instancemanager.commands.*;
+import dev.wiji.instancemanager.discord.AuthenticationManager;
+import dev.wiji.instancemanager.discord.DiscordManager;
+import dev.wiji.instancemanager.guilds.ArcticGuilds;
+import dev.wiji.instancemanager.market.MarketManager;
+import dev.wiji.instancemanager.market.MarketMessaging;
+import dev.wiji.instancemanager.objects.ServerType;
+import dev.wiji.instancemanager.pitsim.*;
+import dev.wiji.instancemanager.skywars.PitsimQuestManager;
+import dev.wiji.instancemanager.skywars.PluginMessageSender;
+import dev.wiji.instancemanager.skywars.SkywarsGameManager;
+import dev.wiji.instancemanager.skywars.SkywarsPluginListener;
+import dev.wiji.instancemanager.storage.EditSessionManager;
+import dev.wiji.instancemanager.storage.StorageManager;
+import dev.wiji.instancemanager.storage.dupe.DupeManager;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -32,9 +53,12 @@ import net.pitsim.bungee.storage.dupe.DupeManager;
 import septogeddon.pluginquery.PluginQuery;
 import septogeddon.pluginquery.api.QueryMessenger;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class BungeeMain extends Plugin {
@@ -149,7 +173,16 @@ public class BungeeMain extends Plugin {
 	}
 
 	public static String getName(UUID uuid, boolean printError) {
-		return IdentificationManager.getUsername(uuid);
+		try {
+			Connection connection = IdentificationManager.getConnection();
+			String name = IdentificationManager.getUsername(Objects.requireNonNull(connection), uuid);
+			connection.close();
+			return name;
+
+		} catch(SQLException throwables) {
+			if(printError) throwables.printStackTrace();
+		}
+		return null;
 	}
 
 	public static List<ProxiedPlayer> getMainGamemodePlayers() {
@@ -162,6 +195,15 @@ public class BungeeMain extends Plugin {
 	}
 
 	public static UUID getUUID(String name, boolean printError) {
-		return IdentificationManager.getUUID(name);
+		try {
+			Connection connection = IdentificationManager.getConnection();
+			UUID uuid = IdentificationManager.getUuid(Objects.requireNonNull(connection), name);
+			connection.close();
+			return uuid;
+
+		} catch(SQLException throwables) {
+			if(printError) throwables.printStackTrace();
+		}
+		return null;
 	}
 }

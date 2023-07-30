@@ -1,17 +1,18 @@
 package net.pitsim.bungee.discord;
 
-import net.pitsim.bungee.ConfigManager;
-import net.pitsim.bungee.SQL.Constraint;
-import net.pitsim.bungee.SQL.SQLTable;
-import net.pitsim.bungee.SQL.TableManager;
-import net.pitsim.bungee.SQL.Value;
-import net.pitsim.bungee.misc.AOutput;
+import dev.wiji.instancemanager.SQL.Constraint;
+import dev.wiji.instancemanager.SQL.SQLTable;
+import dev.wiji.instancemanager.SQL.TableManager;
+import dev.wiji.instancemanager.SQL.Value;
+import dev.wiji.instancemanager.misc.AOutput;
+import dev.wiji.instancemanager.misc.PrivateInfo;
 import io.mokulu.discord.oauth.DiscordAPI;
 import io.mokulu.discord.oauth.model.User;
 import okhttp3.*;
 
 import java.io.IOException;
-import java.sql.ResultSet;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,50 +69,62 @@ public class DiscordUser {
 	}
 
 	public void remove() {
-		SQLTable table = TableManager.getTable(DISCORD_TABLE);
-		if(table == null) throw new RuntimeException("Table not found");
+		Connection connection = DiscordManager.getConnection();
+		assert connection != null;
 
-		table.deleteRow(
-				new Constraint("uuid", uuid.toString())
-		);
+		String sql = "DELETE FROM " + DISCORD_TABLE + " WHERE uuid = ?";
+
+		try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+			stmt.setString(1, uuid.toString());
+			stmt.executeUpdate();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			connection.close();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
 
 		AuthenticationManager.queuedUsers.remove(uuid);
 	}
 
 	public void save() {
-		SQLTable table = TableManager.getTable(DISCORD_TABLE);
-		if(table == null) throw new RuntimeException("Table not found");
-
-		ResultSet rs = table.selectRow(
-				new Constraint("uuid", uuid.toString())
-		);
+		Connection connection = DiscordManager.getConnection();
 
 		try {
-			if(rs.next()) {
-				table.updateRow(
-						new Constraint("uuid", uuid.toString()),
-						new Value("discord_id", discordID),
-						new Value("access_token", accessToken),
-						new Value("refresh_token", refreshToken),
-						new Value("last_refresh", lastRefresh),
-						new Value("last_link", lastLink),
-						new Value("last_boosting_claim", lastBoostingClaim)
-				);
-			} else {
-				table.insertRow(
-						new Value("uuid", uuid.toString()),
-						new Value("discord_id", discordID),
-						new Value("access_token", accessToken),
-						new Value("refresh_token", refreshToken),
-						new Value("last_refresh", lastRefresh),
-						new Value("last_link", lastLink),
-						new Value("last_boosting_claim", lastBoostingClaim)
-				);
-			}
+			String sql = "INSERT INTO " + DISCORD_TABLE + " (uuid, discord_id, access_token, refresh_token, last_refresh, last_link, last_boosting_claim)" +
+					" VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = ?, discord_id = ?, access_token = ?, refresh_token = ?," +
+					" last_refresh = ?, last_link = ?, last_boosting_claim = ?";
 
-			rs.close();
-		} catch(SQLException exception) {
-			exception.printStackTrace();
+			assert connection != null;
+
+			PreparedStatement stmt = connection.prepareStatement(sql);
+			stmt.setString(1, uuid.toString());
+			stmt.setLong(2, discordID);
+			stmt.setString(3, accessToken);
+			stmt.setString(4, refreshToken);
+			stmt.setLong(5, lastRefresh);
+			stmt.setLong(6, lastLink);
+			stmt.setLong(7, lastBoostingClaim);
+
+			stmt.setString(8, uuid.toString());
+			stmt.setLong(9, discordID);
+			stmt.setString(10, accessToken);
+			stmt.setString(11, refreshToken);
+			stmt.setLong(12, lastRefresh);
+			stmt.setLong(13, lastLink);
+			stmt.setLong(14, lastBoostingClaim);
+			stmt.executeUpdate();
+		} catch(SQLException e) {
+			throw new RuntimeException(e);
+		}
+
+		try {
+			connection.close();
+		} catch(SQLException e) {
+			throw new RuntimeException(e);
 		}
 	}
 

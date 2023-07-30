@@ -1,11 +1,14 @@
 package net.pitsim.bungee.alogging;
 
-import net.pitsim.bungee.SQL.Field;
-import net.pitsim.bungee.SQL.SQLTable;
-import net.pitsim.bungee.SQL.TableManager;
-import net.pitsim.bungee.pitsim.IdentificationManager;
+import dev.wiji.instancemanager.SQL.Field;
+import dev.wiji.instancemanager.SQL.SQLTable;
+import dev.wiji.instancemanager.SQL.TableManager;
+import dev.wiji.instancemanager.pitsim.IdentificationManager;
 
+import java.io.FileWriter;
+import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -15,16 +18,13 @@ public class ConnectionData {
 
 
 	public ConnectionData() {
-		SQLTable table = TableManager.getTable(IdentificationManager.TABLE_NAME);
-		if(table == null) throw new RuntimeException("Table not found");
-
-		ResultSet rs = table.selectRow(
-				new Field("uuid"),
-				new Field("username"),
-				new Field("initial_join_domain")
-		);
 
 		try {
+			Connection connection = IdentificationManager.getConnection();
+			assert connection != null;
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT uuid, username, initial_join_domain FROM " + IdentificationManager.NEW_TABLE);
+
 			while (rs.next()) {
 				UUID uuid = UUID.fromString(rs.getString("uuid"));
 				String username = rs.getString("username");
@@ -34,6 +34,8 @@ public class ConnectionData {
 			}
 
 			rs.close();
+			stmt.close();
+
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
