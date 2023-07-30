@@ -28,6 +28,8 @@ import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static net.pitsim.bungee.discord.AuthenticationManager.*;
+
 public class AuthenticationManager implements Listener {
 	public static DiscordOAuth oauthHandler;
 	public static final String CLIENT_ID = "841567626466951171";
@@ -65,7 +67,7 @@ public class AuthenticationManager implements Listener {
 			DiscordUser user = DiscordManager.getUser(uuid);
 			if(user == null || user.lastRefresh + 1000 * 60 * 60 * 24 > System.currentTimeMillis() || user.accessToken.equals("INVALID")) return;
 
-				try {
+			try {
 					TokensResponse tokens = oauthHandler.refreshTokens(user.refreshToken);
 					user.accessToken = tokens.getAccessToken();
 					user.refreshToken = tokens.getRefreshToken();
@@ -149,6 +151,7 @@ public class AuthenticationManager implements Listener {
 			}
 		}
 
+
 		public void authenticate(String code, UUID state) {
 			try {
 				TokensResponse tokens = oauthHandler.getTokens(code);
@@ -206,7 +209,10 @@ public class AuthenticationManager implements Listener {
 				throw new RuntimeException(exception);
 			}
 		}
+
 	}
+
+
 
 	public static void attemptAuthentication(ProxiedPlayer proxiedPlayer) {
 		DiscordUser discordUser = DiscordManager.getUser(proxiedPlayer.getUniqueId());

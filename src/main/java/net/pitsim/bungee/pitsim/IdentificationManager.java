@@ -1,10 +1,12 @@
 package net.pitsim.bungee.pitsim;
 
-import dev.wiji.instancemanager.SQL.*;
-import dev.wiji.instancemanager.alogging.ConnectionData;
-import dev.wiji.instancemanager.alogging.ConnectionManager;
+import com.google.gson.Gson;
 import net.md_5.bungee.api.plugin.Listener;
 import net.pitsim.bungee.BungeeMain;
+import net.pitsim.bungee.ConfigManager;
+import net.pitsim.bungee.alogging.ConnectionData;
+import net.pitsim.bungee.alogging.ConnectionManager;
+import net.pitsim.bungee.alogging.OldConnectionData;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -21,7 +23,7 @@ public class IdentificationManager implements Listener {
 	public static void migrate() {
 		Connection connection = getConnection();
 
-		File file = new File(BungeeMain.INSTANCE.getDataFolder().getPath() + "/s1_PlayerData_PlayerData.csv");
+		File file = new File( BungeeMain.INSTANCE.getDataFolder().getPath() + "/s1_PlayerData_PlayerData.csv");
 
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -100,7 +102,6 @@ public class IdentificationManager implements Listener {
 		stmt.setString(4, domain);
 		stmt.execute();
 
-
 		ConnectionManager.connectionData.playerConnectionMap.put(uuid.toString(), new ConnectionData.PlayerConnectionData(username, domain));
 	}
 
@@ -118,9 +119,10 @@ public class IdentificationManager implements Listener {
 	public static Connection getConnection() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			String dbUrl = "jdbc:mysql://sql.pitsim.net:3306/s9_PlayerData";
-			String username = "***REMOVED***";
-			String password = PrivateInfo.PLAYER_DATA_SQL_PASSWORD;
+			String dbUrl = ConfigManager.get("sql-data-url");
+			String username = ConfigManager.get("sql-data-username");
+
+			String password = ConfigManager.get("sql-data-password");
 			return DriverManager.getConnection(dbUrl, username, password);
 		} catch(Exception ignored) {}
 		throw new RuntimeException();
